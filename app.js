@@ -1,20 +1,24 @@
-require('dotenv').config(); // Load environment variables
 const express = require('express');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const path = require('path');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
-// Import routes
-const apiRoutes = require('./routes/api');
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Middleware
-app.use(express.json());  // Handle JSON payloads
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// Routes
-app.use('/api', apiRoutes);  // All API routes will be under /api
+// Use the auth routes
+app.use('/', authRoutes);
 
-// Start the server
+// Route for the homepage
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
 app.listen(port, () => {
-  console.log(`CMS server is running on http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
