@@ -1,23 +1,36 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/authRoutes');
+const session = require('express-session');
+const authRoutes = require('./routes/authRoutes'); // Import routes
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Session middleware
+app.use(session({
+    secret: 'your-secret-key', 
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 // Parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Use the auth routes
-app.use('/', authRoutes);
+// Middleware for parsing JSON bodies
+app.use(express.json());
 
-// Route for the homepage
-app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'home.html'));
-});
+// Middleware for parsing URL-encoded bodies (optional)
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (for login page, etc.)
+// app.use(express.static(path.join(__dirname, 'public')));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'public')); // Set views directory
+
+// Use routes from the authRoutes file
+app.use('/', authRoutes);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

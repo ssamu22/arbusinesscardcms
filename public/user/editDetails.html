@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Information</title>
+    <style>
+        .field-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .field-container input {
+            flex: 1;
+            margin-right: 5px;
+        }
+        .remove-field {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Your Details</h1>
+    <form id="editIntroductionForm">
+        <h3>Introduction</h3>
+        <textarea id="introduction" rows="4" cols="50" placeholder="Enter your introduction here..."></textarea>
+        <br />
+        <h3>Position</h3>
+        <input id="position" placeholder="Enter your position here..." value="">
+        <br />
+        <h3>Fields</h3>
+        <div id="fieldsContainer"></div>
+        <button type="button" id="addFieldButton">Add Field</button>
+        <br />
+        <br />
+        <button type="submit">Save</button>
+    </form>
+    <script>
+        // Fetch current introduction from the server and populate the textarea
+        async function fetchDetails() {
+            const response = await fetch('/api/details');
+            const data = await response.json();
+            document.getElementById('introduction').value = data.introduction; 
+            document.getElementById('position').value = data.position;
+
+            // Populate fields
+            const fieldsContainer = document.getElementById('fieldsContainer');
+            data.fields.forEach((field, index) => {
+                const fieldDiv = createFieldElement(field, index);
+                fieldsContainer.appendChild(fieldDiv);
+            });
+        }
+
+        function createFieldElement(field, index) {
+            const div = document.createElement('div');
+            div.className = 'field-container';
+            div.innerHTML = `
+                <input type="text" value="${field}" placeholder="Field ${index + 1}">
+                <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+            `;
+            return div;
+        }
+
+        document.getElementById('addFieldButton').addEventListener('click', () => {
+            const fieldsContainer = document.getElementById('fieldsContainer');
+            const fieldDiv = createFieldElement('', fieldsContainer.children.length);
+            fieldsContainer.appendChild(fieldDiv);
+        });
+
+        function removeField(button) {
+            button.parentElement.remove(); // Remove the field input
+        }
+
+        document.getElementById('editIntroductionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newIntroduction = document.getElementById('introduction').value;
+            const newPosition = document.getElementById('position').value;
+
+            const fieldInputs = document.querySelectorAll('#fieldsContainer input');
+            const fields = Array.from(fieldInputs).map(input => input.value).filter(value => value); // Collect non-empty fields
+
+
+            // Send the updated introduction to the server
+            const response = await fetch('/api/details', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ introduction: newIntroduction, position: newPosition, field: fields })
+            });
+
+            if (response.ok) {
+                alert(`Information updated successfully!`); // Display the updated introduction
+                window.location.href = '/home'; // Redirect to home or wherever you want
+            } else {
+                alert('Failed to update information.');
+            }
+        });
+
+        // Fetch the current introduction on page load
+        fetchDetails();
+    </script>
+</body>
+</html>
