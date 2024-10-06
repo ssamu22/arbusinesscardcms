@@ -25,9 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files (for login page, etc.)
 // app.use(express.static(path.join(__dirname, 'public')));
-
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'public')); // Set views directory
+app.set('views', path.join(__dirname, 'resources', 'views')); // Set views directory
+
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from the public folder
 
 // Use routes from the authRoutes file
 app.use('/', authRoutes);

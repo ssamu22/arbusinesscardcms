@@ -5,22 +5,35 @@ const informationController = require('../controllers/informationController');
 const ensureAuthenticated = require('../middlewares/authMiddleware');
 const path = require('path');
 
-// Route for login page
+// Route for the public index page
 router.get('/', (req, res) => {
-    res.render(path.join(__dirname, '../public/index.ejs'));
+  if (req.session.user) {
+      // If user is logged in, redirect to home
+      res.redirect('/home');
+  } else {
+      // If user is not logged in, redirect to login
+      res.redirect('/login');
+  }
+});
+
+// Route for login page
+router.get('/login', (req, res) => {
+  if (req.session.user) {
+      res.redirect('/home'); // Redirect to home if already logged in
+  } else {
+      res.render('auth/login'); // Render login.ejs
+  }
 });
 
 // Handle login form submission
 router.post('/login', authController.login);
-
-// Logout route
 router.get('/logout', authController.logout);
 
 // Protecting home route
 router.get('/home', ensureAuthenticated, (req, res) => {
-    const user = req.session.user; // Access logged-in user's information
-    res.render('home', { user }); // Pass user information to the home page
-  });
+  const user = req.session.user; // Access logged-in user's information
+  res.render('pages/user/home', { user }); // Pass user information to the home page
+});
 
 module.exports = router;
 

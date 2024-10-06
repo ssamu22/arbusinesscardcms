@@ -3,7 +3,7 @@ const supabase = require('../utils/supabaseClient');
 const Professor = require('../models/professor');
 
 exports.edit = (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/user/editDetails.html'));
+    res.render(path.join(__dirname, '../resources/views/pages/user/edits/editDetails.ejs'));
 };
 
 exports.getDetails = async (req, res) => {
