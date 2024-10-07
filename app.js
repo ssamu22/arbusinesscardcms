@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes'); // Import routes
+const apiRoutes = require('./routes/api'); // Import routes
 const app = express();
 const port = 3000;
 
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serve static files f
 
 // Use routes from the authRoutes file
 app.use('/', authRoutes);
+app.use('/api', apiRoutes);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
