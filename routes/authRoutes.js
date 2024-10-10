@@ -35,7 +35,8 @@ router.get('/home', ensureAuthenticated, (req, res) => {
   res.render('pages/user/home', { user }); // Pass user information to the home page
 });
 
-module.exports = router;
+// Route for updating profile data
+router.put('/update-profile', ensureAuthenticated, authController.updateProfile);
 
 // Route for edit details page
 router.get('/edit-details', ensureAuthenticated, informationController.edit);
@@ -43,6 +44,7 @@ router.get('/edit-details', ensureAuthenticated, informationController.edit);
 // Route to get the current introduction
 router.get('/api/details', ensureAuthenticated, informationController.getDetails);
 
-// Route to update the introduction
-router.put('/api/details', ensureAuthenticated, informationController.updateDetails);
+// // Route to update the introduction
+// router.put('/api/details', ensureAuthenticated, informationController.updateDetails);
 
+module.exports = router;

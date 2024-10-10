@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome, <%= user.first_name %> <%= user.last_name %></h1>
+    <!-- <p>Your Email: <%= user.email %></p> -->
+    <p>Your Position: <%= user.position %></p>
+    <a href="/edit-details">Edit Your Introduction</a>
+    <a href="/logout">Logout</a> <!-- Add a logout link -->
+</body>
+</html>

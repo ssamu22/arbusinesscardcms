@@ -1,7 +1,8 @@
 const userService = require('../models/userService');
+const Professor = require('../models/professor');
 const bcrypt = require('bcrypt'); // For password hashing
 
-const { Professor, Contact } = require('../models');
+// const { Professor, Contact } = require('../models/');
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
@@ -51,3 +52,13 @@ exports.ensureAuthenticated = (req, res, next) => {
     }
 };
 
+exports.updateProfile = async (req, res) => {
+  const { professional, personal } = req.body; // Get the new introduction from the request body
+
+  const userProfile = await Professor.updateProfile(req, res, { professional, personal });
+  if(!userProfile){
+    res.status(400).json({ error: 'Failed to update profile' });
+  }
+  
+  res.json({ message: 'Profile updated successfully' });
+};
