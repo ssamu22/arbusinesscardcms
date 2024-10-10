@@ -1,6 +1,6 @@
 const path = require('path');
 const supabase = require('../utils/supabaseClient');
-const Professor = require('../models/Department');
+const Employee = require('../models/Department');
 
 // Fetch all departments
 exports.getAllDepartments = async (req, res) => {

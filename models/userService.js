@@ -6,7 +6,7 @@ const supabaseApiKey = process.env.SUPABASE_API_KEY;
 const supabase = createClient(supabaseUrl, supabaseApiKey);
 
 const Contact = require('./Contact');
-const Professor = require('./professor');
+const Professor = require('./Employee');
 
 async function findUserByEmail(email) {
   return await Contact.findUserByEmail(email);

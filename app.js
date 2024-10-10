@@ -9,7 +9,7 @@ const port = 3000;
 
 // Session middleware
 app.use(session({
-    secret: 'your-secret-key', 
+    secret: 'miawmiaw', 
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if using HTTPS

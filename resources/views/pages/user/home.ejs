@@ -6,7 +6,6 @@
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -83,7 +82,7 @@
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-6">
-                            <h3 class="m-0">AR Business Cards</h3>
+                            <h3 class="m-0">Content Management System</h3>
                         </div>
                         <div class="col-6 profile-section">
                             <div class="profile-icon">
@@ -172,21 +171,21 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" value="<%= user.first_name %>" placeholder="Enter your first name" disabled>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter your first name">
                         </div>
                         <div class="col-md-6">
                             <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="middleName" value="<%= user.middle_name %>" placeholder="Enter your middle name" disabled>
+                            <input type="text" class="form-control" id="middleName" placeholder="Enter your middle name">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" value="<%= user.last_name %>" placeholder="Enter your last name" disabled>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter your last name">
                         </div>
                         <div class="col-md-6">
                             <label for="honorifics" class="form-label">Honorifics</label>
-                            <input type="text" class="form-control" id="honorifics" value="<%= user.honorifics %>" placeholder="Enter honorifics">
+                            <input type="text" class="form-control" id="honorifics" placeholder="Enter honorifics">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -203,17 +202,20 @@
                     </div>
                     <div class="mb-3">
                         <label for="researchFields" class="form-label">Research Fields</label>
-                        <input id="researchFields" name="researchFields" placeholder="Enter your fields here..." value="">
-                        <!-- <select class="form-select" id="researchFields" multiple aria-label="Select research fields">
-                            
+                        <select class="form-select" id="researchFields" multiple aria-label="Select research fields">
+                            <option value="AI">Artificial Intelligence</option>
+                            <option value="ML">Machine Learning</option>
+                            <option value="DS">Data Science</option>
+                            <option value="CV">Computer Vision</option>
+                            <option value="NLP">Natural Language Processing</option>
+                            <option value="RL">Reinforcement Learning</option>
+                            <option value="RO">Robotics</option>
                         </select>
-                        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple fields</small> -->
+                        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple fields</small>
                     </div>
                     <div class="mb-3">
                         <label for="department" class="form-label">Department</label>
-                        <select id="departmentDropdown">
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
+                        <input type="text" class="form-control" id="department" placeholder="Enter your department">
                     </div>
                 </form>
             </div>
@@ -226,35 +228,175 @@
                 <!-- Other sections -->
                 <div id="timeline" class="content-section">
                     <h2>Timeline</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
+                    <form id="timeline-form" class="mb-4">
+                        <div class="mb-3">
+                            <label for="timeline-year" class="form-label">Year</label>
+                            <input type="text" class="form-control" id="timeline-year" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="timeline-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="timeline-description" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="timeline-submit">Add Entry</button>
+                    </form>
+                    <div class="card">
+                        <div class="card-header">Timeline Entries</div>
+                        <ul class="list-group list-group-flush" id="timeline-entries"></ul>
                     </div>
                 </div>
 
-                <div id="achievements" class="content-section">
-                    <h2>Achievements</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
+                <div id="achievements" class="content-section container mt-4">
+                    <h2 class="mb-4">Achievements</h2>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <select id="achievement-filter" class="form-select">
+                                <option value="all">All Achievements</option>
+                                <option value="award">Awards</option>
+                                <option value="teaching">Teaching</option>
+                                <option value="recognition">Recognition</option>
+                                <option value="supervision">Supervision</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <button id="add-achievement-btn" class="btn btn-primary">Add Achievement</button>
+                        </div>
+                    </div>
+                    <div id="achievements-list">
+                        <!-- Achievements will be dynamically added here -->
+                    </div>
+                    <div class="modal fade" id="achievementModal" tabindex="-1" aria-labelledby="achievementModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="achievementModalLabel">Add New Achievement</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="achievement-form">
+                                        <div class="mb-3">
+                                            <label for="achievement-title" class="form-label">Title</label>
+                                            <input type="text" class="form-control" id="achievement-title" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="achievement-description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="achievement-description" rows="3" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="achievement-year" class="form-label">Year</label>
+                                            <input type="number" class="form-control" id="achievement-year" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="achievement-type" class="form-label">Type</label>
+                                            <select class="form-select" id="achievement-type" required>
+                                                <option value="award">Award</option>
+                                                <option value="teaching">Teaching</option>
+                                                <option value="recognition">Recognition</option>
+                                                <option value="supervision">Supervision</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="save-achievement">Add Achievement</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="organizations" class="content-section">
-                    <h2>Organizations</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
+                    <h2 class="mb-4">Organizations</h2>
+    <button id="add-org-btn" class="btn btn-primary mb-4">Add Organization</button>
+    
+    <div id="org-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Organizations will be dynamically added here -->
+    </div>
+    <div class="modal fade" id="orgModal" tabindex="-1" aria-labelledby="orgModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="org-form">
+                        <div class="mb-3">
+                            <label for="org-name" class="form-label">Organization Name</label>
+                            <input type="text" class="form-control" id="org-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-role" class="form-label">Your Role</label>
+                            <input type="text" class="form-control" id="org-role" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="org-description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-image" class="form-label">Organization Image</label>
+                            <input type="file" class="form-control" id="org-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Organization</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="contacts" class="content-section container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 id="contact-name">Dr. John Carlo</h2>
+                    <p id="contact-title" class="text-muted">Professor</p>
+                </div>
+                <button id="edit-toggle" class="btn btn-primary">Edit</button>
+            </div>
+
+            <form id="contact-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Contact Information</h3>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" class="form-control" id="phone" name="phone" disabled>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="landline" class="form-label">Landline</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" class="form-control" id="landline" name="landline" disabled>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Consultation Hours</h3>
+                        <div id="consultation-hours" class="mt-3"></div>
                     </div>
                 </div>
 
-                <div id="contacts" class="content-section">
-                    <h2>Contacts</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
+                <h3 class="mt-4">Social Media</h3>
+                <ul id="social-media-list" class="list-group"></ul>
+                <button id="add-social-media" class="btn btn-success mt-2" style="display: none;">Add Social Media</button>
+            </form>
+        </div>
+    </div>
+</div>
 
                 <div id="about-lpu-c" class="content-section">
                     <h2>About LPU-C</h2>
@@ -268,100 +410,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
-        let tagify;
-
-        // Fetch current introduction from the server and populate the textarea
-        async function fetchDetails() {
-            const response = await fetch('/api/details');
-            const data = await response.json();
-            document.getElementById('introduction').value = data.introduction; 
-            document.getElementById('position').value = data.position;
-
-            let fieldsInput = document.getElementById('researchFields');
-            tagify = new Tagify(fieldsInput, {
-                delimiters: ",", // Tags are separated by commas
-                maxTags: 10,      // Optional limit
-                editTags: true    // Allow users to edit tags
-            });
-
-            tagify.addTags(data.fields);
-            // Populate fields
-            // const fieldsContainer = document.getElementById('fieldsContainer');
-            // data.fields.forEach((field, index) => {
-            //     const fieldDiv = createFieldElement(field, index);
-            //     fieldsContainer.appendChild(fieldDiv);
-            // });
-        }
-
-        // Fetch departments and populate dropdown
-        async function fetchDepartments() {
-            const response = await fetch('/api/departments');
-            const departments = await response.json();
-            
-            const dropdown = document.getElementById('departmentDropdown');
-            departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.department_id;
-                option.textContent = department.department_name;
-                dropdown.appendChild(option);
-            });
-
-            // Set the selected department based on the logged-in user (session info)
-            const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
-            dropdown.value = currentDepartmentId;
-        }
-
-        // function createFieldElement(field, index) {
-        //     const div = document.createElement('div');
-        //     div.className = 'field-container';
-        //     div.innerHTML = `
-        //         <input type="text" value="${field}" placeholder="Field ${index + 1}">
-        //         <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
-        //     `;
-        //     return div;
-        // }
-
-        // document.getElementById('addFieldButton').addEventListener('click', () => {
-        //     const fieldsContainer = document.getElementById('fieldsContainer');
-        //     const fieldDiv = createFieldElement('', fieldsContainer.children.length);
-        //     fieldsContainer.appendChild(fieldDiv);
-        // });
-
-        // function removeField(button) {
-        //     button.parentElement.remove(); // Remove the field input
-        // }
-
-        // document.getElementById('editIntroductionForm').addEventListener('submit', async (e) => {
-        //     e.preventDefault();
-        //     const newIntroduction = document.getElementById('introduction').value;
-        //     const newPosition = document.getElementById('position').value;
-// 
-        //     const fieldInputs = document.querySelectorAll('#fieldsContainer input');
-        //     const fields = Array.from(fieldInputs).map(input => input.value).filter(value => value); // Collect non-empty fields
-// 
-// 
-        //     // Send the updated introduction to the server
-        //     const response = await fetch('/api/details', {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({ introduction: newIntroduction, position: newPosition, field: fields })
-        //     });
-// 
-        //     if (response.ok) {
-        //         alert(`Information updated successfully!`); // Display the updated introduction
-        //         window.location.href = '/home'; // Redirect to home or wherever you want
-        //     } else {
-        //         alert('Failed to update information.');
-        //     }
-        // });
-
-        // Fetch the current introduction on page load
-        
-
         // Navigation handling
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
@@ -390,65 +439,426 @@
                 });
             });
         });
-        let profileData = {
-            personal: {},
-            professional: {}
-        };
 
-        async function updateProfileData() {
+        //Consultation Hours Javascript
+        document.addEventListener('DOMContentLoaded', function() {
+    const editToggle = document.getElementById('edit-toggle');
+    const contactForm = document.getElementById('contact-form');
+    const contactName = document.getElementById('contact-name');
+    const contactTitle = document.getElementById('contact-title');
+    const consultationHours = document.getElementById('consultation-hours');
+    const socialMediaList = document.getElementById('social-media-list');
+    const addSocialMediaBtn = document.getElementById('add-social-media');
+
+    let editMode = false;
+
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const contactInfo = {
+        name: 'Dr. John Carlo',
+        title: 'Professor',
+        phone: '09696969696',
+        landline: '09696969696',
+        email: 'john@example.com',
+        consultationHours: daysOfWeek.map(day => ({
+            day,
+            available: day !== 'Sunday',
+            startTime: '14:00',
+            endTime: '16:00'
+        })),
+        socialMedia: [
+            { platform: 'facebook', url: 'https://facebook.com' },
+            { platform: 'twitter', url: 'https://twitter.com' },
+            { platform: 'instagram', url: 'https://instagram.com' },
+        ],
+    };
+
+    const socialMediaIcons = {
+        facebook: '<i class="bi bi-facebook"></i>',
+        twitter: '<i class="bi bi-twitter"></i>',
+        instagram: '<i class="bi bi-instagram"></i>',
+        linkedin: '<i class="bi bi-linkedin"></i>',
+        github: '<i class="bi bi-github"></i>',
+        youtube: '<i class="bi bi-youtube"></i>',
+    };
+
+    function renderContactInfo() {
+        contactName.textContent = contactInfo.name;
+        contactTitle.textContent = contactInfo.title;
+        document.getElementById('phone').value = contactInfo.phone;
+        document.getElementById('landline').value = contactInfo.landline;
+        document.getElementById('email').value = contactInfo.email;
+    }
+
+    function renderConsultationHours() {
+        consultationHours.innerHTML = contactInfo.consultationHours.map((hour, index) => `
+            <div class="row mb-2 align-items-center">
+                <div class="col-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="available-${hour.day}" 
+                               ${hour.available ? 'checked' : ''} ${!editMode ? 'disabled' : ''}
+                               data-index="${index}" data-field="available">
+                        <label class="form-check-label" for="available-${hour.day}">${hour.day}</label>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="input-group">
+                        <input type="time" class="form-control" value="${hour.startTime}" 
+                               data-index="${index}" data-field="startTime" 
+                               ${!editMode || !hour.available ? 'disabled' : ''}>
+                        <span class="input-group-text">to</span>
+                        <input type="time" class="form-control" value="${hour.endTime}" 
+                               data-index="${index}" data-field="endTime" 
+                               ${!editMode || !hour.available ? 'disabled' : ''}>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderSocialMedia() {
+        socialMediaList.innerHTML = contactInfo.socialMedia.map((social, index) => `
+            <li class="list-group-item d-flex align-items-center">
+                <div class="me-2">${socialMediaIcons[social.platform]}</div>
+                <select class="form-select me-2" style="width: 150px;" data-index="${index}" ${!editMode ? 'disabled' : ''}>
+                    ${Object.keys(socialMediaIcons).map(platform => `
+                        <option value="${platform}" ${platform === social.platform ? 'selected' : ''}>
+                            ${platform.charAt(0).toUpperCase() + platform.slice(1)}
+                        </option>
+                    `).join('')}
+                </select>
+                <input type="url" class="form-control" value="${social.url}" data-index="${index}" ${!editMode ? 'disabled' : ''}>
+                ${editMode ? `
+                    <button class="btn btn-danger btn-sm ms-2 remove-social-media" data-index="${index}">Remove</button>
+                ` : ''}
+            </li>
+        `).join('');
+    }
+
+    function toggleEditMode() {
+        editMode = !editMode;
+        editToggle.textContent = editMode ? 'Save' : 'Edit';
+        addSocialMediaBtn.style.display = editMode ? 'block' : 'none';
         
-            // Gather personal information
-            profileData.personal = {
-                firstName: document.getElementById('firstName').value,
-                middleName: document.getElementById('middleName').value,
-                lastName: document.getElementById('lastName').value,
-                honorifics: document.getElementById('honorifics').value,
-                introduction: document.getElementById('introduction').value
+        const inputs = contactForm.querySelectorAll('input, select');
+        inputs.forEach(input => input.disabled = !editMode);
+
+        renderConsultationHours();
+        renderSocialMedia();
+    }
+
+    editToggle.addEventListener('click', toggleEditMode);
+
+    contactForm.addEventListener('change', function(e) {
+        if (e.target.matches('#phone, #landline, #email')) {
+            contactInfo[e.target.name] = e.target.value;
+        }
+    });
+
+    consultationHours.addEventListener('change', function(e) {
+        if (e.target.matches('input[type="checkbox"]')) {
+            const index = parseInt(e.target.dataset.index);
+            const available = e.target.checked;
+            contactInfo.consultationHours[index].available = available;
+            renderConsultationHours();
+        } else if (e.target.matches('input[type="time"]')) {
+            const index = parseInt(e.target.dataset.index);
+            const field = e.target.dataset.field;
+            contactInfo.consultationHours[index][field] = e.target.value;
+        }
+    });
+
+    socialMediaList.addEventListener('change', function(e) {
+        if (e.target.matches('select, input')) {
+            const index = parseInt(e.target.dataset.index);
+            const field = e.target.tagName === 'SELECT' ? 'platform' : 'url';
+            contactInfo.socialMedia[index][field] = e.target.value;
+        }
+    });
+
+    socialMediaList.addEventListener('click', function(e) {
+        if (e.target.matches('.remove-social-media')) {
+            const index = parseInt(e.target.dataset.index);
+            contactInfo.socialMedia.splice(index, 1);
+            renderSocialMedia();
+        }
+    });
+
+    addSocialMediaBtn.addEventListener('click', function() {
+        contactInfo.socialMedia.push({ platform: 'facebook', url: '' });
+        renderSocialMedia();
+    });
+
+    renderContactInfo();
+    renderConsultationHours();
+    renderSocialMedia();
+});
+//Achivements Page Javascript
+        document.addEventListener('DOMContentLoaded', function() {
+    const achievementsList = document.getElementById('achievements-list');
+    const achievementFilter = document.getElementById('achievement-filter');
+    const addAchievementBtn = document.getElementById('add-achievement-btn');
+    const achievementModal = new bootstrap.Modal(document.getElementById('achievementModal'));
+    const achievementForm = document.getElementById('achievement-form');
+    const saveAchievementBtn = document.getElementById('save-achievement');
+
+    let achievements = [
+        { id: 1, title: "Best Paper Award, ICML 2022", description: "For 'Interpretable Deep Learning in Dynamic Decision Processes'", year: 2022, type: "award" },
+        { id: 2, title: "1M+ students taught worldwide", description: "Through online courses and in-person lectures", year: 2022, type: "teaching" },
+        { id: 3, title: "IEEE Fellow, 2020", description: "For contributions to machine learning and AI ethics", year: 2020, type: "recognition" },
+        { id: 4, title: "25+ Ph.D. students supervised", description: "Many now leading researchers in academia and industry", year: 2022, type: "supervision" },
+        { id: 5, title: "World Economic Forum Technology Pioneer, 2019", description: "Recognized for contributions to AI for social good", year: 2019, type: "recognition" },
+    ];
+
+    const achievementIcons = {
+        award: '<i class="bi bi-award"></i>',
+        teaching: '<i class="bi bi-people"></i>',
+        recognition: '<i class="bi bi-trophy"></i>',
+        supervision: '<i class="bi bi-book"></i>',
+        other: '<i class="bi bi-globe"></i>',
+    };
+
+    function renderAchievements(filter = 'all') {
+        const filteredAchievements = filter === 'all' 
+            ? achievements 
+            : achievements.filter(a => a.type === filter);
+
+        achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
+            <div class="card mb-3 ${index % 2 === 0 ? 'bg-light' : 'bg-white'}">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
+                            ${achievementIcons[achievement.type]}
+                        </div>
+                        <div class="col-10 col-md-11">
+                            <h5 class="card-title">${achievement.title}</h5>
+                            <p class="card-text">${achievement.description}</p>
+                            <span class="badge bg-secondary">${achievement.year}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    achievementFilter.addEventListener('change', function() {
+        renderAchievements(this.value);
+    });
+
+    addAchievementBtn.addEventListener('click', function() {
+        achievementModal.show();
+    });
+
+    saveAchievementBtn.addEventListener('click', function() {
+        const title = document.getElementById('achievement-title').value;
+        const description = document.getElementById('achievement-description').value;
+        const year = parseInt(document.getElementById('achievement-year').value);
+        const type = document.getElementById('achievement-type').value;
+
+        const newAchievement = { id: Date.now(), title, description, year, type };
+        achievements.push(newAchievement);
+        renderAchievements(achievementFilter.value);
+        achievementModal.hide();
+        achievementForm.reset();
+    });
+
+    renderAchievements();
+});
+
+//Overview Javascript Page
+
+document.addEventListener('DOMContentLoaded', function() {
+    const saveButton = document.querySelector('#saveProfile');
+
+    let profileData = {
+        personal: {},
+        professional: {}
+    };
+
+    function updateProfileData() {
+        profileData.personal = {
+            firstName: document.getElementById('firstName').value,
+            middleName: document.getElementById('middleName').value,
+            lastName: document.getElementById('lastName').value,
+            honorifics: document.getElementById('honorifics').value,
+            introduction: document.getElementById('introduction').value
+        };
+        profileData.professional = {
+            position: document.getElementById('position').value,
+            researchFields: Array.from(document.getElementById('researchFields').selectedOptions).map(option => option.value),
+            department: document.getElementById('department').value
+        };
+    }
+
+    saveButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateProfileData();
+        console.log('Profile data saved:', profileData);
+        alert('Profile saved successfully!');
+    });
+});
+
+//Timeline Page Javascript
+
+document.addEventListener('DOMContentLoaded', function() {
+    const timelineForm = document.getElementById('timeline-form');
+    const timelineEntries = document.getElementById('timeline-entries');
+    let entries = [];
+
+    timelineForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const year = document.getElementById('timeline-year').value;
+        const description = document.getElementById('timeline-description').value;
+        
+        entries.push({ id: Date.now(), year, description });
+        renderEntries();
+        timelineForm.reset();
+    });
+
+    function renderEntries() {
+        timelineEntries.innerHTML = '';
+        entries.forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <div>
+                    <strong>${entry.year}:</strong> ${entry.description}
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.id})">Edit</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.id})">Delete</button>
+                </div>
+            `;
+            timelineEntries.appendChild(li);
+        });
+    }
+
+    window.editEntry = function(id) {
+        const entry = entries.find(e => e.id === id);
+        if (entry) {
+            document.getElementById('timeline-year').value = entry.year;
+            document.getElementById('timeline-description').value = entry.description;
+            document.getElementById('timeline-submit').textContent = 'Update Entry';
+            timelineForm.onsubmit = function(e) {
+                e.preventDefault();
+                entry.year = document.getElementById('timeline-year').value;
+                entry.description = document.getElementById('timeline-description').value;
+                renderEntries();
+                timelineForm.reset();
+                document.getElementById('timeline-submit').textContent = 'Add Entry';
+                timelineForm.onsubmit = null;
             };
-        
-            let selectedFields = tagify.value.map(tag => tag.value);
-        
-            // Gather professional information
-            profileData.professional = {
-                position: document.getElementById('position').value,
-                researchFields: selectedFields, // Research fields from Tagify
-                department: document.getElementById('departmentDropdown').value // Selected department
-            };
-        
-            try {
-                const response = await fetch('/update-profile', { // Ensure the correct API endpoint
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(profileData) // Convert profileData to a JSON string
-                });
-        
-                if (response.ok) {
-                    alert(`Profile updated successfully!`); // Display the updated introduction
-                    window.location.href = '/home'; // Redirect to home or wherever you want
-                } else {
-                    const errorData = await response.json();
-                    alert(`Failed to update profile: ${errorData.message}`); // Show error message from the server
-                }
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('An error occurred while updating the profile.');
+        }
+    };
+
+    window.deleteEntry = function(id) {
+        entries = entries.filter(e => e.id !== id);
+        renderEntries();
+    };
+});
+
+// Organization Page Javascript
+document.addEventListener('DOMContentLoaded', function() {
+    const addOrgBtn = document.getElementById('add-org-btn');
+    const orgList = document.getElementById('org-list');
+    const orgForm = document.getElementById('org-form');
+    const orgModal = new bootstrap.Modal(document.getElementById('orgModal'));
+    let organizations = [];
+    let currentOrgId = null;
+
+    addOrgBtn.addEventListener('click', () => {
+        currentOrgId = null;
+        orgForm.reset();
+        document.getElementById('orgModalLabel').textContent = 'Add Organization';
+        orgForm.querySelector('button[type="submit"]').textContent = 'Add Organization';
+        orgModal.show();
+    });
+
+    orgForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('org-name').value;
+        const role = document.getElementById('org-role').value;
+        const description = document.getElementById('org-description').value;
+        const imageFile = document.getElementById('org-image').files[0];
+
+        if (currentOrgId) {
+            const index = organizations.findIndex(org => org.id === currentOrgId);
+            organizations[index] = { ...organizations[index], name, role, description };
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    organizations[index].imageUrl = e.target.result;
+                    renderOrganizations();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                renderOrganizations();
+            }
+        } else {
+            const newOrg = { id: Date.now(), name, role, description };
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newOrg.imageUrl = e.target.result;
+                    organizations.push(newOrg);
+                    renderOrganizations();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                organizations.push(newOrg);
+                renderOrganizations();
             }
         }
-        // Profile data management
-        document.addEventListener('DOMContentLoaded', function() {
-            const saveButton = document.querySelector('#saveProfile');
 
-            saveButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                updateProfileData();
-                console.log('Profile data saved:', profileData);
+        orgModal.hide();
+    });
+
+    function renderOrganizations() {
+        orgList.innerHTML = '';
+        organizations.forEach(org => {
+            const col = document.createElement('div');
+            col.className = 'col';
+            col.innerHTML = `
+                <div class="card h-100">
+                    ${org.imageUrl ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">` : ''}
+                    <div class="card-body">
+                        <h5 class="card-title">${org.name}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${org.role}</h6>
+                        <p class="card-text">${org.description}</p>
+                        <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.id}">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.id}">Delete</button>
+                    </div>
+                </div>
+            `;
+            orgList.appendChild(col);
+        });
+
+        // Add event listeners for edit and delete buttons
+        document.querySelectorAll('.edit-org').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const orgId = parseInt(this.getAttribute('data-id'));
+                const org = organizations.find(o => o.id === orgId);
+                if (org) {
+                    currentOrgId = org.id;
+                    document.getElementById('org-name').value = org.name;
+                    document.getElementById('org-role').value = org.role;
+                    document.getElementById('org-description').value = org.description;
+                    document.getElementById('orgModalLabel').textContent = 'Edit Organization';
+                    orgForm.querySelector('button[type="submit"]').textContent = 'Update Organization';
+                    orgModal.show();
+                }
             });
         });
 
-        fetchDetails();
-        fetchDepartments();
+        document.querySelectorAll('.delete-org').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const orgId = parseInt(this.getAttribute('data-id'));
+                organizations = organizations.filter(org => org.id !== orgId);
+                renderOrganizations();
+            });
+        });
+    }
+});
     </script>
 </body>
 </html>

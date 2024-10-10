@@ -1,6 +1,6 @@
 const path = require('path');
 const supabase = require('../utils/supabaseClient');
-const Professor = require('../models/professor');
+const Professor = require('../models/Employee');
 
 exports.edit = (req, res) => {
     res.render(path.join(__dirname, '../resources/views/pages/user/edits/editDetails.ejs'));
