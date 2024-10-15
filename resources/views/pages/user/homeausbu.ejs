@@ -410,6 +410,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
         // Navigation handling
         document.addEventListener('DOMContentLoaded', function() {
@@ -439,6 +440,44 @@
                 });
             });
         });
+
+        let tagify;
+
+        // Fetch current introduction from the server and populate the textarea
+        async function fetchDetails() {
+            const response = await fetch('/api/details');
+            const data = await response.json();
+            document.getElementById('introduction').value = data.introduction; 
+            document.getElementById('position').value = data.position;
+
+            let fieldsInput = document.getElementById('researchFields');
+            tagify = new Tagify(fieldsInput, {
+                delimiters: ",", // Tags are separated by commas
+                maxTags: 10,      // Optional limit
+                editTags: true    // Allow users to edit tags
+            });
+
+            tagify.addTags(data.fields);
+        }
+
+        // Fetch departments and populate dropdown
+        async function fetchDepartments() {
+            const response = await fetch('/api/departments');
+            const departments = await response.json();
+            
+            const dropdown = document.getElementById('departmentDropdown');
+            departments.forEach(department => {
+                const option = document.createElement('option');
+                option.value = department.department_id;
+                option.textContent = department.department_name;
+                dropdown.appendChild(option);
+            });
+
+            // Set the selected department based on the logged-in user (session info)
+            const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
+            dropdown.value = currentDepartmentId;
+        }
+
 
         //Consultation Hours Javascript
         document.addEventListener('DOMContentLoaded', function() {

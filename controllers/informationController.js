@@ -1,20 +1,21 @@
 const path = require('path');
 const supabase = require('../utils/supabaseClient');
-const Professor = require('../models/Employee');
+const Employee = require('../models/Employee');
 
 exports.edit = (req, res) => {
     res.render(path.join(__dirname, '../resources/views/pages/user/edits/editDetails.ejs'));
 };
 
 exports.getDetails = async (req, res) => {
-    const userId = req.session.user.professor_id; // Get the user ID from the session
+    const employee_id = req.session.user.employee_id; // Get the user ID from the session
     try {
-        const userInfo = await Professor.findProfessorById(userId); // Fetch user info from the database
+        const userInfo = await Employee.getOverviewData(employee_id); // Fetch user info from the database
         res.json({ 
             introduction: userInfo.introduction,
             position: userInfo.position,
             fields: userInfo.field
          }); // Send current introduction
+         console.log("Response: "+userInfo);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -33,7 +34,7 @@ exports.getDetails = async (req, res) => {
 // };
 
 exports.updateDetails = async (req, res) => {
-    const userId = req.session.user.professor_id; // Get the user ID from the session
+    const userId = req.session.user.employee_id; // Get the user ID from the session
     const { introduction, position, field } = req.body; // Get the new introduction from the request body
 
     try {

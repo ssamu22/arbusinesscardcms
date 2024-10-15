@@ -28,6 +28,7 @@ exports.login = async (req, res) => {
           employee_id: employee.employee_id,
           first_name: employee.first_name,
           last_name: employee.last_name,
+          honorifics: employee.honorifics,
           email: employee.getEmail(),
           position: employee.position,
           department_id: employee.department_id,
@@ -61,12 +62,47 @@ exports.ensureAuthenticated = (req, res, next) => {
 };
 
 exports.updateProfile = async (req, res) => {
-  const { professional, personal } = req.body; // Get the new introduction from the request body
+    try {
+        const { firstName, middleName, lastName, honorifics, introduction, position, researchFields, department } = req.body;
 
-  const userProfile = await Employee.updateProfile(req, res, { professional, personal });
-  if(!userProfile){
-    res.status(400).json({ error: 'Failed to update profile' });
-  }
-  
-  res.json({ message: 'Profile updated successfully' });
+        // Sanitize researchFields
+        const formattedResearchFields = Array.isArray(researchFields)
+            ? researchFields.map(field => field.value) // Extract values if it's an array of objects
+            : JSON.parse(researchFields).map(field => field.value); // Parse and extract values if it's a JSON string
+
+        // Create the updated profile data
+        const updatedProfileData = {
+                first_name: firstName,
+                middle_name: middleName,
+                last_name: lastName,
+                honorifics: honorifics,
+                introduction: introduction,
+                position: position,
+                field: formattedResearchFields, 
+                department_id: department
+        };
+
+        console.log(updatedProfileData);
+
+        // Update the user profile in the database here
+        // Assuming you have a function in your model to handle this
+        await Employee.update(req.session.user.employee_id, updatedProfileData);
+        
+        // Update session with the new profile data, while preserving existing values
+        req.session.user = {
+            ...req.session.user, // Spread existing session values (preserve email, employee_id, etc.)
+            first_name: firstName,
+            middle_name: middleName,
+            last_name: lastName,
+            honorifics: honorifics,
+            position: position,
+            department_id: department,
+        };
+
+        // Redirect to the home page with success message
+        res.redirect('/home');
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).send('Failed to update profile');
+    }
 };

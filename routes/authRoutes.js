@@ -32,17 +32,14 @@ router.get('/logout', authController.logout);
 // Protecting home route
 router.get('/home', ensureAuthenticated, (req, res) => {
   const user = req.session.user; // Access logged-in user's information
-  res.render('pages/user/home', { user }); // Pass user information to the home page
+  res.render(path.join(__dirname, '..', 'public', 'index.ejs'), { user });
 });
 
 // Route for updating profile data
-router.put('/update-profile', ensureAuthenticated, authController.updateProfile);
+router.post('/update-profile', ensureAuthenticated, authController.updateProfile);
 
 // Route for edit details page
 router.get('/edit-details', ensureAuthenticated, informationController.edit);
-
-// Route to get the current introduction
-router.get('/api/details', ensureAuthenticated, informationController.getDetails);
 
 // // Route to update the introduction
 // router.put('/api/details', ensureAuthenticated, informationController.updateDetails);
