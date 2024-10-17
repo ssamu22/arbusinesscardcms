@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <style>
@@ -105,6 +106,9 @@
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                
+                
+                <!-- Content Section -->
                 <%- include('../resources/views/pages/user/components/overview.ejs') %>
             </main>
         </div>
@@ -116,35 +120,42 @@
         // Navigation handling
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
+            const mainContent = document.querySelector('.main-content');
 
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-
+        
                     const targetSection = this.getAttribute('data-section');
-
+        
                     // Update active states for nav links
                     navLinks.forEach(l => l.classList.remove('active'));
                     this.classList.add('active');
-
-                    // Show the corresponding content section and hide others
-                    contentSections.forEach(section => {
-                        if (section.id === targetSection) {
-                            section.classList.add('active');
-                            section.style.display = "block";
-                        } else {
-                            section.classList.remove('active');
-                            section.style.display = "none";
-                        }
-                    });
+        
+                    // Dynamically load the content for the clicked section
+                    loadContent(targetSection);
                 });
             });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            let tagify;
-            if (document.getElementById('overview')) {
+        
+            // Function to fetch the content from the server
+            function loadContent(section) {
+                fetch(`/home/${section}`) // Assumes you have a route for /load/:section
+                    .then(response => response.text())
+                    .then(html => {
+                        mainContent.innerHTML = html; // Inject the HTML into the main content
+                        if (section === 'overview'){
+                            initializeOverview();
+                        }else if (section === 'timeline'){
+                            initializeTimeline();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading content:', error);
+                    });
+            }
+            // overview page javascript functions
+            function initializeOverview() {
+                let tagify;
                 
                 // Fetch current introduction from the server and populate the textarea
                 async function fetchDetails() {
@@ -183,58 +194,133 @@
                     const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
                     dropdown.value = currentDepartmentId;
                 }
+
                 fetchDetails();
                 fetchDepartments();
                 
-            }
-
-            let profileData = {
-                personal: {},
-                professional: {}
-            };
-    
-            async function updateProfileData() {
-            
-                // Gather personal information
-                profileData.personal = {
-                    firstName: document.getElementById('firstName').value,
-                    middleName: document.getElementById('middleName').value,
-                    lastName: document.getElementById('lastName').value,
-                    honorifics: document.getElementById('honorifics').value,
-                    introduction: document.getElementById('introduction').value
-                };
-            
-                let selectedFields = tagify.value.map(tag => tag.value);
-            
-                // Gather professional information
-                profileData.professional = {
-                    position: document.getElementById('position').value,
-                    researchFields: selectedFields, // Research fields from Tagify
-                    department: document.getElementById('departmentDropdown').value // Selected department
-                };
-            
-                try {
-                    const response = await fetch('/update-profile', { // Ensure the correct API endpoint
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(profileData) // Convert profileData to a JSON string
-                    });
-            
-                    if (response.ok) {
-                        alert(`Profile updated successfully!`); // Display the updated introduction
-                        window.location.href = '/home'; // Redirect to home or wherever you want
-                    } else {
-                        const errorData = await response.json();
-                        alert(`Failed to update profile: ${errorData.message}`); // Show error message from the server
+                document.getElementById('saveProfile').addEventListener('click', async function (event) {
+                    event.preventDefault(); // Prevent form from submitting immediately
+                
+                    // Show a confirmation alert before submitting
+                    if (confirm("Are you sure you want to update your profile?")) {
+                        const form = document.getElementById('profileForm');
+                        const formData = new FormData(form);
+                
+                        // Convert form data to JSON
+                        const data = {};
+                        formData.forEach((value, key) => {
+                            data[key] = value;
+                        });
+                
+                        try {
+                            const response = await fetch('/update-profile', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            });
+                
+                            const result = await response.json();
+                
+                            if (response.ok) {
+                                alert(result.message);  // Show success message
+                                window.location.href = '/home'; // Redirect to home after success
+                            } else {
+                                alert('Error: ' + result.message);  // Show error message
+                            }
+                        } catch (error) {
+                            console.error('Error updating profile', error);
+                            alert('An error occurred while updating the profile.');
+                        }
                     }
-                } catch (error) {
-                    console.error('Error updating profile:', error);
-                    alert('An error occurred while updating the profile.');
-                }
+                });
             }
+            
+            // timeline page javascript functions
+            function initializeTimeline() {
+                const timelineForm = document.getElementById('timeline-form');
+                const timelineEntries = document.getElementById('timeline-entries');
+                let entries = {};
+            
+                // Fetch timeline entries from the server and render them
+                async function fetchTimeline() {
+                    try {
+                        const response = await fetch('/api/timeline');
+                        const data = await response.json();
+                        console.log(data);
+                        entries = data; // Store fetched entries
+                        renderEntries(); // Render the fetched entries
+                    } catch (error) {
+                        console.error('Error fetching timeline:', error);
+                    }
+                }
+            
+                timelineForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const year = document.getElementById('timeline-year').value;
+                    const description = document.getElementById('timeline-description').value;
+            
+                    // Check if we're updating or adding an entry
+                    const isUpdate = document.getElementById('timeline-submit').textContent === 'Update Entry';
+            
+                    if (isUpdate) {
+                        // Find the entry to update
+                        const entry = entries.find(e => e.id === parseInt(timelineForm.dataset.editId));
+                        if (entry) {
+                            entry.year = year;
+                            entry.description = description;
+                        }
+                        document.getElementById('timeline-submit').textContent = 'Add Entry'; // Reset button text
+                    } else {
+                        // Create a new entry
+                        entries.push({ id: Date.now(), year, description });
+                    }
+            
+                    renderEntries();
+                    timelineForm.reset();
+                    delete timelineForm.dataset.editId; // Clear edit ID
+                });
+            
+                function renderEntries() {
+                    timelineEntries.innerHTML = '';
+                    entries.forEach(entry => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `
+                            <div>
+                                <strong>${entry.date}:</strong> ${entry.description}
+                            </div>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.id})">Edit</button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.id})">Delete</button>
+                            </div>
+                        `;
+                        timelineEntries.appendChild(li);
+                    });
+                }
+            
+                window.editEntry = function (id) {
+                    const entry = entries.find(e => e.id === id);
+                    if (entry) {
+                        document.getElementById('timeline-year').value = entry.year;
+                        document.getElementById('timeline-description').value = entry.description;
+                        document.getElementById('timeline-submit').textContent = 'Update Entry';
+                        timelineForm.dataset.editId = id; // Store the ID of the entry being edited
+                    }
+                };
+            
+                window.deleteEntry = function (id) {
+                    entries = entries.filter(e => e.id !== id);
+                    renderEntries();
+                };
+            
+                fetchTimeline(); // Fetch and render entries on initialization
+            }
+            
 
+            initializeOverview();
+                
         });
     </script>
 </body>

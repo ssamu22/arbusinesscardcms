@@ -29,6 +29,17 @@ router.get('/login', (req, res) => {
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
+// Serve partial pages dynamically
+router.get('/home/:page', ensureAuthenticated, (req, res) => {
+  const page = req.params.page;
+  const allowedPages = ['overview', 'timeline', 'achievements', 'organizations', 'contacts', 'about-lpu-c'];
+  if (allowedPages.includes(page)) {
+      res.render(`pages/user/components/${page}`, { user: req.session.user });
+  } else {
+      res.status(404).send('Page not found');
+  }
+});
+
 // Protecting home route
 router.get('/home', ensureAuthenticated, (req, res) => {
   const user = req.session.user; // Access logged-in user's information
@@ -37,11 +48,5 @@ router.get('/home', ensureAuthenticated, (req, res) => {
 
 // Route for updating profile data
 router.post('/update-profile', ensureAuthenticated, authController.updateProfile);
-
-// Route for edit details page
-router.get('/edit-details', ensureAuthenticated, informationController.edit);
-
-// // Route to update the introduction
-// router.put('/api/details', ensureAuthenticated, informationController.updateDetails);
 
 module.exports = router;

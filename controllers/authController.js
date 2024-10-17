@@ -1,4 +1,5 @@
 const userService = require('../models/userService');
+const ensureAuthenticated = require('../middlewares/authMiddleware');
 const Employee = require('../models/Employee');
 const bcrypt = require('bcrypt'); // For password hashing
 const validator = require('validator'); // For email validation
@@ -52,15 +53,6 @@ exports.logout = (req, res) => {
     });
 };
 
-// Ensure the user is authenticated middleware
-exports.ensureAuthenticated = (req, res, next) => {
-    if (req.session && req.session.isAuthenticated) {
-        return next(); // User is authenticated, proceed to the next middleware or route
-    } else {
-        res.redirect('/'); // User not authenticated, redirect to login
-    }
-};
-
 exports.updateProfile = async (req, res) => {
     try {
         const { firstName, middleName, lastName, honorifics, introduction, position, researchFields, department } = req.body;
@@ -99,10 +91,10 @@ exports.updateProfile = async (req, res) => {
             department_id: department,
         };
 
-        // Redirect to the home page with success message
-        res.redirect('/home');
+        // Send a success response
+        res.status(200).json({ message: 'Profile updated successfully!' });
     } catch (error) {
         console.error('Error updating profile:', error);
-        res.status(500).send('Failed to update profile');
+        res.status(500).json({ message: 'Failed to update profile' });
     }
 };
