@@ -1,29 +1,32 @@
-// models/Episode.js
+// models/Achievement.js
 const supabase = require('../utils/supabaseClient')
 
-class Episode {
-  constructor(episode_id, description, date, employee_id) {
-    this.episode_id = episode_id;
+class Achievement{
+  constructor(achievement_id, title, description, date_achieved, employee_id, achievement_type) {
+    this.achievement_id = achievement_id;
+    this.title = title;
     this.description = description;
-    this.date = date;
+    this.date_achieved = date_achieved;
     this.employee_id = employee_id;
+    this.achievement_type = achievement_type;
   }
 
-  // fetch all episodes of employee
-  static async getAllEpisode(employee) {
+  // fetch all achievement of employee
+  static async getAllAchievement(employee) {
     try {
         const { data, error } = await supabase
-            .from('episode')
+            .from('achievement')
             .select('*')
             .eq('employee_id', employee)
-            .order('date', { ascending: true });
+            .order('date_achieved', { ascending: true });
 
         if (error) {
-            throw new Error(`Failed to retrieve episodes: ${error.message}`);
+            throw new Error(`Failed to retrieve achievements: ${error.message}`);
         }
 
         // Check if data is an array and map to Episode instances
         if (Array.isArray(data)) {
+
             return data;
         } else {
             // If data is not an array, return an empty array
@@ -32,6 +35,28 @@ class Episode {
     } catch (err) {
         console.error(err.message);
         return null; // Return null if there was an error
+    }
+  }
+
+  static async translateAchievementtype(id){
+    try{
+      const { data, error } = await supabase
+        .from('achievement_type')
+        .select('name')
+        .eq('achievement_id', id);
+      
+      if(error) {
+        throw new Error(`Failed to retrieve achievement type: ${error.message}`);
+      }
+      
+      if(Array.isArray(data)) {
+        return data[0].name;
+      } else {
+        return null; // Return null if not found
+      }
+    } catch(err) {
+      console.error(err.message);
+      return null; // Return null if there was an error
     }
   }
 
@@ -117,4 +142,4 @@ class Episode {
   
 }
 
-module.exports = Episode;
+module.exports = Achievement;

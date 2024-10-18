@@ -147,6 +147,8 @@
                             initializeOverview();
                         }else if (section === 'timeline'){
                             initializeTimeline();
+                        }else if (section === 'achievements'){
+                            initializeAchievements();
                         }
                     })
                     .catch(error => {
@@ -241,6 +243,7 @@
             function initializeTimeline() {
                 const timelineForm = document.getElementById('timeline-form');
                 const timelineEntries = document.getElementById('timeline-entries');
+                const timelineSubmit = document.getElementById('timeline-submit');
                 let entries = {};
             
                 // Fetch timeline entries from the server and render them
@@ -256,31 +259,74 @@
                     }
                 }
             
-                timelineForm.addEventListener('submit', function (e) {
+                timelineForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
-                    const year = document.getElementById('timeline-year').value;
-                    const description = document.getElementById('timeline-description').value;
             
+                    // Get form values
+                    const date = document.getElementById('timeline-year').value;
+                    const description = document.getElementById('timeline-description').value;
+                    let editId = timelineForm.dataset.editId;
+
                     // Check if we're updating or adding an entry
                     const isUpdate = document.getElementById('timeline-submit').textContent === 'Update Entry';
+
+                    // Confirmation popup before proceeding
+                    const isConfirmed = confirm('Are you sure you want to submit this entry?');
+                    if (!isConfirmed) return;
             
-                    if (isUpdate) {
-                        // Find the entry to update
-                        const entry = entries.find(e => e.id === parseInt(timelineForm.dataset.editId));
-                        if (entry) {
-                            entry.year = year;
-                            entry.description = description;
+                    // Disable the submit button and show loading state
+                    timelineSubmit.disabled = true;
+                    timelineSubmit.textContent = 'Loading...';
+
+                    const entryData = {
+                        date: date,
+                        description,
+                        episode_id: isUpdate ? editId : null // Send ID if updating
+                    };
+            
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/timeline', {
+                            method: isUpdate ? 'PUT' : 'POST', // Use POST for create and PUT for update
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(entryData) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            if (isUpdate) {
+                                // Update the entry in the entries array
+                                const index = entries.findIndex(entry => entry.episode_id === parseInt(editId, 10));
+                                console.log(editId, index);
+                                entries[index] = result; // Update with the new data from the response
+
+                                editId = null;
+                                alert('Entry updated successfully!');
+                            } else {
+                                // Add the new entry to the entries array
+                                entries.push(result);
+                                alert('Entry created successfully!');
+                            }
+            
+                            renderEntries();
+                            buttonsDisable(false);
+                            timelineForm.reset();
+                        } else {
+                            alert('Error: ' + result.error);
                         }
-                        document.getElementById('timeline-submit').textContent = 'Add Entry'; // Reset button text
-                    } else {
-                        // Create a new entry
-                        entries.push({ id: Date.now(), year, description });
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while saving the entry.');
+                    } finally {
+                        // Re-enable the submit button and reset text
+                        timelineSubmit.disabled = false;
+                        timelineSubmit.textContent = 'Add Entry';
                     }
-            
-                    renderEntries();
-                    timelineForm.reset();
-                    delete timelineForm.dataset.editId; // Clear edit ID
                 });
+                
             
                 function renderEntries() {
                     timelineEntries.innerHTML = '';
@@ -292,32 +338,163 @@
                                 <strong>${entry.date}:</strong> ${entry.description}
                             </div>
                             <div>
-                                <button class="btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.id})">Edit</button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.id})">Delete</button>
+                                <button class="btn edit-btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.episode_id})">Edit</button>
+                                <button class="btn delete-btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.episode_id})">Delete</button>
                             </div>
                         `;
                         timelineEntries.appendChild(li);
                     });
                 }
+
+                function buttonsDisable(condition) {
+                    // Disable all buttons with the class 'edit-btn'
+                    document.querySelectorAll('.edit-btn').forEach(button => {
+                        button.disabled = condition; // Disable the button
+                    });
+
+                    // Disable all buttons with the class 'delete-btn'
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.disabled = condition; // Disable the button
+                    });
+                }
             
                 window.editEntry = function (id) {
-                    const entry = entries.find(e => e.id === id);
+                    const entry = entries.find(e => e.episode_id === id);
                     if (entry) {
-                        document.getElementById('timeline-year').value = entry.year;
+                        document.getElementById('timeline-year').value = entry.date;
                         document.getElementById('timeline-description').value = entry.description;
                         document.getElementById('timeline-submit').textContent = 'Update Entry';
                         timelineForm.dataset.editId = id; // Store the ID of the entry being edited
+
+                        buttonsDisable(true); // Disable buttons during editing
+                        
                     }
                 };
             
-                window.deleteEntry = function (id) {
-                    entries = entries.filter(e => e.id !== id);
-                    renderEntries();
+                window.deleteEntry = async function (id) {
+                    
+                    const isConfirmed = confirm('Are you sure you want to delete this entry?');
+                    if (!isConfirmed) return;
+
+                    const entryData = {
+                        episode_id: id // Send ID if updating
+                    };
+
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/timeline/delete', {
+                            method: 'POST', // Use POST for create and PUT for update
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(entryData) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            alert('Entry deleted successfully!');
+                            
+                            entries = entries.filter(e => e.episode_id !== id);
+                            renderEntries();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while deleting the entry.');
+                    }
+
                 };
             
                 fetchTimeline(); // Fetch and render entries on initialization
             }
             
+            // achievements page javascript functions
+            function initializeAchievements(){
+                const achievementsList = document.getElementById('achievements-list');
+                const achievementFilter = document.getElementById('achievement-filter');
+                const addAchievementBtn = document.getElementById('add-achievement-btn');
+                const achievementModal = new bootstrap.Modal(document.getElementById('achievementModal'));
+                const achievementForm = document.getElementById('achievement-form');
+                const saveAchievementBtn = document.getElementById('save-achievement');
+
+                let achievements = [
+                    { achievement_id: 1, title: "Best Paper Award, ICML 2022", description: "For 'Interpretable Deep Learning in Dynamic Decision Processes'", date_achieved: '2022-10-2', achievement_type: "award" },
+                    { achievement_id: 2, title: "1M+ students taught worldwide", description: "Through online courses and in-person lectures", date_achieved: '2022-4-6', achievement_type: "teaching" },
+                    { achievement_id: 3, title: "IEEE Fellow, 2020", description: "For contributions to machine learning and AI ethics", date_achieved: '2020-8-9', achievement_type: "recognition" },
+                    { achievement_id: 4, title: "25+ Ph.D. students supervised", description: "Many now leading researchers in academia and industry", date_achieved: '2022-10-12', achievement_type: "supervision" },
+                    { achievement_id: 5, title: "World Economic Forum Technology Pioneer, 2019", description: "Recognized for contributions to AI for social good", date_achieved: '2019-1-5', achievement_type: "recognition" },
+                ];
+
+                // Fetch achievements from the server and render them
+                async function fetchAchievements() {
+                    try {
+                        const response = await fetch('/api/achievements');
+                        const data = await response.json();
+                        console.log(data);
+                        achievements = data; // Store fetched entries
+
+                        renderAchievements(); // Render the fetched entries
+                    } catch (error) {
+                        console.error('Error fetching achievements:', error);
+                    }
+                }
+
+                const achievementIcons = {
+                    award: '<i class="bi bi-award"></i>',
+                    teaching: '<i class="bi bi-people"></i>',
+                    recognition: '<i class="bi bi-trophy"></i>',
+                    supervision: '<i class="bi bi-book"></i>',
+                    other: '<i class="bi bi-globe"></i>',
+                };
+
+                function renderAchievements(filter = 'all') {
+                    const filteredAchievements = filter === 'all' 
+                        ? achievements 
+                        : achievements.filter(a => a.achievement_type === filter);
+
+                    achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
+                        <div class="card mb-3 ${index % 2 === 0 ? 'bg-light' : 'bg-white'}">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
+                                        ${achievementIcons[achievement.achievement_type]}
+                                    </div>
+                                    <div class="col-10 col-md-11">
+                                        <h5 class="card-title">${achievement.title}</h5>
+                                        <p class="card-text">${achievement.description}</p>
+                                        <span class="badge bg-secondary">${achievement.date_achieved}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                achievementFilter.addEventListener('change', function() {
+                    renderAchievements(this.value);
+                });
+
+                addAchievementBtn.addEventListener('click', function() {
+                    achievementModal.show();
+                });
+
+                saveAchievementBtn.addEventListener('click', function() {
+                    const title = document.getElementById('achievement-title').value;
+                    const description = document.getElementById('achievement-description').value;
+                    const year = parseInt(document.getElementById('achievement-year').value);
+                    const type = document.getElementById('achievement-type').value;
+
+                    const newAchievement = { id: Date.now(), title, description, year, type };
+                    achievements.push(newAchievement);
+                    renderAchievements(achievementFilter.value);
+                    achievementModal.hide();
+                    achievementForm.reset();
+                });
+
+                fetchAchievements();
+            }
 
             initializeOverview();
                 
