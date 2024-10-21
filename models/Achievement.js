@@ -80,44 +80,48 @@ class Achievement{
 
   // Save the current instance (create or update)
   async save() {
-    if (this.episode_id) {
+    if (this.achievement_id) {
       // Update an existing episode
-      const { data, error } = await supabase
-        .from('episode')
-        .update({
-          description: this.description,
-          date: this.date
-        })
-        .eq('episode_id', this.episode_id);
+    //   const { data, error } = await supabase
+    //     .from('achievement')
+    //     .update({
+    //       description: this.description,
+    //       date: this.date
+    //     })
+    //     .eq('achievement_id', this.achievement_id);
   
-      if (error) {
-        console.error('Error updating episode:', error);
-        throw error;
-      }
+    //   if (error) {
+    //     console.error('Error updating achievement:', error);
+    //     throw error;
+    //   }
   
-      return data[0]; // Return updated episode
+    //   return data[0]; // Return updated episode
     } else {
-      // Create a new episode
+      // Create a new achievement
       const { data, error } = await supabase
-        .from('episode')
+        .from('achievement')
         .insert({
+          title: this.title,
           description: this.description,
-          date: this.date,
-          employee_id: this.employee_id
+          date_achieved: this.date_achieved,
+          employee_id: this.employee_id,
+          achievement_type: this.achievement_type
         });
   
       if (error) {
-        console.error('Error creating episode:', error);
+        console.error('Error creating achievement:', error);
         console.log("Data attempted to insert: ", {
-          description: this.description,
-          date: this.date,
-          employee_id: this.employee_id
+            title: this.title,
+            description: this.description,
+            date_achieved: this.date_achieved,
+            employee_id: this.employee_id,
+            achievement_type: this.achievement_type
         });
         throw error;
       }
   
-      this.episode_id = data[0].episode_id; // Set the ID after creation
-      return data[0]; // Return created episode
+      this.achievement_id = data[0].achievement_id; // Set the ID after creation
+      return data; // Return created achievement
     }
   }
 

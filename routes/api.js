@@ -31,4 +31,10 @@ router.post('/timeline/delete', episodeController.deleteEpisode);
 // Route to get all achievements
 router.get('/achievements', achievementController.getAchievements);
 
+// Route to create achievement
+router.post('/achievements', achievementController.createAchievement);
+
+// Route to get all achievement types
+router.get('/achievement-types', achievementController.getAchievementTypes);
+
 module.exports = router;

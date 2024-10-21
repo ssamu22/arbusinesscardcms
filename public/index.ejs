@@ -418,14 +418,8 @@
                 const achievementModal = new bootstrap.Modal(document.getElementById('achievementModal'));
                 const achievementForm = document.getElementById('achievement-form');
                 const saveAchievementBtn = document.getElementById('save-achievement');
-
-                let achievements = [
-                    { achievement_id: 1, title: "Best Paper Award, ICML 2022", description: "For 'Interpretable Deep Learning in Dynamic Decision Processes'", date_achieved: '2022-10-2', achievement_type: "award" },
-                    { achievement_id: 2, title: "1M+ students taught worldwide", description: "Through online courses and in-person lectures", date_achieved: '2022-4-6', achievement_type: "teaching" },
-                    { achievement_id: 3, title: "IEEE Fellow, 2020", description: "For contributions to machine learning and AI ethics", date_achieved: '2020-8-9', achievement_type: "recognition" },
-                    { achievement_id: 4, title: "25+ Ph.D. students supervised", description: "Many now leading researchers in academia and industry", date_achieved: '2022-10-12', achievement_type: "supervision" },
-                    { achievement_id: 5, title: "World Economic Forum Technology Pioneer, 2019", description: "Recognized for contributions to AI for social good", date_achieved: '2019-1-5', achievement_type: "recognition" },
-                ];
+                const closeAchievementBtn = document.getElementById('close-achievement');
+                let achievementIcons = {};
 
                 // Fetch achievements from the server and render them
                 async function fetchAchievements() {
@@ -434,42 +428,88 @@
                         const data = await response.json();
                         console.log(data);
                         achievements = data; // Store fetched entries
-
+                        
                         renderAchievements(); // Render the fetched entries
                     } catch (error) {
                         console.error('Error fetching achievements:', error);
                     }
                 }
 
-                const achievementIcons = {
-                    award: '<i class="bi bi-award"></i>',
-                    teaching: '<i class="bi bi-people"></i>',
-                    recognition: '<i class="bi bi-trophy"></i>',
-                    supervision: '<i class="bi bi-book"></i>',
-                    other: '<i class="bi bi-globe"></i>',
-                };
+                async function fetchAchievementTypes(containerName){
+                    const container = document.getElementById(containerName);
+                    try {
+                        const response = await fetch('/api/achievement-types');
+                        const data = await response.json();
+
+                        // Clear the container first in case of re-fetching
+                        container.innerHTML = '';
+
+                        if(containerName === 'achievement-filter'){
+                            // Add the 'All' option at the beginning
+                            const allOption = document.createElement('option');
+                            allOption.value = 'all'; // The value could be empty or something like 'all'
+                            allOption.textContent = 'All Achievements'; // Display text for the 'All' option
+                            container.appendChild(allOption);
+                        }
+                        
+                        // Create and append option elements for each achievement type
+                        data.forEach(type => {
+                            const option = document.createElement('option'); // Create an option element
+                            const name = type.name;
+                            option.value = name; // Set the value attribute
+                            option.setAttribute('data-achievement-id', type.achievement_id);
+
+                            option.textContent = name.charAt(0).toUpperCase() + name.slice(1); // Set the display text
+                            container.appendChild(option); // Append the option to the select tag
+
+                            achievementIcons[name] = type.icon; // Store icon as a value in the object with name as key
+                        });
+
+                    } catch (error) {
+                        console.error('Error fetching achievement types:', error);
+                    }
+                }
+
 
                 function renderAchievements(filter = 'all') {
                     const filteredAchievements = filter === 'all' 
                         ? achievements 
                         : achievements.filter(a => a.achievement_type === filter);
 
-                    achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
+                        achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
                         <div class="card mb-3 ${index % 2 === 0 ? 'bg-light' : 'bg-white'}">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
                                         ${achievementIcons[achievement.achievement_type]}
                                     </div>
-                                    <div class="col-10 col-md-11">
+                                    <div class="col-8 col-md-9">
                                         <h5 class="card-title">${achievement.title}</h5>
                                         <p class="card-text">${achievement.description}</p>
                                         <span class="badge bg-secondary">${achievement.date_achieved}</span>
+                                    </div>
+                                    <div class="col-2 col-md-2 d-flex align-items-center justify-content-end">
+                                        <!-- Edit and Delete Icons -->
+                                        <i class="bi bi-pencil-square mx-2 edit-icon" title="Edit" onclick="editAchievement(${achievement.achievement_id})" style="cursor: pointer;"></i>
+                                        <i class="bi bi-trash-fill delete-icon" title="Delete" onclick="deleteAchievement(${achievement.achievement_id})" style="cursor: pointer;"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `).join('');
+                }
+
+                function editAchievement(id) {
+                    console.log(`Edit achievement with ID: ${id}`);
+                    
+                }
+                
+                function deleteAchievement(id) {
+                    console.log(`Delete achievement with ID: ${id}`);
+                    
+                    if(confirm("Are you sure you want to delete this achievement?")) {
+                        // Call API to delete
+                    }
                 }
 
                 achievementFilter.addEventListener('change', function() {
@@ -478,22 +518,73 @@
 
                 addAchievementBtn.addEventListener('click', function() {
                     achievementModal.show();
+                    fetchAchievementTypes('achievement-type');
                 });
 
-                saveAchievementBtn.addEventListener('click', function() {
+                saveAchievementBtn.addEventListener('click', async function() {
                     const title = document.getElementById('achievement-title').value;
                     const description = document.getElementById('achievement-description').value;
-                    const year = parseInt(document.getElementById('achievement-year').value);
-                    const type = document.getElementById('achievement-type').value;
+                    const date_achieved = document.getElementById('achievement-year').value;
 
-                    const newAchievement = { id: Date.now(), title, description, year, type };
-                    achievements.push(newAchievement);
-                    renderAchievements(achievementFilter.value);
-                    achievementModal.hide();
-                    achievementForm.reset();
+                    // Get the selected option from the achievement-type select
+                    const achievementTypeSelect = document.getElementById('achievement-type');
+                    const selectedOption = achievementTypeSelect.options[achievementTypeSelect.selectedIndex];
+
+                    // Access the achievement_id using the dataset property
+                    const achievement_type = selectedOption.dataset.achievementId;
+
+                    console.log(achievement_type);
+
+                    const newAchievement = { title, description, date_achieved, achievement_type };
+
+                    console.log(newAchievement);
+
+                    const isConfirmed = confirm('Are you sure you want to submit this entry?');
+                    if (!isConfirmed) return;
+            
+                    // Disable the submit button and show loading state
+                    saveAchievementBtn.disabled = true;
+                    closeAchievementBtn.disabled = true;
+                    saveAchievementBtn.textContent = 'Loading...';
+            
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/achievements', {
+                            method: 'POST', 
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(newAchievement) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            
+                            alert('Entry created successfully!');
+            
+                            achievements.push(result);
+                            console.log(achievements);
+                            renderAchievements();
+                            achievementModal.hide();
+                            achievementForm.reset();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while saving the entry.');
+                    } finally {
+                        // Re-enable the submit button and reset text
+                        saveAchievementBtn.disabled = false;
+                        closeAchievementBtn.disabled = false;
+                        saveAchievementBtn.textContent = 'Add Achievement';
+                    }
                 });
 
+                fetchAchievementTypes('achievement-filter'); // Store achievement types for filters
                 fetchAchievements();
+                
             }
 
             initializeOverview();

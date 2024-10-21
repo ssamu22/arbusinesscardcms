@@ -3,12 +3,6 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <select id="achievement-filter" class="form-select">
-                <option value="all">All Achievements</option>
-                <option value="award">Awards</option>
-                <option value="teaching">Teaching</option>
-                <option value="recognition">Recognition</option>
-                <option value="supervision">Supervision</option>
-                <option value="other">Other</option>
             </select>
         </div>
         <div class="col-md-6 text-md-end">
@@ -37,22 +31,17 @@
                         </div>
                         <div class="mb-3">
                             <label for="achievement-year" class="form-label">Year</label>
-                            <input type="number" class="form-control" id="achievement-year" required>
+                            <input type="date" class="form-control" id="achievement-year" required>
                         </div>
                         <div class="mb-3">
                             <label for="achievement-type" class="form-label">Type</label>
                             <select class="form-select" id="achievement-type" required>
-                                <option value="award">Award</option>
-                                <option value="teaching">Teaching</option>
-                                <option value="recognition">Recognition</option>
-                                <option value="supervision">Supervision</option>
-                                <option value="other">Other</option>
                             </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="close-achievement" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="save-achievement">Add Achievement</button>
                 </div>
             </div>
