@@ -1,0 +1,81 @@
+<div id="overview" class="content-section active">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+        <h1 class="h2">Overview</h1>
+    </div>
+
+    <!-- Profile Section (now part of Overview) -->
+    <!-- Profile Section (now part of Overview) -->
+<div class="card mb-4">
+<div class="card-body">
+<h5 class="card-title">Profile Information</h5>
+<p class="card-text text-muted">Update your personal and professional information</p>
+
+<ul class="nav nav-tabs" id="profileTabs" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">
+    <i class="bi bi-person me-2"></i>Personal
+</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" id="professional-tab" data-bs-toggle="tab" data-bs-target="#professional" type="button" role="tab" aria-controls="professional" aria-selected="false">
+    <i class="bi bi-briefcase me-2"></i>Professional
+</button>
+</li>
+</ul>
+<form id="profileForm" action="/update-profile" method="POST">
+<div class="tab-content mt-3" id="profileTabsContent">
+<div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" value="<%= user.first_name %>" placeholder="Enter your first name" disabled>
+            <input type="hidden" name="firstName" value="<%= user.first_name %>">
+        </div>
+        <div class="col-md-6">
+            <label for="middleName" class="form-label">Middle Name</label>
+            <input type="text" class="form-control" id="middleName" value="<%= user.middle_name %>" placeholder="Enter your middle name" disabled>
+            <input type="hidden" name="middleName" value="<%= user.middle_name %>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" value="<%= user.last_name %>" placeholder="Enter your last name" disabled>
+            <input type="hidden" name="lastName" value="<%= user.last_name %>">
+        </div>
+        <div class="col-md-6">
+            <label for="honorifics" class="form-label">Honorifics</label>
+            <input type="text" class="form-control" name="honorifics" id="honorifics" value="<%= user.honorifics %>" placeholder="Enter honorifics">
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="introduction" class="form-label">Introduction</label>
+        <textarea class="form-control" name="introduction" id="introduction" rows="4" placeholder="Write a brief introduction about yourself"></textarea>
+    </div>
+</div>
+<div class="tab-pane fade" id="professional" role="tabpanel" aria-labelledby="professional-tab">
+    <div class="mb-3">
+        <label for="position" class="form-label">Position</label>
+        <input type="text" class="form-control" name="position" id="position" placeholder="Enter your position (e.g., President, Researcher)">
+    </div>
+    <div class="mb-3">
+        <label for="researchFields" class="form-label">Research Fields</label>
+        <input id="researchFields" name="researchFields" placeholder="Enter your fields here..." value="">
+        <!-- <select class="form-select" id="researchFields" multiple aria-label="Select research fields">
+            
+        </select>
+        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple fields</small> -->
+    </div>
+    <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <select name="department" id="departmentDropdown">
+            <!-- Options will be populated by JavaScript -->
+        </select>
+    </div>
+</div>
+</div>
+<button type="submit" class="btn btn-custom mt-3" id="saveProfile">Save Profile</button>
+</form>
+</div>
+</div>
+</div>

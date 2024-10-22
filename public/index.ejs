@@ -1,1 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #ffffff;
+            color: #333333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: #333333;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #e9ecef;
+        }
+        .btn-custom {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 5px;
+        }
+        .btn-custom:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+        .top-bar {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 0;
+        }
+        .profile-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        .no-data-found {
+            text-align: center;
+            padding: 50px 0;
+        }
+        .no-data-found img {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Top Bar -->
+            <div class="col-12 top-bar">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <h3 class="m-0">Content Management System</h3>
+                        </div>
+                        <div class="col-6 profile-section">
+                            <div class="profile-icon">
+                                <i class="bi bi-bell"></i>
+                            </div>
+                            <div class="profile-icon">
+                                <i class="bi bi-chat"></i>
+                            </div>
+                            <div class="profile-icon">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Sidebar -->
+            <%- include('../resources/views/pages/user/partials/sidenav.ejs') %>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                
+                
+                <!-- Content Section -->
+                <%- include('../resources/views/pages/user/components/overview.ejs') %>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script>
+        // Navigation handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            const mainContent = document.querySelector('.main-content');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+        
+                    const targetSection = this.getAttribute('data-section');
+        
+                    // Update active states for nav links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+        
+                    // Dynamically load the content for the clicked section
+                    loadContent(targetSection);
+                });
+            });
+        
+            // Function to fetch the content from the server
+            function loadContent(section) {
+                fetch(`/home/${section}`) // Assumes you have a route for /load/:section
+                    .then(response => response.text())
+                    .then(html => {
+                        mainContent.innerHTML = html; // Inject the HTML into the main content
+                        if (section === 'overview'){
+                            initializeOverview();
+                        }else if (section === 'timeline'){
+                            initializeTimeline();
+                        }else if (section === 'achievements'){
+                            initializeAchievements();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading content:', error);
+                    });
+            }
+            // overview page javascript functions
+            function initializeOverview() {
+                let tagify;
+                
+                // Fetch current introduction from the server and populate the textarea
+                async function fetchDetails() {
+                    console.log('Fetching details');
+                    const response = await fetch('/api/details');
+                    const data = await response.json();
+                    console.log(data);
+                    
+                    document.getElementById('introduction').value = data.introduction; 
+                    document.getElementById('position').value = data.position;
+
+                    let fieldsInput = document.getElementById('researchFields');
+                    tagify = new Tagify(fieldsInput, {
+                        delimiters: ",", // Tags are separated by commas
+                        maxTags: 10,      // Optional limit
+                        editTags: true    // Allow users to edit tags
+                    });
+
+                    tagify.addTags(data.fields);
+                }
+
+                // Fetch departments and populate dropdown
+                async function fetchDepartments() {
+                    const response = await fetch('/api/departments');
+                    const departments = await response.json();
+                    
+                    const dropdown = document.getElementById('departmentDropdown');
+                    departments.forEach(department => {
+                        const option = document.createElement('option');
+                        option.value = department.department_id;
+                        option.textContent = department.department_name;
+                        dropdown.appendChild(option);
+                    });
+
+                    // Set the selected department based on the logged-in user (session info)
+                    const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
+                    dropdown.value = currentDepartmentId;
+                }
+
+                fetchDetails();
+                fetchDepartments();
+                
+                document.getElementById('saveProfile').addEventListener('click', async function (event) {
+                    event.preventDefault(); // Prevent form from submitting immediately
+                
+                    // Show a confirmation alert before submitting
+                    if (confirm("Are you sure you want to update your profile?")) {
+                        const form = document.getElementById('profileForm');
+                        const formData = new FormData(form);
+                
+                        // Convert form data to JSON
+                        const data = {};
+                        formData.forEach((value, key) => {
+                            data[key] = value;
+                        });
+                
+                        try {
+                            const response = await fetch('/update-profile', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            });
+                
+                            const result = await response.json();
+                
+                            if (response.ok) {
+                                alert(result.message);  // Show success message
+                                window.location.href = '/home'; // Redirect to home after success
+                            } else {
+                                alert('Error: ' + result.message);  // Show error message
+                            }
+                        } catch (error) {
+                            console.error('Error updating profile', error);
+                            alert('An error occurred while updating the profile.');
+                        }
+                    }
+                });
+            }
+            
+            // timeline page javascript functions
+            function initializeTimeline() {
+                const timelineForm = document.getElementById('timeline-form');
+                const timelineEntries = document.getElementById('timeline-entries');
+                const timelineSubmit = document.getElementById('timeline-submit');
+                let entries = {};
+            
+                // Fetch timeline entries from the server and render them
+                async function fetchTimeline() {
+                    try {
+                        const response = await fetch('/api/timeline');
+                        const data = await response.json();
+                        console.log(data);
+                        entries = data; // Store fetched entries
+                        renderEntries(); // Render the fetched entries
+                    } catch (error) {
+                        console.error('Error fetching timeline:', error);
+                    }
+                }
+            
+                timelineForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+            
+                    // Get form values
+                    const date = document.getElementById('timeline-year').value;
+                    const description = document.getElementById('timeline-description').value;
+                    let editId = timelineForm.dataset.editId;
+
+                    // Check if we're updating or adding an entry
+                    const isUpdate = document.getElementById('timeline-submit').textContent === 'Update Entry';
+
+                    // Confirmation popup before proceeding
+                    const isConfirmed = confirm('Are you sure you want to submit this entry?');
+                    if (!isConfirmed) return;
+            
+                    // Disable the submit button and show loading state
+                    timelineSubmit.disabled = true;
+                    timelineSubmit.textContent = 'Loading...';
+
+                    const entryData = {
+                        date: date,
+                        description,
+                        episode_id: isUpdate ? editId : null // Send ID if updating
+                    };
+            
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/timeline', {
+                            method: isUpdate ? 'PUT' : 'POST', // Use POST for create and PUT for update
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(entryData) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            if (isUpdate) {
+                                // Update the entry in the entries array
+                                const index = entries.findIndex(entry => entry.episode_id === parseInt(editId, 10));
+                                console.log(editId, index);
+                                entries[index] = result; // Update with the new data from the response
+
+                                editId = null;
+                                alert('Entry updated successfully!');
+                            } else {
+                                // Add the new entry to the entries array
+                                entries.push(result);
+                                alert('Entry created successfully!');
+                            }
+            
+                            renderEntries();
+                            buttonsDisable(false);
+                            timelineForm.reset();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while saving the entry.');
+                    } finally {
+                        // Re-enable the submit button and reset text
+                        timelineSubmit.disabled = false;
+                        timelineSubmit.textContent = 'Add Entry';
+                    }
+                });
+                
+            
+                function renderEntries() {
+                    timelineEntries.innerHTML = '';
+                    entries.forEach(entry => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `
+                            <div>
+                                <strong>${entry.date}:</strong> ${entry.description}
+                            </div>
+                            <div>
+                                <button class="btn edit-btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.episode_id})">Edit</button>
+                                <button class="btn delete-btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.episode_id})">Delete</button>
+                            </div>
+                        `;
+                        timelineEntries.appendChild(li);
+                    });
+                }
+
+                function buttonsDisable(condition) {
+                    // Disable all buttons with the class 'edit-btn'
+                    document.querySelectorAll('.edit-btn').forEach(button => {
+                        button.disabled = condition; // Disable the button
+                    });
+
+                    // Disable all buttons with the class 'delete-btn'
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.disabled = condition; // Disable the button
+                    });
+                }
+            
+                window.editEntry = function (id) {
+                    const entry = entries.find(e => e.episode_id === id);
+                    if (entry) {
+                        document.getElementById('timeline-year').value = entry.date;
+                        document.getElementById('timeline-description').value = entry.description;
+                        document.getElementById('timeline-submit').textContent = 'Update Entry';
+                        timelineForm.dataset.editId = id; // Store the ID of the entry being edited
+
+                        buttonsDisable(true); // Disable buttons during editing
+                        
+                    }
+                };
+            
+                window.deleteEntry = async function (id) {
+                    
+                    const isConfirmed = confirm('Are you sure you want to delete this entry?');
+                    if (!isConfirmed) return;
+
+                    const entryData = {
+                        episode_id: id // Send ID if updating
+                    };
+
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/timeline/delete', {
+                            method: 'POST', // Use POST for create and PUT for update
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(entryData) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            alert('Entry deleted successfully!');
+                            
+                            entries = entries.filter(e => e.episode_id !== id);
+                            renderEntries();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while deleting the entry.');
+                    }
+
+                };
+            
+                fetchTimeline(); // Fetch and render entries on initialization
+            }
+            
+            // achievements page javascript functions
+            function initializeAchievements(){
+                const achievementsList = document.getElementById('achievements-list');
+                const achievementFilter = document.getElementById('achievement-filter');
+                const addAchievementBtn = document.getElementById('add-achievement-btn');
+                const achievementModal = new bootstrap.Modal(document.getElementById('achievementModal'));
+                const achievementForm = document.getElementById('achievement-form');
+                const saveAchievementBtn = document.getElementById('save-achievement');
+                const closeAchievementBtn = document.getElementById('close-achievement');
+                let achievementIcons = {};
+
+                // Fetch achievements from the server and render them
+                async function fetchAchievements() {
+                    try {
+                        const response = await fetch('/api/achievements');
+                        const data = await response.json();
+                        console.log(data);
+                        achievements = data; // Store fetched entries
+                        
+                        renderAchievements(); // Render the fetched entries
+                    } catch (error) {
+                        console.error('Error fetching achievements:', error);
+                    }
+                }
+
+                async function fetchAchievementTypes(containerName){
+                    const container = document.getElementById(containerName);
+                    try {
+                        const response = await fetch('/api/achievement-types');
+                        const data = await response.json();
+
+                        // Clear the container first in case of re-fetching
+                        container.innerHTML = '';
+
+                        if(containerName === 'achievement-filter'){
+                            // Add the 'All' option at the beginning
+                            const allOption = document.createElement('option');
+                            allOption.value = 'all'; // The value could be empty or something like 'all'
+                            allOption.textContent = 'All Achievements'; // Display text for the 'All' option
+                            container.appendChild(allOption);
+                        }
+                        
+                        // Create and append option elements for each achievement type
+                        data.forEach(type => {
+                            const option = document.createElement('option'); // Create an option element
+                            const name = type.name;
+                            option.value = name; // Set the value attribute
+                            option.setAttribute('data-achievement-id', type.achievement_id);
+
+                            option.textContent = name.charAt(0).toUpperCase() + name.slice(1); // Set the display text
+                            container.appendChild(option); // Append the option to the select tag
+
+                            achievementIcons[name] = type.icon; // Store icon as a value in the object with name as key
+                        });
+
+                    } catch (error) {
+                        console.error('Error fetching achievement types:', error);
+                    }
+                }
+
+
+                function renderAchievements(filter = 'all') {
+                    const filteredAchievements = filter === 'all' 
+                        ? achievements 
+                        : achievements.filter(a => a.achievement_type === filter);
+
+                        achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
+                        <div class="card mb-3 ${index % 2 === 0 ? 'bg-light' : 'bg-white'}">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
+                                        ${achievementIcons[achievement.achievement_type]}
+                                    </div>
+                                    <div class="col-8 col-md-9">
+                                        <h5 class="card-title">${achievement.title}</h5>
+                                        <p class="card-text">${achievement.description}</p>
+                                        <span class="badge bg-secondary">${achievement.date_achieved}</span>
+                                    </div>
+                                    <div class="col-2 col-md-2 d-flex align-items-center justify-content-end">
+                                        <!-- Edit and Delete Icons -->
+                                        <i class="bi bi-pencil-square mx-2 edit-icon" title="Edit" onclick="editAchievement(${achievement.achievement_id})" style="cursor: pointer;"></i>
+                                        <i class="bi bi-trash-fill delete-icon" title="Delete" onclick="deleteAchievement(${achievement.achievement_id})" style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                function editAchievement(id) {
+                    console.log(`Edit achievement with ID: ${id}`);
+                    
+                }
+                
+                function deleteAchievement(id) {
+                    console.log(`Delete achievement with ID: ${id}`);
+                    
+                    if(confirm("Are you sure you want to delete this achievement?")) {
+                        // Call API to delete
+                    }
+                }
+
+                achievementFilter.addEventListener('change', function() {
+                    renderAchievements(this.value);
+                });
+
+                addAchievementBtn.addEventListener('click', function() {
+                    achievementModal.show();
+                    fetchAchievementTypes('achievement-type');
+                });
+
+                saveAchievementBtn.addEventListener('click', async function() {
+                    const title = document.getElementById('achievement-title').value;
+                    const description = document.getElementById('achievement-description').value;
+                    const date_achieved = document.getElementById('achievement-year').value;
+
+                    // Get the selected option from the achievement-type select
+                    const achievementTypeSelect = document.getElementById('achievement-type');
+                    const selectedOption = achievementTypeSelect.options[achievementTypeSelect.selectedIndex];
+
+                    // Access the achievement_id using the dataset property
+                    const achievement_type = selectedOption.dataset.achievementId;
+
+                    console.log(achievement_type);
+
+                    const newAchievement = { title, description, date_achieved, achievement_type };
+
+                    console.log(newAchievement);
+
+                    const isConfirmed = confirm('Are you sure you want to submit this entry?');
+                    if (!isConfirmed) return;
+            
+                    // Disable the submit button and show loading state
+                    saveAchievementBtn.disabled = true;
+                    closeAchievementBtn.disabled = true;
+                    saveAchievementBtn.textContent = 'Loading...';
+            
+                    try {
+                        // Send the data to the backend (update or insert)
+                        const response = await fetch('/api/achievements', {
+                            method: 'POST', 
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(newAchievement) // Send the entry data to the backend
+                        });
+            
+                        const result = await response.json();
+            
+                        if (response.ok) {
+                            
+                            alert('Entry created successfully!');
+            
+                            achievements.push(result);
+                            console.log(achievements);
+                            renderAchievements();
+                            achievementModal.hide();
+                            achievementForm.reset();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while saving the entry.');
+                    } finally {
+                        // Re-enable the submit button and reset text
+                        saveAchievementBtn.disabled = false;
+                        closeAchievementBtn.disabled = false;
+                        saveAchievementBtn.textContent = 'Add Achievement';
+                    }
+                });
+
+                fetchAchievementTypes('achievement-filter'); // Store achievement types for filters
+                fetchAchievements();
+                
+            }
+
+            initializeOverview();
+                
+        });
+    </script>
+</body>
+</html>

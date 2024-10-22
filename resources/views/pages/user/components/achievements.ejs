@@ -1,0 +1,50 @@
+<div id="achievements" class="content-section container mt-4">
+    <h2 class="mb-4">Achievements</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <select id="achievement-filter" class="form-select">
+            </select>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <button id="add-achievement-btn" class="btn btn-primary">Add Achievement</button>
+        </div>
+    </div>
+    <div id="achievements-list">
+        <!-- Achievements will be dynamically added here -->
+    </div>
+    <div class="modal fade" id="achievementModal" tabindex="-1" aria-labelledby="achievementModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="achievementModalLabel">Add New Achievement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="achievement-form">
+                        <div class="mb-3">
+                            <label for="achievement-title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="achievement-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="achievement-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="achievement-description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="achievement-year" class="form-label">Year</label>
+                            <input type="date" class="form-control" id="achievement-year" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="achievement-type" class="form-label">Type</label>
+                            <select class="form-select" id="achievement-type" required>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="close-achievement" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-achievement">Add Achievement</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

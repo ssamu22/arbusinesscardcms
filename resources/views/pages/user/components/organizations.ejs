@@ -1,0 +1,39 @@
+<div id="organizations" class="content-section">
+    <h2 class="mb-4">Organizations</h2>
+<button id="add-org-btn" class="btn btn-primary mb-4">Add Organization</button>
+
+<div id="org-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<!-- Organizations will be dynamically added here -->
+</div>
+<div class="modal fade" id="orgModal" tabindex="-1" aria-labelledby="orgModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="org-form">
+        <div class="mb-3">
+            <label for="org-name" class="form-label">Organization Name</label>
+            <input type="text" class="form-control" id="org-name" required>
+        </div>
+        <div class="mb-3">
+            <label for="org-role" class="form-label">Your Role</label>
+            <input type="text" class="form-control" id="org-role" required>
+        </div>
+        <div class="mb-3">
+            <label for="org-description" class="form-label">Description</label>
+            <textarea class="form-control" id="org-description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="org-image" class="form-label">Organization Image</label>
+            <input type="file" class="form-control" id="org-image" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Organization</button>
+    </form>
+</div>
+</div>
+</div>
+</div>
+</div>
