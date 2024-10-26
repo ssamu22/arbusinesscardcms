@@ -27,7 +27,7 @@ exports.getEpisodes = async (req, res) => {
 
 exports.createEpisode = async (req, res) => {
     const { date, description } = req.body;
-    const employee_id = req.session.user.employee_id; // Assuming the employee ID comes from the session
+    const employee_id = req.session.user.employee_id; 
 
     try {
         const newEpisode = new Episode(null, description, date, employee_id);
@@ -42,7 +42,7 @@ exports.createEpisode = async (req, res) => {
 
 exports.updateEpisode = async (req, res) => {
     const { episode_id, date, description } = req.body;
-    const employee_id = req.session.user.employee_id; // Assuming the employee ID comes from the session
+    const employee_id = req.session.user.employee_id; 
 
     try {
         const episode = await Episode.getById(episode_id); // Fetch the existing episode by ID
