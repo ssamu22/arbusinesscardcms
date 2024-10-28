@@ -85,3 +85,61 @@ exports.createAchievement = async (req, res) => {
         res.status(500).json({ error: 'Failed to create achievement' });
     }
 }
+
+exports.updateAchievement = async (req, res) => {
+    const { achievement_id, title, description, date_achieved, achievement_type } = req.body;
+    const employee_id = req.session.user.employee_id; 
+
+    try {
+        const achievement = await Achievement.getById(achievement_id);
+
+        if (!achievement || achievement.employee_id !== employee_id) {
+            return res.status(404).json({ error: 'Achievement not found or unauthorized' });
+        }
+
+        achievement.title = title;
+        achievement.description = description;
+        achievement.date_achieved = date_achieved;
+        achievement.achievement_type = achievement_type;
+
+        const updatedAchievement = await achievement.save(); // Save the new achievement
+
+        const response = await Promise.all(updatedAchievement.map(async (achievement) => {
+            const translatedTypes = await Achievement.translateAchievementtype(achievement.achievement_type);
+            return {
+                achievement_id: achievement.achievement_id,
+                title: achievement.title,
+                description: achievement.description,
+                date_achieved: achievement.date_achieved,
+                employee_id: achievement.employee_id,
+                achievement_type: translatedTypes, // Use the array of translated types here
+            };
+        }));
+
+        console.log(JSON.stringify(response));
+
+        res.status(201).json(response[0]); // Return the created achievement
+    } catch (error) {
+        console.error('Error updating achievement:', error);
+        res.status(500).json({ error: 'Failed to update achievement' });
+    }
+}
+
+exports.deleteAchievement = async (req, res) => {
+    const { achievement_id } = req.body;
+
+    try {
+        const achievement = await Achievement.getById(achievement_id); // Fetch the existing episode by ID
+
+        if (!achievement || achievement.achievement_id !== achievement_id) {
+            return res.status(404).json({ error: 'Achievement not found or unauthorized' });
+        }
+
+        const deletedAchievement = await achievement.delete(); // delete the episode
+
+        res.status(200).json(deletedAchievement); // Return the delete episode
+    } catch (error) {
+        console.error('Error deleting achievement:', error);
+        res.status(500).json({ error: 'Failed to delete achievement' });
+    }
+}

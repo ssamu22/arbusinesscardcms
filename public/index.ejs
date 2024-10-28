@@ -420,6 +420,11 @@
                 const saveAchievementBtn = document.getElementById('save-achievement');
                 const closeAchievementBtn = document.getElementById('close-achievement');
                 let achievementIcons = {};
+                let achievements = [];
+
+                let isEditing = false;
+                let editAchievementId = null;
+
 
                 // Fetch achievements from the server and render them
                 async function fetchAchievements() {
@@ -470,6 +475,42 @@
                     }
                 }
 
+                window.editAchievement = function(id) {
+                    const achievement = achievements.find(a => a.achievement_id === id);
+                    openAchievementModal('edit', achievement);
+                };
+            
+                window.deleteAchievement = async function(id) {
+                    const isConfirmed = confirm('Are you sure you want to delete this achievement?');
+                    if (!isConfirmed) return;
+
+                    const entryData = {
+                        achievement_id: id 
+                    };
+
+                    try {
+                        const response = await fetch(`/api/achievement/delete`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(entryData) // Send the entry data to the backend
+                        });
+            
+                        if (response.ok) {
+                            alert('Achievement deleted successfully!');
+                            achievements = achievements.filter(a => a.achievement_id !== id); // Remove the deleted achievement from the list
+                            renderAchievements(); // Re-render the updated achievements list
+                        } else {
+                            const error = await response.json();
+                            alert('Error: ' + error.message);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting achievement:', error);
+                        alert('An error occurred while trying to delete the achievement.');
+                    }
+                    
+                };
 
                 function renderAchievements(filter = 'all') {
                     const filteredAchievements = filter === 'all' 
@@ -499,17 +540,42 @@
                     `).join('');
                 }
 
-                function editAchievement(id) {
-                    console.log(`Edit achievement with ID: ${id}`);
-                    
-                }
+                function openAchievementModal(action, achievement = null) {
+                    // Reset the form first
+                    achievementForm.reset();
+
+                    const modalElement = document.getElementById('achievementModal');
                 
-                function deleteAchievement(id) {
-                    console.log(`Delete achievement with ID: ${id}`);
-                    
-                    if(confirm("Are you sure you want to delete this achievement?")) {
-                        // Call API to delete
+                    if (action === 'edit') {
+                        isEditing = true;
+                        editAchievementId = achievement.achievement_id; // Store the ID for updating
+                        modalElement.querySelector('.modal-title').textContent = 'Edit Achievement';
+                        modalElement.querySelector('#save-achievement').textContent = 'Update Changes';
+                
+                        // Populate the fields with the existing achievement data
+                        document.getElementById('achievement-title').value = achievement.title;
+                        document.getElementById('achievement-description').value = achievement.description;
+                        document.getElementById('achievement-year').value = achievement.date_achieved;
+                
+                        // Set the achievement type
+                        const achievementTypeSelect = document.getElementById('achievement-type');
+                        fetchAchievementTypes('achievement-type').then(() => {
+                            const option = Array.from(achievementTypeSelect.options).find(
+                                opt => opt.value === achievement.achievement_type.toString()
+                            );
+                            if (option) option.selected = true;
+                        });
+                    } else {
+                        isEditing = false;
+                        editAchievementId = null;
+                        modalElement.querySelector('.modal-title').textContent = 'Add Achievement';
+                        modalElement.querySelector('#save-achievement').textContent = 'Add Achievement';
+                
+                        // Fetch the types for creating a new achievement
+                        fetchAchievementTypes('achievement-type');
                     }
+                
+                    achievementModal.show();
                 }
 
                 achievementFilter.addEventListener('change', function() {
@@ -525,46 +591,52 @@
                     const title = document.getElementById('achievement-title').value;
                     const description = document.getElementById('achievement-description').value;
                     const date_achieved = document.getElementById('achievement-year').value;
+                    const achievement_id = editAchievementId;
 
                     // Get the selected option from the achievement-type select
                     const achievementTypeSelect = document.getElementById('achievement-type');
                     const selectedOption = achievementTypeSelect.options[achievementTypeSelect.selectedIndex];
-
-                    // Access the achievement_id using the dataset property
                     const achievement_type = selectedOption.dataset.achievementId;
+                 
+                    let newAchievement = {};
 
-                    console.log(achievement_type);
-
-                    const newAchievement = { title, description, date_achieved, achievement_type };
-
-                    console.log(newAchievement);
-
+                    if (isEditing) {
+                        newAchievement = { achievement_id, title, description, date_achieved, achievement_type };
+                    } else {
+                        newAchievement = { title, description, date_achieved, achievement_type };
+                    }
+                
                     const isConfirmed = confirm('Are you sure you want to submit this entry?');
                     if (!isConfirmed) return;
-            
-                    // Disable the submit button and show loading state
+                
                     saveAchievementBtn.disabled = true;
                     closeAchievementBtn.disabled = true;
                     saveAchievementBtn.textContent = 'Loading...';
-            
+                
                     try {
-                        // Send the data to the backend (update or insert)
-                        const response = await fetch('/api/achievements', {
-                            method: 'POST', 
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(newAchievement) // Send the entry data to the backend
+                        const method = isEditing ? 'PUT' : 'POST';
+                        console.log(method);
+                        const url = '/api/achievements';
+                
+                        // Send the data to the backend
+                        const response = await fetch(url, {
+                            method,
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(newAchievement)
                         });
-            
+                
                         const result = await response.json();
-            
+                
                         if (response.ok) {
-                            
-                            alert('Entry created successfully!');
-            
-                            achievements.push(result);
-                            console.log(achievements);
+                            alert(isEditing ? 'Entry updated successfully!' : 'Entry created successfully!');
+                            if (isEditing) {
+                                // Update the achievements array
+                                const index = achievements.findIndex(a => a.achievement_id === editAchievementId);
+                                achievements[index] = result;
+                            } else {
+                                achievements.push(result);
+                            }
+                
                             renderAchievements();
                             achievementModal.hide();
                             achievementForm.reset();
@@ -575,12 +647,16 @@
                         console.error('Error:', err);
                         alert('An error occurred while saving the entry.');
                     } finally {
-                        // Re-enable the submit button and reset text
+                        isEditing = false;
+                        editAchievementId = null;
                         saveAchievementBtn.disabled = false;
                         closeAchievementBtn.disabled = false;
                         saveAchievementBtn.textContent = 'Add Achievement';
                     }
                 });
+                
+                // Button to open the modal for adding a new achievement
+                addAchievementBtn.addEventListener('click', () => openAchievementModal('add'));
 
                 fetchAchievementTypes('achievement-filter'); // Store achievement types for filters
                 fetchAchievements();

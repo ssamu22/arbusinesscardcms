@@ -60,42 +60,47 @@ class Achievement{
     }
   }
 
-  // Fetch a single episode by ID
-  static async getById(episode_id) {
+  // Fetch a single achievement by ID
+  static async getById(achievement_id) {
+    console.log(`Getting ${achievement_id}`);
     const { data, error } = await supabase
-      .from('episode')
+      .from('achievement')
       .select('*')
-      .eq('episode_id', episode_id)
+      .eq('achievement_id', achievement_id)
       .single();
 
+      console.log(data);
+
     if (error) {
-      console.error(`Error fetching episode with ID ${episode_id}:`, error);
+      console.error(`Error fetching achievement with ID ${achievement_id}:`, error);
       throw error;
     }
 
     if (!data) return null; // Return null if not found
 
-    return new Episode(data.episode_id, data.description, data.date, data.employee_id);
+    return new Achievement(data.achievement_id, data.title, data.description, data.date_achieved, data.employee_id, data.achievement_type);
   }
 
   // Save the current instance (create or update)
   async save() {
     if (this.achievement_id) {
-      // Update an existing episode
-    //   const { data, error } = await supabase
-    //     .from('achievement')
-    //     .update({
-    //       description: this.description,
-    //       date: this.date
-    //     })
-    //     .eq('achievement_id', this.achievement_id);
+      // Update an existing achievement
+      const { data, error } = await supabase
+        .from('achievement')
+        .update({
+            title: this.title,
+            description: this.description,
+            date_achieved: this.date_achieved,
+            achievement_type: this.achievement_type
+        })
+        .eq('achievement_id', this.achievement_id);
   
-    //   if (error) {
-    //     console.error('Error updating achievement:', error);
-    //     throw error;
-    //   }
-  
-    //   return data[0]; // Return updated episode
+      if (error) {
+        console.error('Error updating achievement:', error);
+        throw error;
+      }
+
+      return data; // Return updated episode
     } else {
       // Create a new achievement
       const { data, error } = await supabase
@@ -125,19 +130,19 @@ class Achievement{
     }
   }
 
-  // Delete the current episode instance
+  // Delete the current achievement instance
   async delete() {
-    if (!this.episode_id) {
-      throw new Error('Episode ID is required to delete');
+    if (!this.achievement_id) {
+      throw new Error('Achievement ID is required to delete');
     }
 
     const { data, error } = await supabase
-      .from('episode')
+      .from('achievement')
       .delete()
-      .eq('episode_id', this.episode_id);
+      .eq('achievement_id', this.achievement_id);
 
     if (error) {
-      console.error(`Error deleting episode with ID ${this.episode_id}:`, error);
+      console.error(`Error deleting achievement with ID ${this.achievement_id}:`, error);
       throw error;
     }
 

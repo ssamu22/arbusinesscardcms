@@ -34,7 +34,13 @@ router.get('/achievements', achievementController.getAchievements);
 // Route to create achievement
 router.post('/achievements', achievementController.createAchievement);
 
+// Route to edit achievement
+router.put('/achievements', achievementController.updateAchievement);
+
 // Route to get all achievement types
 router.get('/achievement-types', achievementController.getAchievementTypes);
+
+// Route to delete achievement
+router.post('/achievement/delete', achievementController.deleteAchievement);
 
 module.exports = router;
