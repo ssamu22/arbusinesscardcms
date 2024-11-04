@@ -34,7 +34,7 @@ exports.getContacts = async (req, res) => {
 };
 
 exports.updateContacts = async (req, res) => {
-    const { contact_id, phone_number, landline, email, facebook_url, instagram_url, linkedin_url } = req.body.contact;
+    const { contact_id, phone_number, landline, email, facebook_url, instagram_url, linkedin_url } = req.body;
     const employee_id = req.session.user.employee_id; 
 
     try {
@@ -51,68 +51,73 @@ exports.updateContacts = async (req, res) => {
         contact.instagram_url = instagram_url;
         contact.linkedin_url = linkedin_url;
 
-        const updatedContact = await contact.save(); // Save the new contact
+        const updatedcontact = await contact.save(); // Save the new contact
 
-        // Handle schedule updates
-        const scheduleUpdates = req.body.schedule || []; // Default to an empty array if no schedule is provided
-        const updatedSchedules = []; // Array to hold results of updated schedules
+        console.log(JSON.stringify(updatedcontact));
 
-        console.log("New sched: "+ JSON.stringify(scheduleUpdates));
-
-        for (const entry of scheduleUpdates) {
-            if (!entry) {
-                console.error('Entry is undefined:', entry);
-                continue; // Skip undefined entries
-            }
-        
-            const { schedule_id, day, start_time, end_time, available } = entry;
-        
-            if (schedule_id !== null) {
-                // Update existing schedule
-                const existingSchedule = await Employee_schedule.getById(schedule_id);
-        
-                if (existingSchedule) {
-                    existingSchedule.start_time = start_time;
-                    existingSchedule.end_time = end_time;
-                    existingSchedule.available = available;
-                    const updatedSchedule = await existingSchedule.save(); // Save updated schedule
-                    updatedSchedules.push(updatedSchedule); // Store the updated schedule
-                } else {
-                    console.error(`Schedule with ID ${schedule_id} not found`);
-                }
-            } else {
-                // Insert new schedule entry
-                const newSchedule = new Employee_schedule(
-                    employee_id, // Assuming you have employee_id from session
-                    day,
-                    start_time,
-                    end_time,
-                    available
-                );
-
-                console.log("new scged: "+ JSON.stringify(newSchedule));
-        
-                try {
-                    const savedSchedule = await newSchedule.save(); // Save the new schedule
-                    updatedSchedules.push(savedSchedule); // Store the saved schedule
-                    console.log('New schedule inserted:', savedSchedule);
-                } catch (insertError) {
-                    console.error('Error inserting new schedule:', insertError);
-                }
-            }
-        }
-        
-
-        console.log('Updated contact:', updatedContact);
-        console.log('Updated schedules:', updatedSchedules);
-
-        res.status(200).json({
-            updatedContact,
-            updatedSchedules,
-        });
-
+        res.status(201).json(updatedcontact); // Return the created contact
     } catch (error) {
         console.error('Error updating contact:', error);
         res.status(500).json({ error: 'Failed to update contact' });
     }
 }
+
+exports.updateSchedule = async (req, res) => {
+    const schedule = req.body;
+    const employee_id = req.session.user.employee_id; 
+
+    try {
+        const updatedSchedules = [];
+
+        for (const entry of schedule) {
+
+            if (entry.schedule_id) {
+                const { schedule_id, day, start_time, end_time, available } = entry;
+
+                console.log("updated: " + JSON.stringify(day));
+
+                // Update existing schedule
+                const existingSchedule = await Employee_schedule.getById(schedule_id);
+                if (existingSchedule) {
+                    existingSchedule.day = day;
+                    existingSchedule.start_time = start_time;
+                    existingSchedule.end_time = end_time;
+                    existingSchedule.available = available;
+                    
+                    const updatedSchedule = await existingSchedule.save(); // Save the updated schedule
+                    updatedSchedules.push(updatedSchedule);
+                } else {
+                    console.error(`Schedule with ID ${schedule_id} not found`);
+                }
+            } else {
+                const { day, start_time, end_time, available } = entry;
+
+                console.log("inserted: " + JSON.stringify(day));
+
+                // Insert new schedule entry
+                const newSchedule = new Employee_schedule(
+                    null,
+                    employee_id,
+                    start_time,
+                    end_time,
+                    day,
+                    available
+                );
+
+                console.log("inserted: " + JSON.stringify(newSchedule));
+                const savedSchedule = await newSchedule.save(); // Save the new schedule
+                updatedSchedules.push(savedSchedule); // Add the new entry to the updated schedules list
+            }
+        }
+
+        console.log('Updated Schedules:', updatedSchedules);
+
+        res.status(200).json({
+            updatedSchedules
+        });
+
+    } catch (error) {
+        console.error('Error updating or inserting schedules:', error);
+        res.status(500).json({ error: 'Failed to update or insert schedules' });
+    }
+};

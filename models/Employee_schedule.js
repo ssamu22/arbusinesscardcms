@@ -2,7 +2,7 @@
 const supabase = require('../utils/supabaseClient')
 
 class Employee_schedule {
-  constructor(employee_id, start_time, end_time, day, available, schedule_id) {
+  constructor(schedule_id, employee_id, start_time, end_time, day, available ) {
     this.schedule_id = schedule_id;
     this.start_time = start_time;
     this.end_time = end_time;
@@ -56,7 +56,7 @@ class Employee_schedule {
 
   // Save the current instance (create or update)
   async save() {
-    if (this.schedule_id !== null) { // Check if the schedule_id is defined for updating
+    if (this.schedule_id) { // Check if the schedule_id is defined for updating
         const { data, error } = await supabase
             .from('employee_schedule')
             .update({

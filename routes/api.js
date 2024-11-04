@@ -52,6 +52,9 @@ router.post('/achievement/delete', achievementController.deleteAchievement);
 router.get('/contacts', contactController.getContacts);
 
 // Route to update contacts
-router.post('/contacts', contactController.updateContacts);
+router.put('/contacts', contactController.updateContacts);
+
+// Route to update schedule
+router.post('/contacts/schedule', contactController.updateSchedule);
 
 module.exports = router;

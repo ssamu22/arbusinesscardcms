@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const informationController = require('../controllers/informationController');
+const adminController = require('../controllers/adminController');
 const ensureAuthenticated = require('../middlewares/authMiddleware');
 const path = require('path');
 
@@ -21,7 +21,7 @@ router.get('/login', (req, res) => {
   if (req.session.user) {
       res.redirect('/home'); // Redirect to home if already logged in
   } else {
-      res.render('auth/login'); // Render login.ejs
+      res.render('auth/user/login'); // Render login.ejs
   }
 });
 
@@ -48,5 +48,25 @@ router.get('/home', ensureAuthenticated, (req, res) => {
 
 // Route for updating profile data
 router.post('/update-profile', ensureAuthenticated, authController.updateProfile);
+
+// Route for admin login page
+router.get('/admin/login', (req, res) => {
+  if (req.session.admin) {
+      res.redirect('/admin/home'); // Redirect to admin home if already logged in
+  } else {
+      res.render('auth/admin/login'); // Render admin login page
+  }
+});
+
+// Handle admin login form submission
+router.post('/admin/login', adminController.login);
+router.get('/admin/logout', adminController.logout);
+
+// Protecting admin home route
+router.get('/admin/home', ensureAuthenticated.ensureAdmin, (req, res) => {
+  const admin = req.session.admin; // Access logged-in user's information
+  const adminPath = 'resources/views/pages/admin';
+  res.render(path.join(__dirname, '..', adminPath, 'home.ejs'), { admin });
+});
 
 module.exports = router;
