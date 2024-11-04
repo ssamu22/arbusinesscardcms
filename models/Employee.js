@@ -1,4 +1,4 @@
-// models/Professor.js
+// models/Employee.js
 const supabase = require('../utils/supabaseClient');
 const bcrypt = require('bcrypt'); // For password hashing
 

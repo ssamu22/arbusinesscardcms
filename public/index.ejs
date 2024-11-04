@@ -124,9 +124,16 @@
 
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Check if the link is the logout link
+                    if (!targetSection) {
+                        // Allow the default behavior (navigate to logout)
+                        return; 
+                    }
+
                     e.preventDefault();
         
-                    const targetSection = this.getAttribute('data-section');
         
                     // Update active states for nav links
                     navLinks.forEach(l => l.classList.remove('active'));
@@ -149,6 +156,10 @@
                             initializeTimeline();
                         }else if (section === 'achievements'){
                             initializeAchievements();
+                        }else if (section === 'organizations'){
+                            initializeOrganizations();
+                        }else if (section === 'contacts'){
+                            initializeContacts();
                         }
                     })
                     .catch(error => {
@@ -661,6 +672,405 @@
                 fetchAchievementTypes('achievement-filter'); // Store achievement types for filters
                 fetchAchievements();
                 
+            }
+
+            // organizations page javascript functions
+            function initializeOrganizations(){
+                const addOrgBtn = document.getElementById('add-org-btn');
+                const orgList = document.getElementById('org-list');
+                const orgForm = document.getElementById('org-form');
+                const orgModal = new bootstrap.Modal(document.getElementById('orgModal'));
+                let organizations = [];
+                let currentOrgId = null;
+
+                addOrgBtn.addEventListener('click', () => {
+                    currentOrgId = null;
+                    orgForm.reset();
+                    document.getElementById('orgModalLabel').textContent = 'Add Organization';
+                    orgForm.querySelector('button[type="submit"]').textContent = 'Add Organization';
+                    orgModal.show();
+                });
+
+                orgForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const name = document.getElementById('org-name').value;
+                    const role = document.getElementById('org-role').value;
+                    const description = document.getElementById('org-description').value;
+                    const imageFile = document.getElementById('org-image').files[0];
+
+                    if (currentOrgId) {
+                        const index = organizations.findIndex(org => org.id === currentOrgId);
+                        organizations[index] = { ...organizations[index], name, role, description };
+                        if (imageFile) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                organizations[index].imageUrl = e.target.result;
+                                renderOrganizations();
+                            };
+                            reader.readAsDataURL(imageFile);
+                        } else {
+                            renderOrganizations();
+                        }
+                    } else {
+                        const newOrg = { id: Date.now(), name, role, description };
+                        if (imageFile) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                newOrg.imageUrl = e.target.result;
+                                organizations.push(newOrg);
+                                renderOrganizations();
+                            };
+                            reader.readAsDataURL(imageFile);
+                        } else {
+                            organizations.push(newOrg);
+                            renderOrganizations();
+                        }
+                    }
+
+                    orgModal.hide();
+                });
+
+                function renderOrganizations() {
+                    orgList.innerHTML = '';
+                    organizations.forEach(org => {
+                        const col = document.createElement('div');
+                        col.className = 'col';
+                        col.innerHTML = `
+                            <div class="card h-100">
+                                ${org.imageUrl ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">` : ''}
+                                <div class="card-body">
+                                    <h5 class="card-title">${org.name}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">${org.role}</h6>
+                                    <p class="card-text">${org.description}</p>
+                                    <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.id}">Edit</button>
+                                    <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.id}">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        orgList.appendChild(col);
+                    });
+
+                    // Add event listeners for edit and delete buttons
+                    document.querySelectorAll('.edit-org').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const orgId = parseInt(this.getAttribute('data-id'));
+                            const org = organizations.find(o => o.id === orgId);
+                            if (org) {
+                                currentOrgId = org.id;
+                                document.getElementById('org-name').value = org.name;
+                                document.getElementById('org-role').value = org.role;
+                                document.getElementById('org-description').value = org.description;
+                                document.getElementById('orgModalLabel').textContent = 'Edit Organization';
+                                orgForm.querySelector('button[type="submit"]').textContent = 'Update Organization';
+                                orgModal.show();
+                            }
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-org').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const orgId = parseInt(this.getAttribute('data-id'));
+                            organizations = organizations.filter(org => org.id !== orgId);
+                            renderOrganizations();
+                        });
+                    });
+                }
+            }
+
+            // contacts page javascript functions
+            function initializeContacts(){
+                const editToggle = document.getElementById('edit-toggle');
+                const contactForm = document.getElementById('contact-form');
+                const contactName = document.getElementById('contact-name');
+                const contactTitle = document.getElementById('contact-title');
+                const consultationHours = document.getElementById('consultation-hours');
+                const socialMediaList = document.getElementById('social-media-list');
+                const addSocialMediaBtn = document.getElementById('add-social-media');
+
+                let editMode = false;
+
+                const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+                let contactInfo = {
+                    name: '',
+                    title: '',
+                    
+                    // Default consultation hours if no schedule is retrieved
+                    consultationHours: daysOfWeek.map(day => ({
+                        day,
+                        available: false, // Default to not available
+                        startTime: '09:00', // Default start time
+                        endTime: '17:00' // Default end time
+                    })),
+                    
+                };
+
+                async function fetchContacts() {
+                    console.log('Fetching details');
+                    try {
+                        const response = await fetch('/api/contacts');
+                        const data = await response.json();
+                        console.log(data);
+
+                        const contacts = data.contacts;
+                        const schedule = data.schedule;
+
+                        contactInfo.contactId = contacts.contact_id;
+
+                        contactInfo.name  = data.name;
+                        contactInfo.title = data.position;
+                        
+                
+                        // Update the fields in contactInfo based on the fetched contact data
+                        contactInfo.phone = contacts.phone_number;
+                        contactInfo.landline = contacts.landline;
+                        contactInfo.email = contacts.email;
+                
+                        // Update social media URLs
+                        contactInfo.socialMedia = [
+                            { platform: 'facebook', url: contacts.facebook_url || "" },
+                            { platform: 'instagram', url: contacts.instagram_url || "" },
+                            { platform: 'linkedin', url: contacts.linkedin_url || "" }
+                        ];
+
+                        // Update consultation hours based on fetched schedule data or keep defaults
+                        schedule.forEach(entry => {
+                            const dayIndex = daysOfWeek.indexOf(entry.day); // Find the index of the day in daysOfWeek
+                            if (dayIndex !== -1) {
+                                contactInfo.consultationHours[dayIndex] = {
+                                    schedule_id: entry.schedule_id,
+                                    day: entry.day,
+                                    available: entry.available, // Set available if there's a schedule for this day
+                                    startTime: entry.start_time,
+                                    endTime: entry.end_time
+                                };
+                            }
+                        });
+
+                        renderContactInfo();
+                        renderConsultationHours();
+                        renderSocialMedia();
+                        
+                        console.log('Updated contact info:', contactInfo);
+                    } catch (error) {
+                        console.error('Error fetching contacts:', error);
+                    }
+                }
+                
+
+                const socialMediaIcons = {
+                    facebook: '<i class="bi bi-facebook"></i>',
+                    instagram: '<i class="bi bi-instagram"></i>',
+                    linkedin: '<i class="bi bi-linkedin"></i>',
+                    // github: '<i class="bi bi-github"></i>',
+                    // youtube: '<i class="bi bi-youtube"></i>',
+                    // twitter: '<i class="bi bi-twitter"></i>',
+                };
+
+                function renderContactInfo() {
+                    contactName.textContent = contactInfo.name;
+                    contactTitle.textContent = contactInfo.title;
+                    document.getElementById('phone').value = contactInfo.phone;
+                    document.getElementById('landline').value = contactInfo.landline;
+                    document.getElementById('email').value = contactInfo.email;
+                }
+
+                function renderConsultationHours() {
+                    consultationHours.innerHTML = contactInfo.consultationHours.map((hour, index) => `
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="available-${hour.day}" 
+                                        ${hour.available ? 'checked' : ''} ${!editMode ? 'disabled' : ''}
+                                        data-index="${index}" data-field="available">
+                                    <label class="form-check-label" for="available-${hour.day}">${hour.day}</label>
+                                </div>
+                            </div>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <input type="time" class="form-control" value="${hour.startTime}" 
+                                        data-index="${index}" data-field="startTime" 
+                                        ${!editMode || !hour.available ? 'disabled' : ''}>
+                                    <span class="input-group-text">to</span>
+                                    <input type="time" class="form-control" value="${hour.endTime}" 
+                                        data-index="${index}" data-field="endTime" 
+                                        ${!editMode || !hour.available ? 'disabled' : ''}>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                function renderSocialMedia() {
+                    socialMediaList.innerHTML = contactInfo.socialMedia.map((social, index) => `
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="me-2">${socialMediaIcons[social.platform]}</div>
+                            <span class="me-2" style="width: 150px;">
+                                ${social.platform.charAt(0).toUpperCase() + social.platform.slice(1)}
+                            </span>
+                            <input type="url" class="form-control" placeholder="Enter your ${social.platform.charAt(0).toUpperCase() + social.platform.slice(1)} url" value="${social.url}" data-index="${index}" ${!editMode ? 'disabled' : ''}>
+                        </li>
+                    `).join('');
+                    //${editMode ? `
+                    //            <button class="btn btn-danger btn-sm ms-2 remove-social-media" data-index="${index}">Remove</button>
+                    //        ` : ''}
+                }
+                
+
+                async function toggleEditMode() {
+                    editMode = !editMode;
+                    editToggle.textContent = editMode ? 'Save' : 'Edit';
+                    // addSocialMediaBtn.style.display = editMode ? 'block' : 'none';
+                    
+                    const inputs = contactForm.querySelectorAll('input, select');
+                    inputs.forEach(input => input.disabled = !editMode);
+
+                    if (!editMode) {
+                        const isConfirmed = confirm('Are you sure you want to save changes?');
+                        if (!isConfirmed) {
+                            editToggle.disabled = false; // Re-enable if saving was cancelled
+                        }
+                
+                        editToggle.disabled = true; // Disable the button while saving
+                        editToggle.textContent = 'Saving...'; // Change button text to "Loading..." while saving
+                
+                        try {
+                            await saveContactInfo(); // Call the save function
+                            editToggle.textContent = 'Edit'; // Revert button text to "Edit" after successful save
+                        } catch (error) {
+                            console.error('Failed to save contact info:', error);
+                            alert('An error occurred while saving. Please try again.');
+                            editToggle.textContent = 'Save'; // Keep "Save" text in case of error, to retry
+                        }
+                    }
+                
+                    editToggle.disabled = false; // Re-enable the button after save is complete
+                    renderConsultationHours();
+                    renderSocialMedia();
+                }
+
+                async function saveContactInfo() {
+                    // Gather data from contactInfo
+                    const updatedContactInfo = {
+                        contact_id: contactInfo.contactId,
+                        phone_number: contactInfo.phone,
+                        landline: contactInfo.landline,
+                        email: contactInfo.email,
+                        facebook_url: contactInfo.socialMedia.find(social => social.platform === 'facebook')?.url || "",
+                        instagram_url: contactInfo.socialMedia.find(social => social.platform === 'instagram')?.url || "",
+                        linkedin_url: contactInfo.socialMedia.find(social => social.platform === 'linkedin')?.url || ""
+                    };
+
+                    // Collect the updated schedule
+                    const updatedSchedule = contactInfo.consultationHours.map(hour => {
+                        // Create an object without schedule_id initially
+                        const scheduleEntry = {
+                            day: hour.day,
+                            available: hour.available,
+                            start_time: hour.startTime,
+                            end_time: hour.endTime,
+                        };
+                    
+                        // Conditionally add schedule_id only if it exists
+                        if (hour.schedule_id) {
+                            scheduleEntry.schedule_id = hour.schedule_id;
+                        }
+                    
+                        return scheduleEntry;
+                    });
+
+                    let errors = {};
+
+                    console.log("New contact info: "+ JSON.stringify(updatedSchedule));
+                
+                    try {
+                        // Send the updated data to the backend
+                        const contactResponse = await fetch('/api/contacts', {
+                            method: 'PUT', 
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(updatedContactInfo)
+                        });
+
+                        if (!contactResponse.ok) {
+                            throw new Error('Failed to save contact information');
+                            errors.contacts = 'Failed to save contact information';
+
+                        }
+
+                        const updatedContacts = await contactResponse.json();
+                        console.log('Contact information saved:', updatedContacts);
+
+                        // Send the updated data to the backend
+                        const scheduleResponse = await fetch('/api/contacts/schedule', {
+                            method: 'POST', 
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(updatedSchedule)
+                        });
+
+                        if (!scheduleResponse.ok) {
+                            throw new Error('Failed to save schedule');
+                            errors.schedule = 'Failed to save schedule';
+                        }
+
+                        const successSchedule = await scheduleResponse.json();
+                        console.log('Contact information saved:', successSchedule);
+
+                        
+                        alert('Contact information saved successfully!');
+                    } catch (error) {
+                        console.error('Error saving contact information:', error);
+                        alert('An error occurred while saving the contact information.');
+                    }
+                }
+
+                editToggle.addEventListener('click', toggleEditMode);
+
+                contactForm.addEventListener('change', function(e) {
+                    if (e.target.matches('#phone, #landline, #email')) {
+                        contactInfo[e.target.name] = e.target.value;
+                    }
+                });
+
+                consultationHours.addEventListener('change', function(e) {
+                    if (e.target.matches('input[type="checkbox"]')) {
+                        const index = parseInt(e.target.dataset.index);
+                        const available = e.target.checked;
+                        contactInfo.consultationHours[index].available = available;
+                        renderConsultationHours();
+                    } else if (e.target.matches('input[type="time"]')) {
+                        const index = parseInt(e.target.dataset.index);
+                        const field = e.target.dataset.field;
+                        contactInfo.consultationHours[index][field] = e.target.value;
+                    }
+                });
+
+                socialMediaList.addEventListener('change', function(e) {
+                    if (e.target.matches('select, input')) {
+                        const index = parseInt(e.target.dataset.index);
+                        const field = e.target.tagName === 'SELECT' ? 'platform' : 'url';
+                        contactInfo.socialMedia[index][field] = e.target.value;
+                    }
+                });
+
+                socialMediaList.addEventListener('click', function(e) {
+                    if (e.target.matches('.remove-social-media')) {
+                        const index = parseInt(e.target.dataset.index);
+                        contactInfo.socialMedia.splice(index, 1);
+                        renderSocialMedia();
+                    }
+                });
+
+                addSocialMediaBtn.addEventListener('click', function() {
+                    contactInfo.socialMedia.push({ platform: 'facebook', url: '' });
+                    renderSocialMedia();
+                });
+
+                fetchContacts();
+
             }
 
             initializeOverview();
