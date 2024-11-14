@@ -6,6 +6,7 @@ const informationController = require('../controllers/informationController');
 const episodeController = require('../controllers/episodeController');
 const achievementController = require('../controllers/achievementController');
 const contactController = require('../controllers/contactController');
+const organizationController = require('../controllers/organizationController');
 
 
 // -- Overview Page Routes --
@@ -45,7 +46,11 @@ router.get('/achievement-types', achievementController.getAchievementTypes);
 router.post('/achievement/delete', achievementController.deleteAchievement);
 
 // -- Organizations page routes --
+// Route to get all organizations
+router.get('/organizations', organizationController.getOrganizations);
 
+// Route to get all organizations
+router.post('/organizations', organizationController.createOrganization);
 
 // -- Contacts page routes --
 // Route to get all contacts

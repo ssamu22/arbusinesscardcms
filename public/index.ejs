@@ -675,14 +675,29 @@
             }
 
             // organizations page javascript functions
-            function initializeOrganizations(){
+            function initializeOrganizations() {
                 const addOrgBtn = document.getElementById('add-org-btn');
                 const orgList = document.getElementById('org-list');
                 const orgForm = document.getElementById('org-form');
                 const orgModal = new bootstrap.Modal(document.getElementById('orgModal'));
-                let organizations = [];
+                const orgTypeFilter = document.getElementById('org-type-filter');
+            
+                let organizations = [];  // Replace this with data fetching logic from your database
                 let currentOrgId = null;
 
+                async function fetchOrganizations(){
+                    try {
+                        const response = await fetch('/api/organizations');
+                        const data = await response.json();
+                        organizations = data;
+                        renderOrganizations();
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('An error occurred while fetching organizations.');
+                    }
+                }
+            
+                // Handle add organization button click
                 addOrgBtn.addEventListener('click', () => {
                     currentOrgId = null;
                     orgForm.reset();
@@ -690,21 +705,22 @@
                     orgForm.querySelector('button[type="submit"]').textContent = 'Add Organization';
                     orgModal.show();
                 });
-
-                orgForm.addEventListener('submit', function(e) {
+            
+                // Form submission handler
+                orgForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
                     const name = document.getElementById('org-name').value;
-                    const role = document.getElementById('org-role').value;
-                    const description = document.getElementById('org-description').value;
+                    const type = document.getElementById('org-type').value;
                     const imageFile = document.getElementById('org-image').files[0];
-
+            
+                    // Check if editing an existing organization
                     if (currentOrgId) {
-                        const index = organizations.findIndex(org => org.id === currentOrgId);
-                        organizations[index] = { ...organizations[index], name, role, description };
+                        const orgIndex = organizations.findIndex(org => org.organization_id === currentOrgId);
+                        organizations[orgIndex] = { ...organizations[orgIndex], org_name: name, org_type: type };
                         if (imageFile) {
                             const reader = new FileReader();
-                            reader.onload = function(e) {
-                                organizations[index].imageUrl = e.target.result;
+                            reader.onload = function (e) {
+                                organizations[orgIndex].imageUrl = e.target.result;
                                 renderOrganizations();
                             };
                             reader.readAsDataURL(imageFile);
@@ -712,70 +728,109 @@
                             renderOrganizations();
                         }
                     } else {
-                        const newOrg = { id: Date.now(), name, role, description };
-                        if (imageFile) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                newOrg.imageUrl = e.target.result;
-                                organizations.push(newOrg);
-                                renderOrganizations();
-                            };
-                            reader.readAsDataURL(imageFile);
-                        } else {
-                            organizations.push(newOrg);
-                            renderOrganizations();
-                        }
+                        if(confirm('Are you sure you want to save this entry?'))
+                            createOrganization(name, type, imageFile);
                     }
-
+            
                     orgModal.hide();
                 });
+            
+                // Add organization to the database
+                async function createOrganization(name, type, imageFile) {
+                    try {
+                        const newOrg = { org_name: name, org_type: type };
 
+                        if (imageFile) {
+                        //    const reader = new FileReader();
+                        //    reader.onload = async function (e) {
+                        //        newOrg.imageUrl = e.target.result;
+                        //        const response = await sendOrganizationToServer(newOrg);
+                        //        if (response.success) {
+                        //            organizations.push({ ...newOrg, organization_id: response.organization_id });
+                        //            renderOrganizations();
+                        //        } else {
+                        //            console.error("Error adding organization:", response.error);
+                        //        }
+                        //    };
+                        //    reader.readAsDataURL(imageFile);
+                        } else {
+                            const response = await fetch(`/api/organizations`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(newOrg) // Send the entry data to the backend
+                            });
+                            
+                            if (response.ok) {
+                                organizations.push({ ...newOrg, organization_id: response.organization_id });
+                                renderOrganizations();
+                            } else {
+                                console.error("Error adding organization:", response.error);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("An error occurred while adding the organization:", error);
+                    }
+                }
+
+                // Render organizations list
                 function renderOrganizations() {
+                    const selectedType = orgTypeFilter.value;
                     orgList.innerHTML = '';
-                    organizations.forEach(org => {
-                        const col = document.createElement('div');
-                        col.className = 'col';
-                        col.innerHTML = `
-                            <div class="card h-100">
-                                ${org.imageUrl ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">` : ''}
-                                <div class="card-body">
-                                    <h5 class="card-title">${org.name}</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">${org.role}</h6>
-                                    <p class="card-text">${org.description}</p>
-                                    <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.id}">Edit</button>
-                                    <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.id}">Delete</button>
+            
+                    organizations
+                        .filter(org => selectedType === 'all' || org.org_type === selectedType)
+                        .forEach(org => {
+                            const col = document.createElement('div');
+                            col.className = 'col';
+                            col.innerHTML = `
+                                <div class="card h-100">
+                                    ${org.imageUrl ? 
+                                        `<img src="${org.imageUrl}" class="card-img-top" alt="${org.org_name}" style="width: 100%; height: 200px; object-fit: cover;">` :
+                                        `<div class="card-img-placeholder" style="width: 100%; height: 200px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">No Image</div>`
+                                    }
+                                    <div class="card-body">
+                                        <h5 class="card-title">${org.org_name}</h5>
+                                        <p class="card-subtitle text-muted">${org.org_type}</p>
+                                        <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.organization_id}">Edit</button>
+                                        <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.organization_id}">Delete</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
-                        orgList.appendChild(col);
-                    });
-
-                    // Add event listeners for edit and delete buttons
+                            `;
+                            orgList.appendChild(col);
+                        });
+            
+                    // Event listeners for edit and delete buttons
                     document.querySelectorAll('.edit-org').forEach(btn => {
-                        btn.addEventListener('click', function() {
+                        btn.addEventListener('click', function () {
                             const orgId = parseInt(this.getAttribute('data-id'));
-                            const org = organizations.find(o => o.id === orgId);
+                            const org = organizations.find(o => o.organization_id === orgId);
                             if (org) {
-                                currentOrgId = org.id;
-                                document.getElementById('org-name').value = org.name;
-                                document.getElementById('org-role').value = org.role;
-                                document.getElementById('org-description').value = org.description;
+                                currentOrgId = org.organization_id;
+                                document.getElementById('org-name').value = org.org_name;
+                                document.getElementById('org-type').value = org.org_type;
                                 document.getElementById('orgModalLabel').textContent = 'Edit Organization';
                                 orgForm.querySelector('button[type="submit"]').textContent = 'Update Organization';
                                 orgModal.show();
                             }
                         });
                     });
-
+            
                     document.querySelectorAll('.delete-org').forEach(btn => {
-                        btn.addEventListener('click', function() {
+                        btn.addEventListener('click', function () {
                             const orgId = parseInt(this.getAttribute('data-id'));
-                            organizations = organizations.filter(org => org.id !== orgId);
+                            organizations = organizations.filter(org => org.organization_id !== orgId);
                             renderOrganizations();
                         });
                     });
                 }
+
+                // Event listener for the filter dropdown
+                orgTypeFilter.addEventListener('change', renderOrganizations);
+                fetchOrganizations();
             }
+            
 
             // contacts page javascript functions
             function initializeContacts(){

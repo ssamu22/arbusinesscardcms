@@ -1,39 +1,60 @@
 <div id="organizations" class="content-section">
     <h2 class="mb-4">Organizations</h2>
-<button id="add-org-btn" class="btn btn-primary mb-4">Add Organization</button>
 
-<div id="org-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-<!-- Organizations will be dynamically added here -->
-</div>
-<div class="modal fade" id="orgModal" tabindex="-1" aria-labelledby="orgModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-<div class="modal-content">
-<div class="modal-header">
-    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-<div class="modal-body">
-    <form id="org-form">
-        <div class="mb-3">
-            <label for="org-name" class="form-label">Organization Name</label>
-            <input type="text" class="form-control" id="org-name" required>
+    <!-- Filter and Add Organization button in a row -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Filter Dropdown on the left -->
+        <div class="d-flex align-items-center">
+            <label for="org-type-filter" class="form-label me-2 mb-0">Filter by Type:</label>
+            <select id="org-type-filter" class="form-select" style="width: 200px;">
+                <option value="all" selected>All</option>
+                <option value="professional">Professional</option>
+                <option value="civic">Civic</option>
+            </select>
         </div>
-        <div class="mb-3">
-            <label for="org-role" class="form-label">Your Role</label>
-            <input type="text" class="form-control" id="org-role" required>
+
+        <!-- Add Organization Button on the right -->
+        <button id="add-org-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orgModal">Add Organization</button>
+    </div>
+
+    <!-- Organization list container -->
+    <div id="org-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Organizations will be dynamically added here -->
+    </div>
+
+    <!-- Modal for adding an organization -->
+    <div class="modal fade" id="orgModal" tabindex="-1" aria-labelledby="orgModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="org-form">
+                        <div class="mb-3">
+                            <label for="org-type" class="form-label">Organization Type</label>
+                            <select class="form-select" id="org-type" required>
+                                <option value="professional">Professional</option>
+                                <option value="civic">Civic</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-name" class="form-label">Organization Name</label>
+                            <input type="text" class="form-control" id="org-name" required>
+                        </div>
+                        <!-- <div class="mb-3">
+                            <label for="org-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="org-description" rows="3" required></textarea>
+                        </div> -->
+                        <div class="mb-3">
+                            <label for="org-image" class="form-label">Organization Image</label>
+                            <input type="file" class="form-control" id="org-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Organization</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="org-description" class="form-label">Description</label>
-            <textarea class="form-control" id="org-description" rows="3" required></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="org-image" class="form-label">Organization Image</label>
-            <input type="file" class="form-control" id="org-image" accept="image/*">
-        </div>
-        <button type="submit" class="btn btn-primary">Add Organization</button>
-    </form>
-</div>
-</div>
-</div>
-</div>
+    </div>
 </div>
