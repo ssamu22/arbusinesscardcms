@@ -7,6 +7,6 @@ exports.uploadFile = (req, res) => {
       return res.status(500).json({ message: 'File upload failed', error: err });
     }
     console.log(req.file);  // Use the file to upload it to storage (e.g., Firebase, AWS)
-    res.json({ message: 'File uploaded successfully', file: req.file });
+    res.status(201).json({ message: 'File uploaded successfully', file: req.file });
   });
 };
