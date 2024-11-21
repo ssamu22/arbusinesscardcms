@@ -1,6 +1,8 @@
 const path = require('path');
+const fs = require('fs');
 const supabase = require('../utils/supabaseClient');
 const Organization = require('../models/Organization');
+const Image = require('../models/Image');
 
 
 exports.getOrganizations = async (req, res) => {
@@ -13,11 +15,28 @@ exports.getOrganizations = async (req, res) => {
             return res.status(404).json({ message: 'No organizations found for this employee.' });
         }
 
-        const response = orgs.map(org => ({
-            organization_id: org.organization_id,
-            org_name: org.org_name,
-            org_type: org.org_type
-        }));
+        // Map through organizations and include image URLs
+        const response = await Promise.all(
+            orgs.map(async (org) => {
+            // Fetch banner and logo images
+            const bannerImage = org.banner_id ? await Image.getImageById(org.banner_id) : null;
+            const logoImage = org.image_id ? await Image.getImageById(org.image_id) : null;
+    
+            // Return the organization object with image URLs
+            return {
+                organization_id: org.organization_id,
+                org_name: org.org_name,
+                org_type: org.org_type,
+                category: org.category,
+                description: org.description,
+                banner_url: bannerImage ? bannerImage.image_url : null,
+                logo_url: logoImage ? logoImage.image_url : null,
+                position: org.position,
+                date_joined: org.date_joined,
+                date_active: org.date_active,
+            };
+            })
+        );
 
         res.json(response); 
     } catch (error) {
@@ -48,6 +67,22 @@ exports.createOrganization = async (req, res) => {
         res.status(500).json({ error: 'Failed to create organization' });
     }
 }
+
+exports.uploadImage = async (req, res) => {
+    try {
+        const file = req.file; 
+        const { bucket, fileName } = req.body;
+
+        // Use the Image model to handle upload and creation
+        const uploadedImage = await Image.uploadImage(file, bucket, fileName);
+
+        // Return the Image object as the response
+        res.json(uploadedImage);
+    } catch (error) {
+        console.error('Error in uploadImage:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
 
 exports.updateOrganization = async (req, res) => {
     const { organization_id, title, description, date_achieved, organization_type } = req.body;

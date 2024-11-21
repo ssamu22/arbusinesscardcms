@@ -2,12 +2,18 @@
 const supabase = require('../utils/supabaseClient')
 
 class Organization{
-  constructor(organization_id, org_name, employee_id, org_type, image_id) {
+  constructor(organization_id, org_name, employee_id, org_type, image_id, category, description, banner_id, position, date_joined, date_active) {
     this.organization_id = organization_id;
     this.org_name = org_name;
     this.employee_id = employee_id;
     this.org_type = org_type;
     this.image_id = image_id;
+    this.category = category;
+    this.description = description;
+    this.banner_id = banner_id;
+    this.position = position;
+    this.date_joined = date_joined;
+    this.date_active = date_active;
   }
 
   // fetch all organization of employee

@@ -74,6 +74,30 @@
             max-width: 200px;
             margin-bottom: 20px;
         }
+        .card {
+            position: relative;
+        }
+        .logo-container {
+            position: absolute;
+            top: 15px;
+            left: 15px; /* Positioned at the bottom left */
+            background-color: white; /* Add a white background for contrast */
+            border-radius: 50%;
+            padding: 5px; /* Adds space around the image for a clean look */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            height: 100px; /* Fixed size for the logo */
+            width: 100px; /* Same as height for a perfect circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-circle {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%; /* Makes the image circular */
+        }
+        
     </style>
 </head>
 <body>
@@ -685,6 +709,28 @@
                 let organizations = [];  // Replace this with data fetching logic from your database
                 let currentOrgId = null;
 
+                const currentYear = new Date().getFullYear();
+                const startYear = 1950; // Start year for the dropdowns
+                const dateJoinedDropdown = document.getElementById('org-date-joined');
+                const dateActiveDropdown = document.getElementById('org-date-active');
+
+                // Populate year dropdowns
+                for (let year = currentYear; year >= startYear; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    dateJoinedDropdown.appendChild(option);
+
+                    const activeOption = option.cloneNode(true);
+                    dateActiveDropdown.insertBefore(activeOption, dateActiveDropdown.firstChild);
+                }
+
+                // Ensure "Present" is the first option in Date Active
+                const presentOption = document.createElement('option');
+                presentOption.value = 'present';
+                presentOption.textContent = 'Present';
+                dateActiveDropdown.insertBefore(presentOption, dateActiveDropdown.firstChild);
+
                 async function fetchOrganizations(){
                     try {
                         const response = await fetch('/api/organizations');
@@ -706,71 +752,106 @@
                     orgModal.show();
                 });
             
-                // Form submission handler
                 orgForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
-                    const name = document.getElementById('org-name').value;
-                    const type = document.getElementById('org-type').value;
-                    const imageFile = document.getElementById('org-image').files[0];
-            
+                
+                    const name = document.getElementById('org-name').value.trim();
+                    const type = document.getElementById('org-type').value.trim();
+                    const bannerFile = document.getElementById('org-banner').files[0];
+                    const logoFile = document.getElementById('org-image').files[0];
+                
                     // Check if editing an existing organization
                     if (currentOrgId) {
                         const orgIndex = organizations.findIndex(org => org.organization_id === currentOrgId);
                         organizations[orgIndex] = { ...organizations[orgIndex], org_name: name, org_type: type };
-                        if (imageFile) {
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                organizations[orgIndex].imageUrl = e.target.result;
-                                renderOrganizations();
-                            };
-                            reader.readAsDataURL(imageFile);
-                        } else {
-                            renderOrganizations();
+                
+                        // Handle banner and logo updates if new files are provided
+                        if (bannerFile) {
+                            const bannerImage = await uploadImage(bannerFile, `${name}_banner`);
+                            organizations[orgIndex].bannerUrl = bannerImage.url;
                         }
+                
+                        if (logoFile) {
+                            const logoImage = await uploadImage(logoFile, `${name}_logo`);
+                            organizations[orgIndex].logoUrl = logoImage.url;
+                        }
+                
+                        renderOrganizations();
                     } else {
-                        if(confirm('Are you sure you want to save this entry?'))
-                            createOrganization(name, type, imageFile);
+                        // Create a new organization entry
+                        if (confirm('Are you sure you want to save this entry?')) {
+                            createOrganization(name, type, bannerFile, logoFile);
+                        }
                     }
-            
+                
                     orgModal.hide();
                 });
-            
-                // Add organization to the database
-                async function createOrganization(name, type, imageFile) {
-                    try {
-                        const newOrg = { org_name: name, org_type: type };
+                
+                // Upload image to the server
+                async function uploadImage(file, namePrefix) {
+                    const formData = new FormData();
+                    const extension = file.name.split('.').pop(); // Extract file extension
+                    const fileName = `${namePrefix}.${extension}`; // Generate file name
+                
+                    // Determine the bucket based on the type of image
+                    const bucket =
+                        namePrefix.includes('banner') ? 'assets/orgBannerImages' : 'assets/employeeOrgsImages';
+                
+                    formData.append('file', file);
+                    formData.append('bucket', bucket);
+                    formData.append('fileName', fileName);
 
-                        if (imageFile) {
-                        //    const reader = new FileReader();
-                        //    reader.onload = async function (e) {
-                        //        newOrg.imageUrl = e.target.result;
-                        //        const response = await sendOrganizationToServer(newOrg);
-                        //        if (response.success) {
-                        //            organizations.push({ ...newOrg, organization_id: response.organization_id });
-                        //            renderOrganizations();
-                        //        } else {
-                        //            console.error("Error adding organization:", response.error);
-                        //        }
-                        //    };
-                        //    reader.readAsDataURL(imageFile);
+                    console.log('Uploading image: ', formData);
+                
+                    try {
+                        const response = await fetch('/api/organizations/image', {
+                            method: 'POST',
+                            body: formData,
+                        });
+                
+                        if (response.ok) {
+                            return await response.json(); // Returns { bucket, fileName, url }
                         } else {
-                            const response = await fetch(`/api/organizations`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(newOrg) // Send the entry data to the backend
-                            });
-                            
-                            if (response.ok) {
-                                organizations.push({ ...newOrg, organization_id: response.organization_id });
-                                renderOrganizations();
-                            } else {
-                                console.error("Error adding organization:", response.error);
-                            }
+                            console.error('Failed to upload image:', response.statusText);
                         }
                     } catch (error) {
-                        console.error("An error occurred while adding the organization:", error);
+                        console.error('Error uploading image:', error);
+                    }
+                }
+                
+                // Add organization to the database
+                async function createOrganization(name, type, bannerFile, logoFile) {
+                    try {
+                        const organizationData = { org_name: name, org_type: type };
+                
+                        // Upload the banner if provided
+                        if (bannerFile) {
+                            const bannerImage = await uploadImage(bannerFile, `${name}_banner`);
+                            organizationData.banner_id = bannerImage.image_id;
+                        }
+                
+                        // Upload the logo if provided
+                        if (logoFile) {
+                            const logoImage = await uploadImage(logoFile, `${name}_logo`);
+                            organizationData.logo_id = logoImage.image_id;
+                        }
+                
+                        // Send the organization data to the backend
+                        const response = await fetch('/api/organizations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(organizationData),
+                        });
+                
+                        if (response.ok) {
+                            const newOrg = await response.json(); // Backend should return the created organization
+                            organizations.push(newOrg);
+                            renderOrganizations();
+                        } else {
+                            console.error('Error adding organization:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('An error occurred while adding the organization:', error);
                     }
                 }
 
@@ -785,14 +866,36 @@
                             const col = document.createElement('div');
                             col.className = 'col';
                             col.innerHTML = `
-                                <div class="card h-100">
-                                    ${org.imageUrl ? 
-                                        `<img src="${org.imageUrl}" class="card-img-top" alt="${org.org_name}" style="width: 100%; height: 200px; object-fit: cover;">` :
-                                        `<div class="card-img-placeholder" style="width: 100%; height: 200px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">No Image</div>`
-                                    }
+                                <div class="card h-100 position-relative">
+                                    <!-- Banner Image -->
+                                    <img src="${org.banner_url || '/default-image.png'}" 
+                                        class="card-img-top" 
+                                        alt="${org.org_name}" 
+                                        style="height: 200px; object-fit: cover;">
+
+                                    <!-- Circular Logo -->
+                                    <div class="logo-container position-absolute">
+                                        <img src="${org.logo_url || '/default-logo.png'}" 
+                                            alt="${org.org_name} Logo" 
+                                            class="logo-circle">
+                                    </div>
+
+                                    <!-- Card Body -->
                                     <div class="card-body">
                                         <h5 class="card-title">${org.org_name}</h5>
-                                        <p class="card-subtitle text-muted">${org.org_type}</p>
+                                        <h6 class="card-subtitle mb-2 text-muted">${org.org_type}</h6>
+                                        <p class="card-text description" 
+                                        title="${org.description || 'N/A'}">
+                                        ${org.description 
+                                                ? org.description.length > 100 
+                                                    ? org.description.slice(0, 100) + '...' 
+                                                    : org.description 
+                                                : 'N/A'}
+                                        </p>
+                                        <p class="card-text">Position: ${org.position || 'N/A'}</p>
+                                        <p class="card-text">Category: ${org.category || 'N/A'}</p>
+                                        <p class="card-text">Date: ${org.date_joined || 'N/A'} - ${org.date_active || 'Present'}</p>
+                                        
                                         <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.organization_id}">Edit</button>
                                         <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.organization_id}">Delete</button>
                                     </div>

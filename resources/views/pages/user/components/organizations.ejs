@@ -27,34 +27,58 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
+                    <h5 id="orgModalLabel" class="modal-title">Add Organization</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="org-form">
+                <form id="org-form">
+                    <div class="modal-body">
                         <div class="mb-3">
-                            <label for="org-type" class="form-label">Organization Type</label>
-                            <select class="form-select" id="org-type" required>
+                            <label for="org-name" class="form-label">Organization Name</label>
+                            <input type="text" id="org-name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-type" class="form-label">Type</label>
+                            <select id="org-type" class="form-select">
                                 <option value="professional">Professional</option>
                                 <option value="civic">Civic</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="org-name" class="form-label">Organization Name</label>
-                            <input type="text" class="form-control" id="org-name" required>
+                            <label for="org-category" class="form-label">Category</label>
+                            <input type="text" id="org-category" class="form-control">
                         </div>
-                        <!-- <div class="mb-3">
-                            <label for="org-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="org-description" rows="3" required></textarea>
-                        </div> -->
                         <div class="mb-3">
-                            <label for="org-image" class="form-label">Organization Image</label>
-                            <input type="file" class="form-control" id="org-image" accept="image/*">
+                            <label for="org-position" class="form-label">Position</label>
+                            <input type="text" id="org-position" class="form-control">
                         </div>
+                        <div class="mb-3">
+                            <label for="org-date-joined" class="form-label">Date Joined</label>
+                            <select id="org-date-joined" class="form-select year-dropdown" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-date-active" class="form-label">Date Active</label>
+                            <select id="org-date-active" class="form-select year-dropdown" required>
+                                <option value="present">Present</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-description" class="form-label">Description</label>
+                            <textarea id="org-description" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-image" class="form-label">Upload Logo</label>
+                            <input type="file" id="org-image" class="form-control" accept="image/png, image/jpeg, image/jpg">
+                        </div>
+                        <div class="mb-3">
+                            <label for="org-banner" class="form-label">Upload Banner</label>
+                            <input type="file" id="org-banner" class="form-control" accept="image/png, image/jpeg, image/jpg">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Add Organization</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
+    </div>    
 </div>

@@ -52,6 +52,9 @@ router.get('/organizations', organizationController.getOrganizations);
 // Route to get all organizations
 router.post('/organizations', organizationController.createOrganization);
 
+// Route for image uploads from the organization
+router.post('/organizations/image', organizationController.uploadImage);
+
 // -- Contacts page routes --
 // Route to get all contacts
 router.get('/contacts', contactController.getContacts);
