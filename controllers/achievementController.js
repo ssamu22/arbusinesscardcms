@@ -5,6 +5,7 @@ const Achievement_type = require('../models/Achievement_type');
 
 
 exports.getAchievements = async (req, res) => {
+    
     const employee_id = req.session.user.employee_id; // Get the user ID from the session
     try {
         const achievements = await Achievement.getAllAchievement(employee_id); // Fetch user info from the database
