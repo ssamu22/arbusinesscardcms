@@ -39,7 +39,7 @@ var target = {
   // name of the target, unique within a database
   name: "dogshit marker",
   // width of the target in scene unit
-  width: 32.0,
+  width: 6.0,
   // the base64 encoded binary recognition image data
   image: util.encodeFileBase64(`${__dirname}/../uploads/markers/new_card.jpg`),
   // indicates whether or not the target is active for query
