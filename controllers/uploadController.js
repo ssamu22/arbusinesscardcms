@@ -19,37 +19,89 @@ var vuforia = require("vuforia-api");
 
 // init client with valid credentials
 var client = vuforia.client({
-  // Server access key (used for Vuforia Web Services API)
   serverAccessKey: process.env.VUFORIA_SERVER_ACCESS_KEY,
-
-  // Server secret key (used for Vuforia Web Services API)
   serverSecretKey: process.env.VUFORIA_SERVER_SECRET_KEY,
-
-  // Client access key (used for Vuforia Web Query API)
   clientAccessKey: process.env.VUFORIA_CLIENT_ACCESS_KEY,
-
-  // Client secret key (used for Vuforia Web Query API)
   clientSecretKey: process.env.VUFORIA_CLIENT_SECRET_KEY,
 });
 
 // util for base64 encoding and decoding
 var util = vuforia.util();
 
-var target = {
-  // name of the target, unique within a database
-  name: "dogshit marker",
-  // width of the target in scene unit
-  width: 6.0,
-  // the base64 encoded binary recognition image data
-  image: util.encodeFileBase64(`${__dirname}/../uploads/markers/new_card.jpg`),
-  // indicates whether or not the target is active for query
-  active_flag: true,
-  // the base64 encoded application metadata associated with the target
-  application_metadata: util.encodeBase64("some metadata about your image"),
+// GET ALL CARDS
+exports.getAllCards = (req, res) => {
+  // This will retrieve all the target id's from the Vuforia cloud database
+  client.listTargets(function (error, result) {
+    if (error) {
+      console.error(result);
+    } else {
+      console.log(result);
+    }
+  });
+  
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved all business cards!",
+  });
 };
 
-exports.uploadCard = async (req, res) => {
-  client.addTarget(target, function (error, result) {
+// GET CARD
+exports.getCard = (req, res) => {
+  console.log(req.params.id);
+  client.retrieveTarget(req.params.id, function (error, result) {
+    if (error) {
+      console.error(result);
+    } else {
+      console.log(result);
+    }
+  });
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved card!",
+  });
+};
+
+  // UPLOAD
+exports.uploadCard = (req, res) => {
+  try {
+    const target = {
+      name: req.body.name,
+      width: parseFloat(req.body.width),
+      image: util.encodeFileBase64(
+        `${__dirname}/../uploads/markers/${req.file.originalname}`
+      ),
+      active_flag: req.body.active_flag === "true",
+      application_metadata: util.encodeBase64(req.body.application_metadata),
+    };
+
+    client.addTarget(target, function (error, result) {
+      if (error) {
+        console.error("Error adding target:", error);
+        return res
+          .status(500)
+          .json({ status: "error", message: "Failed to add marker", error });
+      } else {
+        console.log("Target added:", result);
+        return res.status(200).json({
+          status: "success",
+          message: "Marker successfully uploaded",
+          result,
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Unexpected server error", error });
+  }
+};
+
+
+// DELETE 
+exports.deleteCard = (req, res) => {
+  // console.log(req.body.target_id);
+  client.deleteTarget(req.body.target_id, function (error, result) {
     if (error) {
       console.error(result);
     } else {
@@ -59,99 +111,29 @@ exports.uploadCard = async (req, res) => {
 
   return res.status(200).json({
     status: "success",
-    message: "marker succcessfully uploaded",
+    message: "Marker successfully deleted",
   });
 };
 
-// exports.uploadCard = async (req, res) => {
-//   try {
-//     // Ensure a file is uploaded
-//     if (!req.file) {
-//       return res.status(400).json({ error: "No file uploaded." });
-//     }
+// UPDATE 
+exports.updateCard = (req, res) => {
+  console.log(req.body);
 
-//     const { filename, path: filePath } = req.file;
-//     console.log(req.file);
-//     // Read and encode the image file
-//     const imageData = fs.readFileSync(filePath);
-//     const imageBase64 = imageData.toString("base64");
+  var update = {
+    active_flag: true,
+    application_metadata: util.encodeBase64(JSON.stringify(req.body)),
+  };
 
-//     // Vuforia credentials
-//     const accessKey = "5167af135bcd3dce0bebfabdf902b683e58e3c5a"; // Replace with your access key
-//     const secretKey = "656d5c32f02cad981f813095fc86e216944234b6"; // Replace with your secret key
-
-//     // API endpoint
-//     const vuforiaUrl = "https://vws.vuforia.com/targets";
-
-//     // Prepare the payload
-//     const payload = JSON.stringify({
-//       name: filename,
-//       width: 6.0, // Default width
-//       image: imageBase64,
-//       application_metadata: "496fbb6532b3863460a984de1d980bed5ebcd507",
-//     });
-
-//     console.log("Payload:", payload); // Debugging the payload content
-
-//     // Compute Content-MD5
-//     const contentMD5 = crypto
-//       .createHash("md5")
-//       .update(payload)
-//       .digest("base64");
-
-//     console.log("Content-MD5:", contentMD5); // Debugging the MD5 hash
-
-//     // Prepare headers
-//     const contentType = "application/json";
-//     const date = new Date().toUTCString(); // Use RFC 2616 format
-//     const requestPath = "/targets";
-
-//     // Construct the StringToSign
-//     const stringToSign = `POST\n${contentMD5}\n${contentType}\n${date}\n${requestPath}`;
-
-//     console.log("StringToSign:", stringToSign); // Debugging the StringToSign
-
-//     // Generate the signature
-//     const signature = crypto
-//       .createHmac("sha1", secretKey)
-//       .update(stringToSign)
-//       .digest("base64");
-
-//     console.log("Signature:", signature); // Debugging the signature
-
-//     // Authorization header
-//     const headers = {
-//       "Content-Type": contentType,
-//       Date: date,
-//       Authorization: `VWS ${accessKey}:${signature}`,
-//     };
-
-//     console.log("Headers:", headers); // Debugging the request headers
-
-//     // Send POST request to Vuforia
-//     const response = await axios.post(vuforiaUrl, payload, { headers });
-
-//     console.log("Vuforia Response:", response.data); // Debugging the Vuforia response
-
-//     // Cleanup the uploaded file
-//     fs.unlinkSync(filePath);
-
-//     // Respond to the client
-//     res.status(200).json({
-//       status: "success",
-//       message: "Marker uploaded successfully!",
-//       vuforiaResponse: response.data,
-//     });
-//   } catch (error) {
-//     console.error("Error uploading marker to Vuforia:", error.message);
-//     console.error("Error Details:", error.response?.data || error); // Log detailed error response
-
-//     // Send error response
-//     res.status(500).json({
-//       status: "error",
-//       message: "Failed to upload marker to Vuforia.",
-//       error: error.message,
-//       details: error.response?.data || null, // Include error details if available
-//     });
-//   }
-// };
+  // This will update the metadata of a business card
+  client.updateTarget(req.params.id, update, function (error, result) {
+    if (error) {
+      console.error(result);
+    } else {
+      console.log(result);
+    }
+  });
+  return res.status(200).json({
+    status: "success",
+    message: "Marker successfully updated",
+  });
+};
