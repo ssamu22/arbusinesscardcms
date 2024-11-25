@@ -1,6 +1,9 @@
 const axios = require("axios");
 const crypto = require("crypto");
 const fs = require("fs");
+const { Jimp } = require("jimp");
+const path = require("path");
+
 var vuforia = require("vuforia-api");
 
 // exports.uploadFile = (req, res) => {
@@ -28,6 +31,70 @@ var client = vuforia.client({
 // util for base64 encoding and decoding
 var util = vuforia.util();
 
+const applyHistogramEqualization = async (filePath) => {
+  try {
+    const image = await Jimp.read(filePath);
+
+    // Access the raw pixel data
+    const pixels = image.bitmap.data; // RGBA array
+
+    // Convert to grayscale manually
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+      pixels[i] = gray;
+      pixels[i + 1] = gray;
+      pixels[i + 2] = gray;
+    }
+
+    // Step 1: Compute Histogram
+    const histogram = new Array(256).fill(0);
+    for (let i = 0; i < pixels.length; i += 4) {
+      histogram[pixels[i]]++;
+    }
+
+    // Step 2: Compute Cumulative Distribution Function (CDF)
+    const cdf = [];
+    histogram.reduce((acc, value, index) => {
+      cdf[index] = acc + value;
+      return cdf[index];
+    }, 0);
+
+    const cdfMin = cdf.find((value) => value > 0);
+    const cdfMax = cdf[255];
+    const normalizedCdf = cdf.map((value) =>
+      Math.round(((value - cdfMin) / (cdfMax - cdfMin)) * 255)
+    );
+
+    // Step 3: Apply Equalization
+    for (let i = 0; i < pixels.length; i += 4) {
+      const equalizedValue = normalizedCdf[pixels[i]];
+      pixels[i] = equalizedValue;
+      pixels[i + 1] = equalizedValue;
+      pixels[i + 2] = equalizedValue;
+    }
+
+    // Save the modified image
+    const dir = path.dirname(filePath);
+    const ext = path.extname(filePath);
+    const baseName = path.basename(filePath, ext);
+
+    // Ensure no duplicate "_equalized" in the file name
+    const outputPath = path.join(
+      dir,
+      `${baseName.replace(/_equalized$/, "")}_equalized${ext}`
+    );
+    await image.write(outputPath);
+
+    return path.basename(outputPath); // Return file name only
+  } catch (error) {
+    console.error("Error during histogram equalization:", error);
+    throw error;
+  }
+};
+
 // GET ALL CARDS
 exports.getAllCards = (req, res) => {
   // This will retrieve all the target id's from the Vuforia cloud database
@@ -38,7 +105,7 @@ exports.getAllCards = (req, res) => {
       console.log(result);
     }
   });
-  
+
   res.status(200).json({
     status: "success",
     message: "Successfully retrieved all business cards!",
@@ -61,14 +128,16 @@ exports.getCard = (req, res) => {
   });
 };
 
-  // UPLOAD
-exports.uploadCard = (req, res) => {
+// UPLOAD
+exports.uploadCard = async (req, res) => {
+  histogramName = await applyHistogramEqualization(req.file.path);
+
   try {
     const target = {
       name: req.body.name,
       width: parseFloat(req.body.width),
       image: util.encodeFileBase64(
-        `${__dirname}/../uploads/markers/${req.file.originalname}`
+        `${__dirname}/../uploads/markers/${histogramName}`
       ),
       active_flag: req.body.active_flag === "true",
       application_metadata: util.encodeBase64(req.body.application_metadata),
@@ -97,8 +166,7 @@ exports.uploadCard = (req, res) => {
   }
 };
 
-
-// DELETE 
+// DELETE
 exports.deleteCard = (req, res) => {
   // console.log(req.body.target_id);
   client.deleteTarget(req.body.target_id, function (error, result) {
@@ -115,7 +183,7 @@ exports.deleteCard = (req, res) => {
   });
 };
 
-// UPDATE 
+// UPDATE
 exports.updateCard = (req, res) => {
   console.log(req.body);
 
