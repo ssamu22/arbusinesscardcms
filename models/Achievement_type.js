@@ -7,7 +7,7 @@ class Achievement_type{
     this.name = name;
   }
 
-  // fetch all episodes of employee
+  // fetch all achievement types
   static async getAllAchievementType() {
     try {
         const { data, error } = await supabase
@@ -18,7 +18,7 @@ class Achievement_type{
             throw new Error(`Failed to retrieve achievement types: ${error.message}`);
         }
 
-        // Check if data is an array and map to Episode instances
+        // Check if data is an array and map to achievement instances
         if (Array.isArray(data)) {
             return data;
         } else {

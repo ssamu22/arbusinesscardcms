@@ -1,4 +1,6 @@
 // models/Image.js
+const fs = require('fs');
+const path = require('path');
 const supabase = require('../utils/supabaseClient')
 
 class Image {
@@ -41,45 +43,77 @@ class Image {
       }
     }
 
+    // Upload an image to Supabase and return an Image instance
     static async uploadImage(file, bucket, fileName) {
-        try {
-            if (!file || !bucket || !fileName) {
-                throw new Error('Missing required parameters (file, bucket, fileName).');
-            }
+      try {
+          if (!file || !bucket || !fileName) {
+              throw new Error('Missing required parameters (file, bucket, fileName).');
+          }
+  
+          const subBucket = bucket.replace(/^assets\//, '');
 
-            const filePath = path.join(__dirname, '..', file.path);
-
-            // Upload to Supabase storage
-            const { data, error } = await supabase.storage
-                .from(bucket)
-                .upload(fileName, fs.createReadStream(filePath), {
-                    contentType: file.mimetype,
-                });
-
-            if (error) {
-                throw new Error(`Supabase upload error: ${error.message}`);
-            }
-
-            // Get the public URL of the uploaded file
-            const { data: publicUrlData } = supabase.storage
-                .from(bucket)
-                .getPublicUrl(fileName);
-
-            // Simulate creating an image object in the database (replace with your database logic)
-            const image_id = Date.now(); // Temporary unique ID (replace with DB logic)
-            return new Image({
-                image_id,
-                bucket,
-                file_name: fileName,
-                url: publicUrlData.publicUrl,
+          // Resolve correct file path
+          const filePath = path.resolve(file.path);
+  
+          // Check if the file size is valid (not empty)
+          const stats = fs.statSync(filePath);
+          if (stats.size === 0) {
+              throw new Error('File is empty.');
+          }
+  
+          // Read the file as a buffer for upload
+          const fileBuffer = fs.readFileSync(filePath);
+  
+          const { data, error } = await supabase.storage
+            .from(bucket)
+            .upload(fileName, fileBuffer, {
+                contentType: file.mimetype, // Ensure correct content type
+                upsert: true, // Overwrite if the file already exists
             });
-        } catch (error) {
-            console.error('Error uploading image:', error.message);
-            throw error;
-        }
-    }
+
+          if (error) {
+            throw new Error(`Supabase upload error: ${error.message}`);
+          }
+  
+          // Generate public URL for the uploaded image
+          const { publicUrl, error: urlError } = supabase.storage
+              .from(bucket)
+              .getPublicUrl(fileName);
+  
+          if (urlError) {
+              throw new Error(`Failed to generate image public URL: ${urlError.message}`);
+          }
+  
+          // Insert or update the image details in the 'image' table in Supabase database
+          const { data: imageData, error: insertError } = await supabase
+              .from('image')  // Assuming your table name is 'image'
+              .upsert([  // Use upsert to either insert a new row or update an existing one
+                  {
+                      image_bucket: bucket,
+                      image_filename: fileName,
+                  }
+              ], { onConflict: ['image_filename'] });  // On conflict, update based on image_filename
+  
+          if (insertError) {
+              throw new Error(`Error inserting/updating image record in database: ${insertError.message}`);
+          }
+  
+          // Clean up temporary file
+          fs.unlinkSync(filePath);
+  
+          // Return the inserted/updated image details
+          return {
+              image_id: imageData[0].image_id,  // Return the inserted/updated image ID from DB
+              bucket,
+              fileName,
+              url: publicUrl,
+          };
+      } catch (error) {
+          console.error('Error uploading image:', error.message);
+          throw error;
+      }
+   }
+    
   }
 
-  
-  
   module.exports = Image;

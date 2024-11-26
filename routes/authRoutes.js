@@ -32,7 +32,7 @@ router.get('/logout', authController.logout);
 // Serve partial pages dynamically
 router.get('/home/:page', ensureAuthenticated, (req, res) => {
   const page = req.params.page;
-  const allowedPages = ['overview', 'timeline', 'achievements', 'organizations', 'contacts', 'about-lpu-c'];
+  const allowedPages = ['overview', 'achievements', 'organizations', 'contacts', 'schedule', 'about-lpu-c'];
   if (allowedPages.includes(page)) {
       res.render(`pages/user/components/${page}`, { user: req.session.user });
   } else {

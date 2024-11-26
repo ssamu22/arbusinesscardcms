@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const departmentController = require('../controllers/departmentController');
 const ensureAuthenticated = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/upload');
 const informationController = require('../controllers/informationController');
-const episodeController = require('../controllers/episodeController');
+const scheduleController = require('../controllers/scheduleController');
 const achievementController = require('../controllers/achievementController');
 const contactController = require('../controllers/contactController');
 const organizationController = require('../controllers/organizationController');
+const { uploadImage } = require('../controllers/organizationController');
 
 
 // -- Overview Page Routes --
@@ -15,19 +17,6 @@ router.get('/departments', departmentController.getAllDepartments);
 
 // Route to get the current introduction
 router.get('/details', ensureAuthenticated, informationController.getDetails);
-
-// -- Timeline Page Routes --
-// Route to get all episodes
-router.get('/timeline', episodeController.getEpisodes);
-
-// Route to add episode
-router.post('/timeline', episodeController.createEpisode);
-
-// Route to update episode
-router.put('/timeline', episodeController.updateEpisode);
-
-// Route to delete episode
-router.post('/timeline/delete', episodeController.deleteEpisode);
 
 // -- Achievements Page Routes --
 // Route to get all achievements
@@ -53,7 +42,13 @@ router.get('/organizations', organizationController.getOrganizations);
 router.post('/organizations', organizationController.createOrganization);
 
 // Route for image uploads from the organization
-router.post('/organizations/image', organizationController.uploadImage);
+router.post('/organizations/image', upload.single('file'), uploadImage);
+
+// Route to update organization
+router.put('/organizations', organizationController.updateOrganization);
+
+// Route to delete organization
+router.post('/organization/delete', organizationController.deleteOrganization);
 
 // -- Contacts page routes --
 // Route to get all contacts
@@ -64,5 +59,9 @@ router.put('/contacts', contactController.updateContacts);
 
 // Route to update schedule
 router.post('/contacts/schedule', contactController.updateSchedule);
+
+// -- Schedule page routes --
+// Route to get all schedules
+router.get('/schedule', scheduleController.getSchedule);
 
 module.exports = router;

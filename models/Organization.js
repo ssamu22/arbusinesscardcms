@@ -60,38 +60,59 @@ class Organization{
 
     if (!data) return null; // Return null if not found
 
-    return new organization(data.organization_id, data.title, data.description, data.date_achieved, data.employee_id, data.organization_type);
+    return new Organization(data.organization_id, data.title, data.description, data.date_achieved, data.employee_id, data.organization_type);
   }
 
   // Save the current instance (create or update)
   async save() {
     if (this.organization_id) {
-      // Update an existing organization
-      const { data, error } = await supabase
-        .from('organization')
-        .update({
-            title: this.title,
-            description: this.description,
-            date_achieved: this.date_achieved,
-            organization_type: this.organization_type
-        })
-        .eq('organization_id', this.organization_id);
-  
-      if (error) {
-        console.error('Error updating organization:', error);
-        throw error;
-      }
+        // Dynamically construct update data to skip null or undefined values
+        const updateData = {
+          org_name: this.org_name,
+          org_type: this.org_type,
+          category: this.category,
+          description: this.description,
+          position: this.position,
+          date_joined: this.date_joined,
+          date_active: this.date_active,
+        };
 
-      return data; // Return updated episode
+        // Only include image_id if it has a value
+        if (this.image_id !== null && this.image_id !== undefined) {
+            updateData.image_id = this.image_id;
+        }
+
+        // Only include banner_id if it has a value
+        if (this.banner_id !== null && this.banner_id !== undefined) {
+            updateData.banner_id = this.banner_id;
+        }
+
+        const { data, error } = await supabase
+            .from('organization')
+            .update(updateData)
+            .eq('organization_id', this.organization_id);
+
+        if (error) {
+            console.error('Error updating organization:', error);
+            throw error;
+        }
+
+        return data; // Return updated organization
     } else {
       // Create a new organization
       const { data, error } = await supabase
         .from('organization')
         .insert({
-            org_name: this.org_name,
-            employee_id: this.employee_id,
-            org_type: this.org_type,
-            image_id: this.image_id,
+          org_name: this.org_name,
+          employee_id: this.employee_id,
+          org_type: this.org_type,
+          image_id: this.image_id,
+          category: this.category,
+          description: this.description,
+          banner_id: this.banner_id,
+          position: this.position,
+          date_joined: this.date_joined,
+          date_active: this.date_active,
         });
   
       if (error) {
