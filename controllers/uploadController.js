@@ -31,49 +31,41 @@ var client = vuforia.client({
 // util for base64 encoding and decoding
 var util = vuforia.util();
 
-const applyHistogramEqualization = async (filePath) => {
+const applyHistogramEqualization = async (filePath, blendRatio = 0.8) => {
   try {
     const image = await Jimp.read(filePath);
 
     // Access the raw pixel data
-    const pixels = image.bitmap.data; // RGBA array
-
-    // Convert to grayscale manually
-    for (let i = 0; i < pixels.length; i += 4) {
-      const r = pixels[i];
-      const g = pixels[i + 1];
-      const b = pixels[i + 2];
-      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-      pixels[i] = gray;
-      pixels[i + 1] = gray;
-      pixels[i + 2] = gray;
-    }
+    const { data: pixels, width, height } = image.bitmap;
+    const histogram = new Array(256).fill(0);
+    const cdf = new Array(256).fill(0);
 
     // Step 1: Compute Histogram
-    const histogram = new Array(256).fill(0);
     for (let i = 0; i < pixels.length; i += 4) {
-      histogram[pixels[i]]++;
+      const intensity = pixels[i]; // Grayscale (assuming already converted to grayscale)
+      histogram[intensity]++;
     }
 
     // Step 2: Compute Cumulative Distribution Function (CDF)
-    const cdf = [];
-    histogram.reduce((acc, value, index) => {
-      cdf[index] = acc + value;
-      return cdf[index];
-    }, 0);
+    cdf[0] = histogram[0];
+    for (let i = 1; i < 256; i++) {
+      cdf[i] = cdf[i - 1] + histogram[i];
+    }
 
-    const cdfMin = cdf.find((value) => value > 0);
-    const cdfMax = cdf[255];
-    const normalizedCdf = cdf.map((value) =>
-      Math.round(((value - cdfMin) / (cdfMax - cdfMin)) * 255)
-    );
+    // Normalize CDF (stretch to full range 0-255)
+    const minCDF = cdf[0];
+    const maxCDF = cdf[255];
+    for (let i = 0; i < cdf.length; i++) {
+      cdf[i] = Math.round(((cdf[i] - minCDF) * 255) / (maxCDF - minCDF));
+    }
 
-    // Step 3: Apply Equalization
+    // Step 3: Apply Equalization with Blending
     for (let i = 0; i < pixels.length; i += 4) {
-      const equalizedValue = normalizedCdf[pixels[i]];
-      pixels[i] = equalizedValue;
-      pixels[i + 1] = equalizedValue;
-      pixels[i + 2] = equalizedValue;
+      const intensity = pixels[i];
+      const equalizedValue = Math.round(
+        blendRatio * cdf[intensity] + (1 - blendRatio) * intensity
+      );
+      pixels[i] = pixels[i + 1] = pixels[i + 2] = equalizedValue; // RGB channels
     }
 
     // Save the modified image
@@ -130,7 +122,7 @@ exports.getCard = (req, res) => {
 
 // UPLOAD
 exports.uploadCard = async (req, res) => {
-  histogramName = await applyHistogramEqualization(req.file.path);
+  histogramName = await applyHistogramEqualization(req.file.path, 0.8);
 
   try {
     const target = {
