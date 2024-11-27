@@ -1,20 +1,13 @@
-<style>
-  canvas {
-    margin: 10px;
-    border: 1px solid #ccc;
-    display: none;
-  }
-
-</style>
-<div id="about-lpu-c" class="content-section">
+<section id="markers-section" class="markers-section">
   <h2>About LPU-C</h2>
   <div>
     <h3>List of registered Business Cards</h3>
+    <div class=""></div>
   </div>
   <!-- <div class="no-data-found">
-        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-        <p>No Data Found!</p>
-    </div> -->
+                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
+                <p>No Data Found!</p>
+            </div> -->
   <input type="file" id="upload" accept="image/*" />
 
   <div class="canvasDiv">
@@ -23,7 +16,7 @@
 
   <form
     id="uploadForm"
-    action="upload/businessCard"
+    action="../upload/businessCard"
     enctype="multipart/form-data"
     method="post"
   >
@@ -33,4 +26,4 @@
     <input type="number" id="marker-id" />
     <button id="submitBCard" type="submit" disabled>Submit</button>
   </form>
-</div>
+</section>
