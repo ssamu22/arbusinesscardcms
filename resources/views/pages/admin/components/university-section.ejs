@@ -1,0 +1,144 @@
+<section id="university-section" class="university-contents">
+  <h2>University Contents</h2>
+  <div class="university-tabs">
+    <div class="university-tab active" data-tab="home">Home</div>
+    <div class="university-tab" data-tab="achievements">Achievements</div>
+  </div>
+  <div id="home-tab" class="university-tab-content active">
+    <div class="university-preview">
+      <img
+        id="preview-background"
+        src="university-background.jpg"
+        alt="University Background"
+        class="university-preview-background"
+      />
+      <div class="university-preview-content">
+        <div class="university-preview-text">
+          <h3 id="preview-title">LPU Cavite Opens Doors to Community</h3>
+          <p id="preview-text">
+            LPU Cavite opens doors to community: Shared sports facilities boost
+            health and wellbeing.
+          </p>
+          <button id="preview-button">Read more</button>
+        </div>
+        <div class="university-carousel">
+          <img
+            id="preview-image-1"
+            src="university-image-1.jpg"
+            alt="University Image 1"
+          />
+          <img
+            id="preview-image-2"
+            src="university-image-2.jpg"
+            alt="University Image 2"
+          />
+          <img
+            id="preview-image-3"
+            src="university-image-3.jpg"
+            alt="University Image 3"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIVERSITY PRINCIPLES -->
+    <div class="university-form">
+      <h3>University Principles</h3>
+
+      <!-- VISION FORM -->
+      <form action = "" id="vision-form">
+        <label for="lpu-vision">Vision</label>
+        <textarea id="lpu-vision" rows="4" class="lpu-principle" disabled>
+        University Vision</textarea
+        >
+        <button type="button" id="edit-vision" class="uni-edit-btn">
+          Edit
+        </button>
+        <button type="submit" id="submit-vision" class="uni-submit-btn">
+          Submit
+        </button>
+      </form>
+
+      <!-- MISSION FORM -->
+      <form id="mission-form">
+        <label for="lpu-mission">Misison</label>
+        <textarea id="lpu-mission" rows="4" class="lpu-principle" disabled>
+        University Mission</textarea
+        >
+        <button type="button" id="edit-mission" class="uni-edit-btn">
+          Edit
+        </button>
+        <button type="submit" id="submit-mission" class="uni-submit-btn">
+          Submit
+        </button>
+      </form>
+
+      <!-- CORE VALUES FORM -->
+      <form id="values-form">
+        <label for="lpu-values">Core Values</label>
+        <textarea id="lpu-values" rows="4" class="lpu-principle" disabled>
+        University Core Values</textarea
+        >
+        <button
+          type="button"
+          id="submit-values"
+          id="edit-values"
+          class="uni-edit-btn"
+        >
+          Edit
+        </button>
+        <button type="submit" class="uni-submit-btn">Submit</button>
+      </form>
+
+      <!-- PHILOSOPPHY FORM -->
+      <form id="philo-form">
+        <label for="lpu-philo">Philosophy</label>
+        <textarea id="lpu-philo" rows="4" class="lpu-principle" disabled>
+        University Philosophy</textarea
+        >
+        <button type="button" id="edit-philo" class="uni-edit-btn">Edit</button>
+        <button type="submit" class="uni-submit-btn">Submit</button>
+      </form>
+    </div>
+    <!-- END OF UNIVERSITY PRINCIPLES -->
+  </div>
+  <div id="achievements-tab" class="university-tab-content">
+    <div class="achievements-form">
+      <h3>Add New Achievement</h3>
+      <form id="achievement-add-form">
+        <label for="achievement-image">Achievement Image (PNG):</label>
+        <input type="file" id="achievement-image" accept="image/png" />
+
+        <label for="achievement-description">Achievement Description:</label>
+        <textarea id="achievement-description" rows="4"></textarea>
+
+        <button type="submit">Add Achievement</button>
+      </form>
+    </div>
+    <div class="achievements-list" id="achievements-list">
+      <!-- Achievement items will be dynamically added here -->
+    </div>
+  </div>
+</section>
+
+<!-- <label for="background-image">Background Image:</label>
+                      <input type="file" id="background-image" accept="image/*">
+                      
+                      <label for="title">Title:</label>
+                      <input type="text" id="title" value="LPU Cavite Opens Doors to Community">
+                      
+                      <label for="carousel-image-1">Carousel Image 1:</label>
+                      <input type="file" id="carousel-image-1" accept="image/*">
+                      
+                      <label for="carousel-image-2">Carousel Image 2:</label>
+                      <input type="file" id="carousel-image-2" accept="image/*">
+                      
+                      <label for="carousel-image-3">Carousel Image 3:</label>
+                      <input type="file" id="carousel-image-3" accept="image/*">
+                      
+                      <label for="content-text">Content Text:</label>
+                      <textarea id="content-text" rows="4">LPU Cavite opens doors to community: Shared sports facilities boost health and wellbeing.</textarea>
+                      
+                      <label for="button-text">Button Text:</label>
+                      <input type="text" id="button-text" value="Read more">
+                       -->

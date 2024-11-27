@@ -1,18 +1,32 @@
 <div id="timeline" class="content-section">
-    <h2>Timeline</h2>
-    <form id="timeline-form" class="mb-4">
-        <div class="mb-3">
-            <label for="timeline-year" class="form-label">Year</label>
-            <input type="date" name="date" class="form-control" id="timeline-year" required>
-        </div>
-        <div class="mb-3">
-            <label for="timeline-description" class="form-label">Description</label>
-            <textarea class="form-control" name="description" id="timeline-description" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" id="timeline-submit">Add Entry</button>
-    </form>
-    <div class="card">
-        <div class="card-header">Timeline Entries</div>
-        <ul class="list-group list-group-flush" id="timeline-entries"></ul>
+  <h2>Timeline</h2>
+  <form id="timeline-form" class="mb-4">
+    <div class="mb-3">
+      <label for="timeline-year" class="form-label">Year</label>
+      <input
+        type="date"
+        name="date"
+        class="form-control"
+        id="timeline-year"
+        required
+      />
     </div>
+    <div class="mb-3">
+      <label for="timeline-description" class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        name="description"
+        id="timeline-description"
+        rows="3"
+        required
+      ></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" id="timeline-submit">
+      Add Entry
+    </button>
+  </form>
+  <div class="card">
+    <div class="card-header">Timeline Entries</div>
+    <ul class="list-group list-group-flush" id="timeline-entries"></ul>
+  </div>
 </div>

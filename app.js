@@ -4,7 +4,8 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const authRoutes = require("./routes/authRoutes"); // Import routes
 const apiRoutes = require("./routes/api"); // Import routes
-uploadRoutes = require("./routes/uploadRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const lpuRoutes = require("./routes/lpuRoutes");
 const app = express();
 const port = 3000;
 
@@ -39,6 +40,7 @@ app.use("/", authRoutes);
 app.use("/api", apiRoutes);
 
 app.use("/upload", uploadRoutes);
+app.use("/lpu", lpuRoutes);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

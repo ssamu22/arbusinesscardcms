@@ -1,1080 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARCMS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            display: flex;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        .logo {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #34495e;
-        }
-        .logo img {
-            max-width: 100px;
-            height: auto;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #34495e;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .user-name {
-            font-weight: bold;
-        }
-        .user-role {
-            font-size: 12px;
-            color: #bdc3c7;
-        }
-        nav {
-            flex-grow: 1;
-            padding: 20px 0;
-        }
-        nav h3 {
-            font-size: 12px;
-            color: #bdc3c7;
-            margin: 20px 0 10px 20px;
-            text-transform: uppercase;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        nav li {
-            margin: 5px 0;
-        }
-        nav a {
-            text-decoration: none;
-            color: #ecf0f1;
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-            transition: background-color 0.3s;
-        }
-        nav a:hover {
-            background-color: #34495e;
-        }
-        nav a i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        .active {
-            background-color: #3498db;
-        }
-        .logout {
-            padding: 20px;
-            border-top: 1px solid #34495e;
-        }
-        main {
-            flex-grow: 1;
-            padding: 20px;
-            background-color: #fff;
-            overflow-y: auto;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .search-bar {
-            position: relative;
-        }
-        .search-bar input {
-            padding: 10px 10px 10px 35px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 250px;
-        }
-        .search-bar i {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-        }
-        .user-actions a {
-            margin-left: 15px;
-            color: #888;
-            font-size: 18px;
-        }
-        .members-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .add-member-btn {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .add-member-btn:hover {
-            background-color: #2980b9;
-        }
-        .members-actions {
-            display: flex;
-            align-items: center;
-        }
-        .members-actions input {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        .filter-btn {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .members-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .members-table th, .members-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .members-table th {
-            background-color: #f9f9f9;
-            font-weight: normal;
-            color: #888;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
-        .member-info {
-            display: flex;
-            align-items: center;
-        }
-        .member-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .member-name {
-            font-weight: bold;
-        }
-        .member-email {
-            color: #888;
-            font-size: 12px;
-        }
-        .status {
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        .status-active {
-            background-color: #e6ffe6;
-            color: #00cc00;
-        }
-        .status-blocked {
-            background-color: #f0f0f0;
-            color: #888;
-        }
-        .status-suspended {
-            background-color: #ffe6e6;
-            color: #cc0000;
-        }
-        .instagram {
-            color: #3498db;
-        }
-        .edit-btn {
-            color: #3498db;
-            text-decoration: none;
-        }
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .pagination-info {
-            color: #888;
-        }
-        .pagination-buttons {
-            display: flex;
-        }
-        .pagination-buttons a {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            margin: 0 5px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .pagination-buttons a.active {
-            background-color: #3498db;
-            color: #fff;
-            border-color: #3498db;
-        }
-        .pagination-buttons a:hover:not(.active) {
-            background-color: #f0f0f0;
-        }
-        #membersTableBody tr {
-            animation: fadeIn 0.5s ease-out;
-        }
-        .university-contents {
-            display: none;
-            padding: 20px;
-        }
-
-        .university-tabs {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-
-        .university-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-bottom: none;
-            background-color: #f9f9f9;
-        }
-
-        .university-tab.active {
-            background-color: #fff;
-            border-color: #ddd;
-            border-bottom-color: #fff;
-            margin-bottom: -1px;
-        }
-
-        .university-tab-content {
-            display: none;
-        }
-
-        .university-tab-content.active {
-            display: block;
-        }
-
-        .university-preview {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-        }
-
-        .university-preview-background {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-
-        .university-preview-content {
-            display: flex;
-            gap: 20px;
-        }
-
-        .university-preview-text {
-            flex: 1;
-        }
-
-        .university-carousel {
-            display: flex;
-            gap: 10px;
-            flex: 2;
-        }
-
-        .university-carousel img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .university-form, .achievements-form {
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .university-form label, .achievements-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .university-form input[type="text"],
-        .university-form textarea,
-        .achievements-form input[type="text"],
-        .achievements-form textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .university-form input[type="file"],
-        .achievements-form input[type="file"] {
-            margin-bottom: 10px;
-        }
-
-        .university-form button,
-        .achievements-form button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .university-form button:hover,
-        .achievements-form button:hover {
-            background-color: #2980b9;
-        }
-
-        .achievements-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .achievement-item {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .achievement-item img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        #university-section {
-            display: none;
-        }
-
-        /* Add a style for the active sidebar link */
-        .sidebar-active {
-            background-color: #3498db;
-        }
-
-        /* New styles for University Management section */
-
-
-        .management-tab.active {
-            color: #3498db;
-            border-bottom: 2px solid #3498db;
-        }
-
-        .management-content {
-            padding: 20px 0;
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .filter-section input,
-        .filter-section select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .filter-section button {
-            padding: 8px 16px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .filter-section button:hover {
-            background-color: #2980b9;
-        }
-
-        .management-tab-content {
-            display: none;
-        }
-
-        .management-tab-content.active {
-            display: block;
-        }
-
-        .add-item-btn {
-            margin-bottom: 10px;
-            padding: 8px 16px;
-            background-color: #2ecc71;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .add-item-btn:hover {
-            background-color: #27ae60;
-        }
-
-        .items-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .items-list li {
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .items-list li button {
-            padding: 5px 10px;
-            background-color: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .items-list li button:hover {
-            background-color: #c0392b;
-        }
-        .university-management-section {
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .section-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #333;
-    }
-
-    .management-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .management-card {
-        background-color: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .management-card h3 {
-        font-size: 18px;
-        margin-bottom: 15px;
-        color: #333;
-    }
-
-    .management-list {
-        list-style-type: none;
-        padding: 0;
-        margin: 0 0 15px 0;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .management-list li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .management-list li:last-child {
-        border-bottom: none;
-    }
-
-    .add-btn, .submit-btn {
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .add-btn:hover, .submit-btn:hover {
-        background-color: #2980b9;
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: 15% auto;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close:hover {
-        color: #000;
-    }
-
-    .management-form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .management-form input {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-</style>
-    </style>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/styles/admin.css" />
+    <link rel="stylesheet" href="/styles/admin/university-section.css" />
+  </head>
+  <body>
     <div class="container">
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="nun.png" alt="ARCMS Logo">
-            </div>
-            <div class="user-info">
-                <img src="vampire.png" alt="User Avatar" class="avatar">
-                <div>
-                    <div class="user-name">John Doe</div>
-                    <div class="user-role">Admin</div>
-                </div>
-            </div>
-            <nav>
-                <h3>Main Menu</h3>
-                <ul>
-                    <li><a href="#" id="dashboard-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="#" id="members-link" class="sidebar-active"><i class="fas fa-users"></i> Members</a></li>
-                    <li><a href="#" id="analytics-link"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                    <li><a href="#" id="university-link"><i class="fas fa-university"></i> University Contents</a></li>
-                    <li><a href="#" id="university-management-link"><i class="fas fa-cogs"></i> University Management</a></li>
-                </ul>
-                <h3>Settings</h3>
+      <aside class="sidebar">
+        <div class="logo">
+          <img src="nun.png" alt="ARCMS Logo" />
+        </div>
+        <div class="user-info">
+          <img src="vampire.png" alt="User Avatar" class="avatar" />
+          <div>
+            <div class="user-name">John Doe</div>
+            <div class="user-role">Admin</div>
+          </div>
+        </div>
+        <nav>
+          <h3>Main Menu</h3>
+          <ul>
+            <!-- <li><a href="#" id="dashboard-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li> -->
+            <li>
+              <a href="#" id="members-link" class="sidebar-active"
+                ><i class="fas fa-users"></i> Members</a
+              >
+            </li>
+            <!-- <li><a href="#" id="analytics-link"><i class="fas fa-chart-bar"></i> Analytics</a></li> -->
+            <li>
+              <a href="#" id="university-link"
+                ><i class="fas fa-university"></i> University Contents</a
+              >
+            </li>
+            <li>
+              <a href="#" id="university-management-link"
+                ><i class="fas fa-cogs"></i> University Management</a
+              >
+            </li>
+            <li>
+              <a href="#" id="markers-link"
+                ><i class="fas fa-crosshairs"></i>Markers</a
+              >
+            </li>
+          </ul>
+          <!-- <h3>Settings</h3>
                 <ul>
                     <li><a href="#"><i class="fas fa-cog"></i> General Settings</a></li>
                     <li><a href="#"><i class="fas fa-user-cog"></i> Account Settings</a></li>
                     <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
-                </ul>
-            </nav>
-            <div class="logout">
-                <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+                </ul> -->
+        </nav>
+        <div class="logout">
+          <p>
+            <a href="/admin/logout"
+              ><i class="fas fa-sign-out-alt"></i> Log out</a
+            >
+          </p>
+        </div>
+      </aside>
+      <main>
+        <header></header>
+
+        <%- include('./components/employees-section.ejs')%>
+
+        <!-- UNIVERSITY CONTENTS SECTION -->
+        <%- include('./components/university-section.ejs')%>
+
+        <section
+          id="university-management-section"
+          class="university-management-section"
+        >
+          <h2 class="section-title">University Management</h2>
+          <div class="management-grid">
+            <div class="management-card">
+              <h3>Departments</h3>
+              <ul id="departments-list" class="management-list">
+                <!-- Departments will be dynamically added here -->
+              </ul>
+              <button class="add-btn" onclick="openModal('department')">
+                <i class="fas fa-plus"></i> Add Department
+              </button>
             </div>
-        </aside>
-        <main>
-            <header>
-                <div class="user-actions">
-                    <a href="#"><i class="fas fa-bell"></i></a>
-                    <a href="#"><i class="fas fa-cog"></i></a>
-                </div>
-            </header>
-            <section id="members-section" class="members-section">
-                <div class="members-header">
-                    <h2>Members</h2>
-                    <button class="add-member-btn"><i class="fas fa-plus"></i> Add Member</button>
-                </div>
-                <div class="members-actions">
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search members...">
-                    </div>
-                    <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
-                </div>
-                <table class="members-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Members</th>
-                            <th>Status</th>
-                            <th>Joined</th>
-                            <th>Last access</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="membersTableBody">
-                        <!-- Dummy data will be inserted here by JavaScript -->
-                    </tbody>
-                </table>
-                <div class="pagination">
-                    <div class="pagination-info">
-                        Showing <span>1</span> to <span>10</span> of <span>50</span> results
-                    </div>
-                    <div class="pagination-buttons">
-                        <a href="#" class="prev-page"><i class="fas fa-chevron-left"></i></a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#">4</a>
-                        <a href="#">5</a>
-                        <a href="#" class="next-page"><i class="fas fa-chevron-right"></i></a>
-                    </div>
-                </div>
-            </section>
-            <section id="university-section" class="university-contents">
-                <h2>University Contents</h2>
-                <div class="university-tabs">
-                    <div class="university-tab active" data-tab="home">Home</div>
-                    <div class="university-tab" data-tab="achievements">Achievements</div>
-                </div>
-                <div id="home-tab" class="university-tab-content active">
-                    <div class="university-preview">
-                        <img id="preview-background" src="university-background.jpg" alt="University Background" class="university-preview-background">
-                        <div class="university-preview-content">
-                            <div class="university-preview-text">
-                                <h3 id="preview-title">LPU Cavite Opens Doors to Community</h3>
-                                <p id="preview-text">LPU Cavite opens doors to community: Shared sports facilities boost health and wellbeing.</p>
-                                <button id="preview-button">Read more</button>
-                            </div>
-                            <div class="university-carousel">
-                                <img id="preview-image-1" src="university-image-1.jpg" alt="University Image 1">
-                                <img id="preview-image-2" src="university-image-2.jpg" alt="University Image 2">
-                                <img id="preview-image-3" src="university-image-3.jpg" alt="University Image 3">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="university-form">
-                        <h3>Edit University Content</h3>
-                        <form id="university-edit-form">
-                            <label for="background-image">Background Image:</label>
-                            <input type="file" id="background-image" accept="image/*">
-                            
-                            <label for="title">Title:</label>
-                            <input type="text" id="title" value="LPU Cavite Opens Doors to Community">
-                            
-                            <label for="carousel-image-1">Carousel Image 1:</label>
-                            <input type="file" id="carousel-image-1" accept="image/*">
-                            
-                            <label for="carousel-image-2">Carousel Image 2:</label>
-                            <input type="file" id="carousel-image-2" accept="image/*">
-                            
-                            <label for="carousel-image-3">Carousel Image 3:</label>
-                            <input type="file" id="carousel-image-3" accept="image/*">
-                            
-                            <label for="content-text">Content Text:</label>
-                            <textarea id="content-text" rows="4">LPU Cavite opens doors to community: Shared sports facilities boost health and wellbeing.</textarea>
-                            
-                            <label for="button-text">Button Text:</label>
-                            <input type="text" id="button-text" value="Read more">
-                            
-                            <button type="submit">Update Content</button>
-                        </form>
-                    </div>
-                </div>
-                <div id="achievements-tab" class="university-tab-content">
-                    <div class="achievements-form">
-                        <h3>Add New Achievement</h3>
-                        <form id="achievement-add-form">
-                            <label for="achievement-image">Achievement Image (PNG):</label>
-                            <input type="file" id="achievement-image" accept="image/png">
-                            
-                            <label for="achievement-description">Achievement Description:</label>
-                            <textarea id="achievement-description" rows="4"></textarea>
-                            
-                            <button type="submit">Add Achievement</button>
-                        </form>
-                    </div>
-                    <div class="achievements-list" id="achievements-list">
-                        <!-- Achievement items will be dynamically added here -->
-                    </div>
-                </div>
-            </section>
-            <section id="university-management-section" class="university-management-section">
-                <h2 class="section-title">University Management</h2>
-                <div class="management-grid">
-                    <div class="management-card">
-                        <h3>Departments</h3>
-                        <ul id="departments-list" class="management-list">
-                            <!-- Departments will be dynamically added here -->
-                        </ul>
-                        <button class="add-btn" onclick="openModal('department')">
-                            <i class="fas fa-plus"></i> Add Department
-                        </button>
-                    </div>
-                    <div class="management-card">
-                        <h3>Offices</h3>
-                        <ul id="offices-list" class="management-list">
-                            <!-- Offices will be dynamically added here -->
-                        </ul>
-                        <button class="add-btn" onclick="openModal('office')">
-                            <i class="fas fa-plus"></i> Add Office
-                        </button>
-                    </div>
-                    <div class="management-card">
-                        <h3>Consultation Types</h3>
-                        <ul id="consultation-types-list" class="management-list">
-                            <!-- Consultation Types will be dynamically added here -->
-                        </ul>
-                        <button class="add-btn" onclick="openModal('consultation')">
-                            <i class="fas fa-plus"></i> Add Consultation Type
-                        </button>
-                    </div>
-                </div>
-            
-                <!-- Add/Edit Modal -->
-                <div id="management-modal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeModal()">&times;</span>
-                        <h3 id="modal-title">Add New Item</h3>
-                        <form id="management-form" class="management-form">
-                            <input type="text" id="item-name" required placeholder="Enter name">
-                            <button type="submit" class="submit-btn">Save</button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-            
-        </main>
+            <div class="management-card">
+              <h3>Offices</h3>
+              <ul id="offices-list" class="management-list">
+                <!-- Offices will be dynamically added here -->
+              </ul>
+              <button class="add-btn" onclick="openModal('office')">
+                <i class="fas fa-plus"></i> Add Office
+              </button>
+            </div>
+            <div class="management-card">
+              <h3>Consultation Types</h3>
+              <ul id="consultation-types-list" class="management-list">
+                <!-- Consultation Types will be dynamically added here -->
+              </ul>
+              <button class="add-btn" onclick="openModal('consultation')">
+                <i class="fas fa-plus"></i> Add Consultation Type
+              </button>
+            </div>
+          </div>
+
+          <!-- Add/Edit Modal -->
+          <div id="management-modal" class="modal">
+            <div class="modal-content">
+              <span class="close" onclick="closeModal()">&times;</span>
+              <h3 id="modal-title">Add New Item</h3>
+              <form id="management-form" class="management-form">
+                <input
+                  type="text"
+                  id="item-name"
+                  required
+                  placeholder="Enter name"
+                />
+                <button type="submit" class="submit-btn">Save</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <%- include('./components/markers-section.ejs')%>
+      </main>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dashboardLink = document.getElementById('dashboard-link');
-            const membersLink = document.getElementById('members-link');
-            const analyticsLink = document.getElementById('analytics-link');
-            const universityLink = document.getElementById('university-link');
-            const universityManagementLink = document.getElementById('university-management-link');
-            const membersSection = document.getElementById('members-section');
-            const universitySection = document.getElementById('university-section');
-            const universityManagementSection = document.getElementById('university-management-section');
-
-            function showSection(section) {
-                membersSection.style.display = 'none';
-                universitySection.style.display = 'none';
-                universityManagementSection.style.display = 'none';
-                section.style.display = 'block';
-
-                // Update sidebar active state
-                [dashboardLink, membersLink, analyticsLink, universityLink, universityManagementLink].forEach(link => {
-                    link.classList.remove('sidebar-active');
-                });
-                if (section === membersSection) membersLink.classList.add('sidebar-active');
-                if (section === universitySection) universityLink.classList.add('sidebar-active');
-                if (section === universityManagementSection) universityManagementLink.classList.add('sidebar-active');
-            }
-
-            dashboardLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Dashboard clicked');
-            });
-
-            membersLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection(membersSection);
-            });
-
-            analyticsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Analytics clicked');
-            });
-
-            universityLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection(universitySection);
-            });
-
-            universityManagementLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection(universityManagementSection);
-            });
-
-            // University Contents Tabs
-            const tabs = document.querySelectorAll('.university-tab');
-            const tabContents = document.querySelectorAll('.university-tab-content');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    tab.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-                });
-            });
-
-            // Handle university content updates
-            const universityForm = document.getElementById('university-edit-form');
-            const previewTitle = document.getElementById('preview-title');
-            const previewText = document.getElementById('preview-text');
-            const previewButton = document.getElementById('preview-button');
-            const previewBackground = document.getElementById('preview-background');
-            const previewImages = [
-                document.getElementById('preview-image-1'),
-                document.getElementById('preview-image-2'),
-                document.getElementById('preview-image-3')
-            ];
-
-            if (universityForm) {
-                universityForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    previewTitle.textContent = document.getElementById('title').value;
-                    previewText.textContent = document.getElementById('content-text').value;
-                    previewButton.textContent = document.getElementById('button-text').value;
-                    
-                    const newBackground = document.getElementById('background-image').files[0];
-                    if (newBackground) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            previewBackground.src = e.target.result;
-                        };
-                        reader.readAsDataURL(newBackground);
-                    }
-                    
-                    for (let i = 0; i < 3; i++) {
-                        const newImage = document.getElementById(`carousel-image-${i+1}`).files[0];
-                        if (newImage) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                previewImages[i].src = e.target.result;
-                            };
-                            reader.readAsDataURL(newImage);
-                        }
-                    }
-
-                    console.log('University content updated');
-                });
-            }
-
-            // Handle achievements
-            const achievementForm = document.getElementById('achievement-add-form');
-            const achievementsList = document.getElementById('achievements-list');
-
-            if (achievementForm) {
-                achievementForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const newImage = document.getElementById('achievement-image').files[0];
-                    const description = document.getElementById('achievement-description').value;
-
-                    if (newImage && description) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const achievementItem = document.createElement('div');
-                            achievementItem.className = 'achievement-item';
-                            achievementItem.innerHTML = `
-                                <img src="${e.target.result}" alt="Achievement">
-                                <p>${description}</p>
-                            `;
-                            achievementsList.appendChild(achievementItem);
-                        };
-                        reader.readAsDataURL(newImage);
-
-                        // Clear form
-                        document.getElementById('achievement-image').value = '';
-                        document.getElementById('achievement-description').value = '';
-
-                        console.log('Achievement added');
-                    } else {
-                        console.log('Please provide both an image and a description');
-                    }
-                });
-            }
-
-            // Function to populate the table with dummy data
-            function populateTable() {
-                const tableBody = document.getElementById('membersTableBody');
-                if (!tableBody) return;
-
-                tableBody.innerHTML = ''; // Clear existing content
-
-                const dummyMembers = [
-                    { name: "Alice Johnson", email: "alice@example.com", status: "Active", joined: "2023-05-15", lastAccess: "2023-06-01" },
-                    { name: "Bob Smith", email: "bob@example.com", status: "Blocked", joined: "2023-04-20", lastAccess: "2023-05-28" },
-                    { name: "Charlie Brown", email: "charlie@example.com", status: "Active", joined: "2023-05-01", lastAccess: "2023-06-02" },
-                    { name: "Diana Ross", email: "diana@example.com", status: "Suspended", joined: "2023-03-10", lastAccess: "2023-05-15" },
-                    { name: "Ethan Hunt", email: "ethan@example.com", status: "Active", joined: "2023-05-22", lastAccess: "2023-06-03" },
-                ];
-
-                dummyMembers.forEach((member, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td  class="member-info">
-                            <img src="boy.png" alt="${member.name}">
-                            <div>
-                                <div class="member-name">${member.name}</div>
-                                <div class="member-email">${member.email}</div>
-                            </div>
-                        </td>
-                        <td><span class="status status-${member.status.toLowerCase()}">${member.status}</span></td>
-                        <td>${member.joined}</td>
-                        <td>${member.lastAccess}</td>
-                        <td><a href="#" class="edit-btn">Edit</a></td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-            }
-
-            // Call the function to populate the table when the page loads
-            populateTable();
-
-        });
-
-        const departments = ['Department of Computer Studies', 'Department of Engineering', 'Department of Architecture'];
-    const offices = ['COECSA Dean\'s Office', 'Human Resources Office', 'Quality Assurance Office'];
-    const consultationTypes = ['Academic Consultation', 'Career Counseling', 'Research Guidance'];
-
-    function populateList(listId, items) {
-        const list = document.getElementById(listId);
-        list.innerHTML = '';
-        items.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item;
-            const deleteBtn = document.createElement('button');
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.onclick = function() { deleteItem(listId, item); };
-            li.appendChild(deleteBtn);
-            list.appendChild(li);
-        });
-    }
-
-    function deleteItem(listId, item) {
-        if (confirm('Are you sure you want to delete this item?')) {
-            switch(listId) {
-                case 'departments-list':
-                    departments.splice(departments.indexOf(item), 1);
-                    break;
-                case 'offices-list':
-                    offices.splice(offices.indexOf(item), 1);
-                    break;
-                case 'consultation-types-list':
-                    consultationTypes.splice(consultationTypes.indexOf(item), 1);
-                    break;
-            }
-            populateList(listId, eval(listId.split('-')[0]));
-        }
-    }
-
-    function openModal(type) {
-        const modal = document.getElementById('management-modal');
-        const title = document.getElementById('modal-title');
-        const form = document.getElementById('management-form');
-        
-        title.textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-        form.onsubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('item-name').value;
-            if (name) {
-                switch(type) {
-                    case 'department':
-                        departments.push(name);
-                        populateList('departments-list', departments);
-                        break;
-                    case 'office':
-                        offices.push(name);
-                        populateList('offices-list', offices);
-                        break;
-                    case 'consultation':
-                        consultationTypes.push(name);
-                        populateList('consultation-types-list', consultationTypes);
-                        break;
-                }
-                closeModal();
-            }
-        };
-        
-        modal.style.display = 'block';
-    }
-
-    function closeModal() {
-        document.getElementById('management-modal').style.display = 'none';
-        document.getElementById('item-name').value = '';
-    }
-
-    // Initialize lists
-    document.addEventListener('DOMContentLoaded', function() {
-        populateList('departments-list', departments);
-        populateList('offices-list', offices);
-        populateList('consultation-types-list', consultationTypes);
-    });
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('management-modal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    </script>
-</body>
+    <script src="/scripts/admin-script.js"></script>
+    <script src="/scripts/employees-section.js"></script>
+    <script src="/scripts/university-section.js"></script>
+  </body>
 </html>

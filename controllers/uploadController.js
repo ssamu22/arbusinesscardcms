@@ -122,14 +122,14 @@ exports.getCard = (req, res) => {
 
 // UPLOAD
 exports.uploadCard = async (req, res) => {
-  histogramName = await applyHistogramEqualization(req.file.path, 0.8);
-
+  // histogramName = await applyHistogramEqualization(req.file.path, 0.8);
+  console.log(req.file);
   try {
     const target = {
       name: req.body.name,
-      width: parseFloat(req.body.width),
+      width: 6,
       image: util.encodeFileBase64(
-        `${__dirname}/../uploads/markers/${histogramName}`
+        `${__dirname}/../uploads/markers/${req.file.originalname}`
       ),
       active_flag: req.body.active_flag === "true",
       application_metadata: util.encodeBase64(req.body.application_metadata),
@@ -137,6 +137,13 @@ exports.uploadCard = async (req, res) => {
 
     client.addTarget(target, function (error, result) {
       if (error) {
+        if (error == "Error: TargetNameExist") {
+          console.log("MARKER ALREADY EXISTED!");
+          return res.status(500).json({
+            status: "error",
+            message: "Marker already existed! Please upload another marker.",
+          });
+        }
         console.error("Error adding target:", error);
         return res
           .status(500)
