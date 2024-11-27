@@ -46,9 +46,20 @@
       <h3>University Principles</h3>
 
       <!-- VISION FORM -->
-      <form action = "" id="vision-form">
+      <form
+        action="/lpu/1/vision"
+        id="vision-form"
+        class="principle-form"
+        method="POST"
+      >
         <label for="lpu-vision">Vision</label>
-        <textarea id="lpu-vision" rows="4" class="lpu-principle" disabled>
+        <textarea
+          id="lpu-vision"
+          rows="4"
+          class="lpu-principle"
+          name="newText"
+          disabled
+        >
         University Vision</textarea
         >
         <button type="button" id="edit-vision" class="uni-edit-btn">
@@ -60,9 +71,20 @@
       </form>
 
       <!-- MISSION FORM -->
-      <form id="mission-form">
+      <form
+        action="/lpu/1/mission"
+        id="mission-form"
+        class="principle-form"
+        method="POST"
+      >
         <label for="lpu-mission">Misison</label>
-        <textarea id="lpu-mission" rows="4" class="lpu-principle" disabled>
+        <textarea
+          id="lpu-mission"
+          rows="4"
+          class="lpu-principle"
+          name="newText"
+          disabled
+        >
         University Mission</textarea
         >
         <button type="button" id="edit-mission" class="uni-edit-btn">
@@ -74,9 +96,20 @@
       </form>
 
       <!-- CORE VALUES FORM -->
-      <form id="values-form">
+      <form
+        action="/lpu/1/core_values"
+        id="values-form"
+        class="principle-form"
+        method="POST"
+      >
         <label for="lpu-values">Core Values</label>
-        <textarea id="lpu-values" rows="4" class="lpu-principle" disabled>
+        <textarea
+          id="lpu-values"
+          rows="4"
+          class="lpu-principle"
+          name="newText"
+          disabled
+        >
         University Core Values</textarea
         >
         <button
@@ -91,9 +124,20 @@
       </form>
 
       <!-- PHILOSOPPHY FORM -->
-      <form id="philo-form">
+      <form
+        action="/lpu/1/philosophy"
+        id="philo-form"
+        class="principle-form"
+        method="POST"
+      >
         <label for="lpu-philo">Philosophy</label>
-        <textarea id="lpu-philo" rows="4" class="lpu-principle" disabled>
+        <textarea
+          id="lpu-philo"
+          rows="4"
+          class="lpu-principle"
+          name="newText"
+          disabled
+        >
         University Philosophy</textarea
         >
         <button type="button" id="edit-philo" class="uni-edit-btn">Edit</button>
@@ -110,7 +154,11 @@
         <input type="file" id="achievement-image" accept="image/png" />
 
         <label for="achievement-description">Achievement Description:</label>
-        <textarea id="achievement-description" rows="4"></textarea>
+        <textarea
+          id="achievement-description"
+          name="newText"
+          rows="4"
+        ></textarea>
 
         <button type="submit">Add Achievement</button>
       </form>

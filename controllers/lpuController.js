@@ -14,7 +14,7 @@ exports.getBranch = async (req, res) => {
   res.status(200).json({
     status: "success",
     message: `Successfully retrieved ${branch.vision}!`,
-    data: branch,
+    branch,
   });
 };
 
