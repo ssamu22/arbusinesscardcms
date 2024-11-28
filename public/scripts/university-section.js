@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   await fetchPrinciples();
+  await fetchAwards();
 });
 
 // Edit buttons for the university principles: vision, misison, core values, philo
@@ -20,6 +21,7 @@ const philoText = document.getElementById("lpu-philo");
 
 const principleTexts = document.querySelectorAll(".lpu-principle");
 const principleForms = document.querySelectorAll(".principle-form");
+const awardContainer = document.querySelector(".award-item-container");
 
 function escapeHTML(str) {
   return str
@@ -87,7 +89,18 @@ async function fetchPrinciples() {
     valuesText.textContent = data.branch.core_values;
     philoText.textContent = data.branch.philosophy;
   } catch (err) {
-    console.error("Error fetching data:", err);
+    console.error("Error fetching lpu principles data:", err);
+  }
+}
+
+async function fetchAwards() {
+  try {
+    const response = await fetch("/lpu/1/awards");
+    const data = await response.json();
+
+    generateAwards(data.awards);
+  } catch (err) {
+    console.error("Error fetching Awards data: ", err);
   }
 }
 
@@ -107,6 +120,25 @@ editBtns.forEach((btn, idx) => {
     btn.classList.add("cancel-btn");
   });
 });
+
+function generateAwards(awards) {
+  awards.forEach((award) => {
+    const awardItem = document.createElement("div");
+    awardItem.classList.add("award-item");
+    awardItem.innerHTML = `
+    <img src="/images/AwardImage.png" class="award-image" />
+            <div class="award-texts">
+            <label for="award-desc">Category</label>
+            <input type="text" id="award-desc" value = "${award.award_category}"/>
+              <label for="award-title">Title</label>
+              <input type="text" id="award-title" value = "${award.award_title}" />
+            </div>
+    <button>Edit</button>
+`;
+
+    awardContainer.appendChild(awardItem);
+  });
+}
 
 function removeCancelClass(cancelBtn, submitBtn) {
   submitBtn.style.display = "none";

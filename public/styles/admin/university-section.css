@@ -2,6 +2,32 @@
   resize: none;
 }
 
-.uni-submit-btn{
+.uni-submit-btn {
   display: none;
+}
+
+.award-image {
+  max-width: 200px;
+  max-height: 200px;
+}
+.award-image:hover {
+  background: green;
+}
+
+.award-item {
+  display: flex;
+}
+
+.award-texts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.award-list {
+  margin-bottom: 1rem;
+}
+
+.achievements-tab {
+  background: white;
 }
