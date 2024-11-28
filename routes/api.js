@@ -57,11 +57,14 @@ router.get('/contacts', contactController.getContacts);
 // Route to update contacts
 router.put('/contacts', contactController.updateContacts);
 
-// Route to update schedule
-router.post('/contacts/schedule', contactController.updateSchedule);
-
 // -- Schedule page routes --
 // Route to get all schedules
 router.get('/schedule', scheduleController.getSchedule);
+
+// Route to update schedule
+router.post('/schedule/hours', scheduleController.updateSchedule);
+
+// Route to update consultation types
+router.post('/schedule/types', scheduleController.updateTypes);
 
 module.exports = router;

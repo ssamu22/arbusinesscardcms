@@ -2,13 +2,14 @@
 const supabase = require('../utils/supabaseClient')
 
 class Employee_schedule {
-  constructor(schedule_id, employee_id, start_time, end_time, day, available ) {
+  constructor(schedule_id, employee_id, start_time, end_time, day, available, location ) {
     this.schedule_id = schedule_id;
     this.start_time = start_time;
     this.end_time = end_time;
     this.employee_id = employee_id;
     this.day = day;
     this.available = available;
+    this.location = location;
   }
 
   // fetch all employee_schedules of employee
@@ -51,7 +52,7 @@ class Employee_schedule {
 
     if (!data) return null; // Return null if not found
 
-    return new Employee_schedule(data.schedule_id, data.employee_id, data.start_time, data.end_time, data.day, data.available);
+    return new Employee_schedule(data.schedule_id, data.employee_id, data.start_time, data.end_time, data.day, data.available, data.location);
   }
 
   // Save the current instance (create or update)
@@ -63,6 +64,7 @@ class Employee_schedule {
                 start_time: this.start_time,
                 end_time: this.end_time,
                 available: this.available,
+                location: this.location,
             })
             .eq('schedule_id', this.schedule_id);
 
@@ -82,6 +84,7 @@ class Employee_schedule {
                 start_time: this.start_time,
                 end_time: this.end_time,
                 available: this.available,
+                location: this.location,
             });
 
         console.log('Insert response:', { data, error });

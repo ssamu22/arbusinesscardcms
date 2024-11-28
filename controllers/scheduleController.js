@@ -10,7 +10,7 @@ exports.getSchedule = async (req, res) => {
         const consultationTypes = await Consultation_type.getAllConsultationType(employee_id);  // Fetch consultation types of employee from the database
         
         const response = {
-            schedule: schedule.map(schedule => ({
+            consultationHours: schedule.map(schedule => ({
                 schedule_id: schedule.schedule_id,
                 day: schedule.day,
                 start_time: schedule.start_time,
@@ -19,9 +19,9 @@ exports.getSchedule = async (req, res) => {
                 location: schedule.location // Include location
             })),
             consultationTypes: consultationTypes.map(consultationType => ({
-                type_id: consultationType.consultation_type_id,
-                type_name: consultationType.consultation,
-                type_description: consultationType.description
+                contype_id: consultationType.contype_id,
+                consultation: consultationType.consultation,
+                description: consultationType.description
             }))
         };
 
@@ -44,7 +44,7 @@ exports.updateSchedule = async (req, res) => {
         for (const entry of schedule) {
 
             if (entry.schedule_id) {
-                const { schedule_id, day, start_time, end_time, available } = entry;
+                const { schedule_id, day, start_time, end_time, available, location } = entry;
 
                 console.log("updated: " + JSON.stringify(day));
 
@@ -55,6 +55,7 @@ exports.updateSchedule = async (req, res) => {
                     existingSchedule.start_time = start_time;
                     existingSchedule.end_time = end_time;
                     existingSchedule.available = available;
+                    existingSchedule.location = location;
                     
                     const updatedSchedule = await existingSchedule.save(); // Save the updated schedule
                     updatedSchedules.push(updatedSchedule);
@@ -62,7 +63,7 @@ exports.updateSchedule = async (req, res) => {
                     console.error(`Schedule with ID ${schedule_id} not found`);
                 }
             } else {
-                const { day, start_time, end_time, available } = entry;
+                const { day, start_time, end_time, available, location } = entry;
 
                 console.log("inserted: " + JSON.stringify(day));
 
@@ -73,7 +74,8 @@ exports.updateSchedule = async (req, res) => {
                     start_time,
                     end_time,
                     day,
-                    available
+                    available,
+                    location,
                 );
 
                 console.log("inserted: " + JSON.stringify(newSchedule));
@@ -91,5 +93,57 @@ exports.updateSchedule = async (req, res) => {
     } catch (error) {
         console.error('Error updating or inserting schedules:', error);
         res.status(500).json({ error: 'Failed to update or insert schedules' });
+    }
+};
+
+exports.updateTypes = async (req, res) => {
+    const types = req.body;
+    const employee_id = req.session.user.employee_id; 
+
+    try {
+        const updatedTypes = [];
+
+        for (const entry of types) {
+
+            if (entry.contype_id) {
+                const { contype_id, consultation, description} = entry;
+
+                // Update existing schedule
+                const existingType = await Consultation_type.getById(contype_id);
+                if (existingType) {
+                    existingType.consultation = consultation;
+                    existingType.description = description;
+                    
+                    const updatedType = await existingType.save(); // Save the updated schedule
+                    updatedTypes.push(updatedType);
+                } else {
+                    console.error(`Consultation type with ID ${contype_id} not found`);
+                }
+            } else {
+                const { consultation, description} = entry;
+
+                // Insert new schedule entry
+                const newType = new Consultation_type(
+                    null,
+                    consultation,
+                    description,
+                    employee_id,
+                );
+
+                console.log("inserted: " + JSON.stringify(newType));
+                const savedType = await newType.save(); // Save the new schedule
+                updatedTypes.push(savedType); // Add the new entry to the updated schedules list
+            }
+        }
+
+        console.log('Updated Schedules:', updatedTypes);
+
+        res.status(200).json({
+            updatedTypes
+        });
+
+    } catch (error) {
+        console.error('Error updating or inserting consultation types:', error);
+        res.status(500).json({ error: 'Failed to update or insert consultation types' });
     }
 };

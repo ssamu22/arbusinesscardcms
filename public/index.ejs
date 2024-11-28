@@ -829,7 +829,6 @@
                 fetchOrganizations();
             }
             
-
             // contacts page javascript functions
             function initializeContacts(){
                 const editToggle = document.getElementById('edit-toggle');
@@ -1026,6 +1025,9 @@
             function initializeSchedule(){
 
                 const consultationHours = document.getElementById('consultation-hours');
+                const editConsultationHours = document.getElementById('editConsultationHours'); 
+                const consultationTypes = document.getElementById('consultation-types');
+                const editConsultationTypes = document.getElementById('editConsultationTypes');
 
                 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 
@@ -1035,29 +1037,56 @@
                     consultationHours: daysOfWeek.map(day => ({
                         day,
                         available: false, 
-                        startTime: '09:00',
-                        endTime: '17:00',
-                        location: '' // Add location here
+                        start_time: '09:00',
+                        end_time: '17:00',
+                        location: '',
                     })),
                     consultationTypes: [
-                        { type: 'In-Person', description: 'Consultation at the office' },
-                        { type: 'Online', description: 'Consultation via video call' },
-                        { type: 'Phone', description: 'Consultation via phone call' }
+                        { consultation: 'In-Person', description: 'Consultation at the office' },
+                        { consultation: 'Online', description: 'Consultation via video call' },
+                        { consultation: 'Phone', description: 'Consultation via phone call' }
                     ]
                 };
 
                 async function fetchSchedule() {
+                    renderDefaultConsultationHours();
                     try {
                         const response = await fetch('/api/schedule');
                         const data = await response.json();
                 
-                        const { schedule, consultationTypes } = data;
+                        const { consultationHours, consultationTypes } = data;
 
-                        console.log(schedule);
+                        console.log(data);
+
+                        consultationHours.forEach((entry) => {
+                            const dayIndex = daysOfWeek.indexOf(entry.day); // Find the index of the day in daysOfWeek
+                            if (dayIndex !== -1) {
+                              schedule.consultationHours[dayIndex] = {
+                                schedule_id: entry.schedule_id,
+                                day: entry.day,
+                                available: entry.available, 
+                                start_time: entry.start_time,
+                                end_time: entry.end_time,
+                                location: entry.location || "",
+                              };
+                            }
+                          });
+
+                        schedule.consultationTypes = consultationTypes.map(type => ({ 
+                            contype_id: type.contype_id,
+                            consultation: type.consultation, 
+                            description: type.description,
+                        }));
+
+                        console.log(schedule.consultationTypes);
                 
-                        // Update Consultation Hours
-                        renderConsultationHours(schedule);
-                
+                        if (consultationHours) {
+                            populateConsultationHours(schedule.consultationHours);
+                        }
+                        if (consultationTypes) {
+                            populateConsultationTypes(schedule.consultationTypes);
+                        }
+                        
                         // Update Consultation Types
                         consultationTypes.forEach((type, index) => {
                             const typeNameInput = document.getElementById(`type-${index}-name`);
@@ -1072,8 +1101,8 @@
                     }
                 }
 
-                function renderConsultationHours(schedule) {
-                    consultationHours.innerHTML = schedule.map((hour, index) => `
+                function renderDefaultConsultationHours() {
+                    consultationHours.innerHTML = schedule.consultationHours.map((hour, index) => `
                         <div class="row mb-2 align-items-center">
                             <div class="col-3">
                                 <div class="form-check form-switch">
@@ -1086,11 +1115,11 @@
                             <div class="col-4">
                                 <div class="input-group">
                                     <input type="time" class="form-control" value="${hour.start_time}" 
-                                        data-index="${index}" data-field="startTime" 
+                                        data-index="${index}" data-field="start_time" 
                                         ${!editMode || !hour.available ? 'disabled' : ''}>
                                     <span class="input-group-text">to</span>
                                     <input type="time" class="form-control" value="${hour.end_time}" 
-                                        data-index="${index}" data-field="endTime" 
+                                        data-index="${index}" data-field="end_time" 
                                         ${!editMode || !hour.available ? 'disabled' : ''}>
                                 </div>
                             </div>
@@ -1105,31 +1134,192 @@
                         </div>
                     `).join('');
                 }
+
+                function populateConsultationHours(data) {
+                    data.forEach((hour, index) => {
+                        const availableInput = document.querySelector(`#available-${hour.day}`);
+                        const startTimeInput = document.querySelector(`input[data-index="${index}"][data-field="start_time"]`);
+                        const endTimeInput = document.querySelector(`input[data-index="${index}"][data-field="end_time"]`);
+                        const locationInput = document.querySelector(`input[data-index="${index}"][data-field="location"]`);
+        
+                        if (availableInput) {
+                            availableInput.checked = hour.available;
+                        }
+                        if (startTimeInput) {
+                            startTimeInput.value = hour.start_time;
+                        }
+                        if (endTimeInput) {
+                            endTimeInput.value = hour.end_time;
+                        }
+                        if (locationInput) {
+                            locationInput.value = hour.location || '';
+                        }
+                    });
+                }
+
+                function populateConsultationTypes(data) {
+                    // Iterate through the consultation types data
+                    data.forEach((type, index) => {
+                        // Select the name and description input fields for each consultation type
+                        const nameInput = document.querySelector(`#type-${index}-consultation`);
+                        const descriptionInput = document.querySelector(`#type-${index}-description`);
                 
-                document.getElementById('editConsultationTypes').addEventListener('click', () => {
+                        // Populate the input fields with the corresponding data values
+                        if (nameInput) {
+                            nameInput.value = type.consultation || '';  // Default to empty string if no value is present
+                        }
+                        if (descriptionInput) {
+                            descriptionInput.value = type.description || '';  // Default to empty string if no value is present
+                        }
+                
+                    });
+                }
+                
+                editConsultationTypes.addEventListener('click', async () => {
                     editMode = !editMode;
+
+                    editConsultationTypes.textContent = editMode ? "Save" : "Edit";
+
                     document.querySelectorAll('#consultation-types input').forEach(input => {
                         input.disabled = !editMode;
                     });
+
+                    if(!editMode){
+                        if (!confirm('Are you sure you want to save changes?'))
+                        return;
+
+                        editConsultationTypes.textContent = "Updating...";
+                        editConsultationTypes.disabled = true;
+
+                        try {
+                            await updateTypes();
+                            editConsultationTypes.textContent = 'Edit'; // Revert button text to "Edit" after successful save
+                        } catch (error) {
+                            console.error('Failed to save contact info:', error);
+                            alert('An error occurred while saving. Please try again.');
+                            editConsultationTypes.textContent = 'Save'; // Keep "Save" text in case of error, to retry
+                        }
+                        
+                    }
+
+                    editConsultationTypes.disabled = false; // Re-enable the button after save is complete
+
                 });
                 
-                document.getElementById('editConsultationHours').addEventListener('click', () => {
+                editConsultationHours.addEventListener('click', async () => {
                     editMode = !editMode;
-                    document.querySelectorAll('#consultation-hours input').forEach(input => {
-                        input.disabled = !editMode;
+                
+                    editConsultationHours.textContent = editMode ? "Save" : "Edit";
+
+                    document.querySelectorAll('#consultation-hours .form-check-input').forEach(checkbox => {
+                        const index = checkbox.dataset.index;
+                
+                        // Find associated inputs
+                        const startTimeInput = document.querySelector(`input[data-index="${index}"][data-field="start_time"]`);
+                        const endTimeInput = document.querySelector(`input[data-index="${index}"][data-field="end_time"]`);
+                        const locationInput = document.querySelector(`input[data-index="${index}"][data-field="location"]`);
+                
+                        // Enable/disable fields based on edit mode and checkbox state
+                        const enableFields = editMode && checkbox.checked;
+                        checkbox.disabled = !editMode; // Checkboxes are editable only in edit mode
+                        startTimeInput.disabled = !enableFields;
+                        endTimeInput.disabled = !enableFields;
+                        locationInput.disabled = !enableFields;
+                
+                        // Update fields dynamically when checkbox is toggled
+                        checkbox.addEventListener('change', () => {
+                            const isChecked = checkbox.checked;
+                            startTimeInput.disabled = !isChecked;
+                            endTimeInput.disabled = !isChecked;
+                            locationInput.disabled = !isChecked;
+                        });
                     });
+
+                    if(!editMode){
+                        if (!confirm('Are you sure you want to save changes?')){
+                            return;
+                        }
+                        
+                        editConsultationHours.textContent = "Updating...";
+                        editConsultationHours.disabled = true;
+
+                        try {
+                            await updateSchedule();
+                            editConsultationHours.textContent = 'Edit'; // Revert button text to "Edit" after successful save
+                        } catch (error) {
+                            console.error('Failed to save consultation hours:', error);
+                            alert('An error occurred while saving. Please try again.');
+                            editConsultationHours.textContent = 'Save'; // Keep "Save" text in case of error, to retry
+                        }
+                    }
+
+                    editConsultationHours.disabled = false; // Re-enable the button after save is complete
                 });
 
+                consultationHours.addEventListener("change", function (e) {
+                    const target = e.target;
+                
+                    if (target.matches('input[type="checkbox"]')) {
+                        const index = parseInt(target.dataset.index);
+                        const available = target.checked;
+                
+                        // Update the availability in the schedule object
+                        schedule.consultationHours[index].available = available;
+                
+                        // Enable or disable related inputs dynamically
+                        const row = target.closest('.row');
+                        row.querySelectorAll('input[type="time"], input[data-field="location"]').forEach(input => {
+                            input.disabled = !available;
+                        });
+                    } else if (target.matches('input[type="time"]')) {
+                        const index = parseInt(target.dataset.index);
+                        const field = target.dataset.field;
+                
+                        // Update the start_time or end_time in the schedule object
+                        schedule.consultationHours[index][field] = target.value;
+                    } else if (target.matches('input[data-field="location"]')) {
+                        const index = parseInt(target.dataset.index);
+                
+                        // Update the location in the schedule object
+                        schedule.consultationHours[index].location = target.value;
+                    }
+                });
+
+                consultationTypes.addEventListener("change", function (e) {
+                    const target = e.target;
+                    
+                    // Determine which field was changed (name or description)
+                    if (target.matches('input[id^="type-"][id$="-consultation"], input[id^="type-"][id$="-description"]')) {
+                        const index = parseInt(target.id.split('-')[1]); // Extract the index from the input ID
+                        const field = target.id.split('-')[2]; // Determine the field (name or description)
+                        
+                        // Update the corresponding consultation type data
+                        if (!schedule.consultationTypes[index]) {
+                            schedule.consultationTypes[index] = {}; // Ensure the slot exists if it's empty
+                        }
+                        schedule.consultationTypes[index][field] = target.value;
+                
+                        // Enable or disable the inputs based on the data in schedule.consultationTypes
+                        const nameInput = document.querySelector(`#type-${index}-consultation`);
+                        const descriptionInput = document.querySelector(`#type-${index}-description`);
+                        
+                        // Enable fields if there is a name or description in the corresponding slot
+                        const hasData = schedule.consultationTypes[index].consultation || schedule.consultationTypes[index].description;
+                        nameInput.disabled = !hasData;
+                        descriptionInput.disabled = !hasData;
+                    }
+                });
 
                 async function updateSchedule(){
                     // Collect the updated schedule
-                    const updatedSchedule = contactInfo.consultationHours.map(hour => {
+                    const updatedSchedule = schedule.consultationHours.map(hour => {
                         // Create an object without schedule_id initially
                         const scheduleEntry = {
                             day: hour.day,
                             available: hour.available,
-                            start_time: hour.startTime,
-                            end_time: hour.endTime,
+                            start_time: hour.start_time,
+                            end_time: hour.end_time,
+                            location: hour.location || null,
                         };
                     
                         // Conditionally add schedule_id only if it exists
@@ -1140,8 +1330,10 @@
                         return scheduleEntry;
                     });
 
+                    console.log(updatedSchedule);
+
                     // Send the updated data to the backend
-                    const scheduleResponse = await fetch('/api/contacts/schedule', {
+                    const scheduleResponse = await fetch('/api/schedule/hours', {
                         method: 'POST', 
                         headers: {
                             'Content-Type': 'application/json'
@@ -1151,11 +1343,48 @@
 
                     if (!scheduleResponse.ok) {
                         throw new Error('Failed to save schedule');
-                        errors.schedule = 'Failed to save schedule';
                     }
 
                     const successSchedule = await scheduleResponse.json();
-                    console.log('Contact information saved:', successSchedule);
+                    console.log('Consultation hours saved:', successSchedule);
+                    alert('Consultation hours saved');
+                }
+
+                async function updateTypes(){
+                    // Collect the updated schedule
+                    const updatedTypes = schedule.consultationTypes.map(type => {
+                        // Create an object without schedule_id initially
+                        const typeEntry = {
+                            consultation: type.consultation,
+                            description: type.description,
+                        };
+                    
+                        // Conditionally add schedule_id only if it exists
+                        if (type.contype_id) {
+                            typeEntry.contype_id = type.contype_id;
+                        }
+                    
+                        return typeEntry;
+                    });
+
+                    console.log(updatedTypes);
+
+                    // Send the updated data to the backend
+                    const typeResponse = await fetch('/api/schedule/types', {
+                        method: 'POST', 
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedTypes)
+                    });
+
+                    if (!typeResponse.ok) {
+                        throw new Error('Failed to save consultation types');
+                    }
+
+                    const successTypes = await typeResponse.json();
+                    console.log('Consultation types saved:', successTypes);
+                    alert('Consultation types saved');
                 }
 
                 fetchSchedule();
