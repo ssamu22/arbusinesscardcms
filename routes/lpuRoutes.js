@@ -13,5 +13,5 @@ router
   .post(awardController.addAward);
 
 router.route("/:id/award/image/:imageId").get(awardController.getAwardImage);
-
+router.route("/:id/award/images").post(awardController.getAwardImages);
 module.exports = router;

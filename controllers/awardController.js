@@ -20,7 +20,6 @@ exports.getAwards = async (req, res) => {
 };
 
 exports.getAwardImage = async (req, res) => {
-
   const image = await Image.getImage(req.params.imageId);
   if (!image) {
     return res.status(404).json({
@@ -32,6 +31,22 @@ exports.getAwardImage = async (req, res) => {
     status: "success",
     message: "successfully retrieved lpu awards!",
     data: image,
+  });
+};
+
+exports.getAwardImages = async (req, res) => {
+  console.log(req.body.awardImageIds);
+  const images = await Image.getImages(req.body.awardImageIds);
+  if (!images) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Error geting images",
+    });
+  }
+  res.status(200).json({
+    status: "success",
+    message: "successfully retrieved lpu awards!",
+    data: images,
   });
 };
 

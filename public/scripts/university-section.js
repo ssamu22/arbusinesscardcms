@@ -95,10 +95,22 @@ async function fetchPrinciples() {
 
 async function fetchAwards() {
   try {
-    const response = await fetch("/lpu/1/awards");
-    const data = await response.json();
+    const awardResponse = await fetch("/lpu/1/awards");
+    const data = await awardResponse.json();
+    const awardImageIds = [];
+    data.awards.forEach((award) => {
+      awardImageIds.push(award.image_id);
+    });
 
-    generateAwards(data.awards);
+    const awardImages = [];
+    for (const id of awardImageIds) {
+      const awardImageResponse = await fetch(`/lpu/1/award/image/${id}`);
+      const imageData = await awardImageResponse.json();
+      awardImages.push(imageData.data[0].signedURL); // Collect all fetched images
+    }
+    console.log(awardImages);
+
+    generateAwards(data.awards, awardImages);
   } catch (err) {
     console.error("Error fetching Awards data: ", err);
   }
@@ -121,12 +133,12 @@ editBtns.forEach((btn, idx) => {
   });
 });
 
-function generateAwards(awards) {
-  awards.forEach((award) => {
+function generateAwards(awards, awardImages) {
+  awards.forEach((award, idx) => {
     const awardItem = document.createElement("div");
     awardItem.classList.add("award-item");
     awardItem.innerHTML = `
-    <img src="/images/AwardImage.png" class="award-image" />
+    <img src=${awardImages[idx]} class="award-image" />
             <div class="award-texts">
             <label for="award-desc">Category</label>
             <input type="text" id="award-desc" value = "${award.award_category}"/>
