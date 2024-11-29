@@ -87,6 +87,29 @@
         max-width: 200px;
         margin-bottom: 20px;
       }
+      .card {
+        position: relative;
+      }
+      .logo-container {
+        position: absolute;
+        top: 15px;
+        left: 15px; /* Positioned at the bottom left */
+        background-color: white; /* Add a white background for contrast */
+        border-radius: 50%;
+        padding: 5px; /* Adds space around the image for a clean look */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        height: 100px; /* Fixed size for the logo */
+        width: 100px; /* Same as height for a perfect circle */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-circle {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%; /* Makes the image circular */
+      }
     </style>
   </head>
   <body>
@@ -163,14 +186,14 @@
               mainContent.innerHTML = html; // Inject the HTML into the main content
               if (section === "overview") {
                 initializeOverview();
-              } else if (section === "timeline") {
-                initializeTimeline();
               } else if (section === "achievements") {
                 initializeAchievements();
               } else if (section === "organizations") {
                 initializeOrganizations();
               } else if (section === "contacts") {
                 initializeContacts();
+              } else if (section === "schedule") {
+                initializeSchedule();
               } else if (section === "about-lpu-c") {
                 initializeLPU();
               }
@@ -264,187 +287,6 @@
               }
             });
         }
-
-        // timeline page javascript functions
-        function initializeTimeline() {
-          const timelineForm = document.getElementById("timeline-form");
-          const timelineEntries = document.getElementById("timeline-entries");
-          const timelineSubmit = document.getElementById("timeline-submit");
-          let entries = {};
-
-          // Fetch timeline entries from the server and render them
-          async function fetchTimeline() {
-            try {
-              const response = await fetch("/api/timeline");
-              const data = await response.json();
-              console.log(data);
-              entries = data; // Store fetched entries
-              renderEntries(); // Render the fetched entries
-            } catch (error) {
-              console.error("Error fetching timeline:", error);
-            }
-          }
-
-          timelineForm.addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            // Get form values
-            const date = document.getElementById("timeline-year").value;
-            const description = document.getElementById(
-              "timeline-description"
-            ).value;
-            let editId = timelineForm.dataset.editId;
-
-            // Check if we're updating or adding an entry
-            const isUpdate =
-              document.getElementById("timeline-submit").textContent ===
-              "Update Entry";
-
-            // Confirmation popup before proceeding
-            const isConfirmed = confirm(
-              "Are you sure you want to submit this entry?"
-            );
-            if (!isConfirmed) return;
-
-            // Disable the submit button and show loading state
-            timelineSubmit.disabled = true;
-            timelineSubmit.textContent = "Loading...";
-
-            const entryData = {
-              date: date,
-              description,
-              episode_id: isUpdate ? editId : null, // Send ID if updating
-            };
-
-            try {
-              // Send the data to the backend (update or insert)
-              const response = await fetch("/api/timeline", {
-                method: isUpdate ? "PUT" : "POST", // Use POST for create and PUT for update
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(entryData), // Send the entry data to the backend
-              });
-
-              const result = await response.json();
-
-              if (response.ok) {
-                if (isUpdate) {
-                  // Update the entry in the entries array
-                  const index = entries.findIndex(
-                    (entry) => entry.episode_id === parseInt(editId, 10)
-                  );
-                  console.log(editId, index);
-                  entries[index] = result; // Update with the new data from the response
-
-                  editId = null;
-                  alert("Entry updated successfully!");
-                } else {
-                  // Add the new entry to the entries array
-                  entries.push(result);
-                  alert("Entry created successfully!");
-                }
-
-                renderEntries();
-                buttonsDisable(false);
-                timelineForm.reset();
-              } else {
-                alert("Error: " + result.error);
-              }
-            } catch (err) {
-              console.error("Error:", err);
-              alert("An error occurred while saving the entry.");
-            } finally {
-              // Re-enable the submit button and reset text
-              timelineSubmit.disabled = false;
-              timelineSubmit.textContent = "Add Entry";
-            }
-          });
-
-          function renderEntries() {
-            timelineEntries.innerHTML = "";
-            entries.forEach((entry) => {
-              const li = document.createElement("li");
-              li.className =
-                "list-group-item d-flex justify-content-between align-items-center";
-              li.innerHTML = `
-                            <div>
-                                <strong>${entry.date}:</strong> ${entry.description}
-                            </div>
-                            <div>
-                                <button class="btn edit-btn btn-outline-primary btn-sm me-2" onclick="editEntry(${entry.episode_id})">Edit</button>
-                                <button class="btn delete-btn btn-outline-danger btn-sm" onclick="deleteEntry(${entry.episode_id})">Delete</button>
-                            </div>
-                        `;
-              timelineEntries.appendChild(li);
-            });
-          }
-
-          function buttonsDisable(condition) {
-            // Disable all buttons with the class 'edit-btn'
-            document.querySelectorAll(".edit-btn").forEach((button) => {
-              button.disabled = condition; // Disable the button
-            });
-
-            // Disable all buttons with the class 'delete-btn'
-            document.querySelectorAll(".delete-btn").forEach((button) => {
-              button.disabled = condition; // Disable the button
-            });
-          }
-
-          window.editEntry = function (id) {
-            const entry = entries.find((e) => e.episode_id === id);
-            if (entry) {
-              document.getElementById("timeline-year").value = entry.date;
-              document.getElementById("timeline-description").value =
-                entry.description;
-              document.getElementById("timeline-submit").textContent =
-                "Update Entry";
-              timelineForm.dataset.editId = id; // Store the ID of the entry being edited
-
-              buttonsDisable(true); // Disable buttons during editing
-            }
-          };
-
-          window.deleteEntry = async function (id) {
-            const isConfirmed = confirm(
-              "Are you sure you want to delete this entry?"
-            );
-            if (!isConfirmed) return;
-
-            const entryData = {
-              episode_id: id, // Send ID if updating
-            };
-
-            try {
-              // Send the data to the backend (update or insert)
-              const response = await fetch("/api/timeline/delete", {
-                method: "POST", // Use POST for create and PUT for update
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(entryData), // Send the entry data to the backend
-              });
-
-              const result = await response.json();
-
-              if (response.ok) {
-                alert("Entry deleted successfully!");
-
-                entries = entries.filter((e) => e.episode_id !== id);
-                renderEntries();
-              } else {
-                alert("Error: " + result.error);
-              }
-            } catch (err) {
-              console.error("Error:", err);
-              alert("An error occurred while deleting the entry.");
-            }
-          };
-
-          fetchTimeline(); // Fetch and render entries on initialization
-        }
-
         // achievements page javascript functions
         function initializeAchievements() {
           const achievementsList = document.getElementById("achievements-list");
@@ -569,42 +411,42 @@
             achievementsList.innerHTML = filteredAchievements
               .map(
                 (achievement, index) => `
-                        <div class="card mb-3 ${
-                          index % 2 === 0 ? "bg-light" : "bg-white"
-                        }">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
-                                        ${
-                                          achievementIcons[
-                                            achievement.achievement_type
-                                          ]
-                                        }
-                                    </div>
-                                    <div class="col-8 col-md-9">
-                                        <h5 class="card-title">${
-                                          achievement.title
-                                        }</h5>
-                                        <p class="card-text">${
-                                          achievement.description
-                                        }</p>
-                                        <span class="badge bg-secondary">${
-                                          achievement.date_achieved
-                                        }</span>
-                                    </div>
-                                    <div class="col-2 col-md-2 d-flex align-items-center justify-content-end">
-                                        <!-- Edit and Delete Icons -->
-                                        <i class="bi bi-pencil-square mx-2 edit-icon" title="Edit" onclick="editAchievement(${
-                                          achievement.achievement_id
-                                        })" style="cursor: pointer;"></i>
-                                        <i class="bi bi-trash-fill delete-icon" title="Delete" onclick="deleteAchievement(${
-                                          achievement.achievement_id
-                                        })" style="cursor: pointer;"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `
+                              <div class="card mb-3 ${
+                                index % 2 === 0 ? "bg-light" : "bg-white"
+                              }">
+                                  <div class="card-body">
+                                      <div class="row">
+                                          <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
+                                              ${
+                                                achievementIcons[
+                                                  achievement.achievement_type
+                                                ]
+                                              }
+                                          </div>
+                                          <div class="col-8 col-md-9">
+                                              <h5 class="card-title">${
+                                                achievement.title
+                                              }</h5>
+                                              <p class="card-text">${
+                                                achievement.description
+                                              }</p>
+                                              <span class="badge bg-secondary">${
+                                                achievement.date_achieved
+                                              }</span>
+                                          </div>
+                                          <div class="col-2 col-md-2 d-flex align-items-center justify-content-end">
+                                              <!-- Edit and Delete Icons -->
+                                              <i class="bi bi-pencil-square mx-2 edit-icon" title="Edit" onclick="editAchievement(${
+                                                achievement.achievement_id
+                                              })" style="cursor: pointer;"></i>
+                                              <i class="bi bi-trash-fill delete-icon" title="Delete" onclick="deleteAchievement(${
+                                                achievement.achievement_id
+                                              })" style="cursor: pointer;"></i>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          `
               )
               .join("");
           }
@@ -768,6 +610,137 @@
         }
 
         // organizations page javascript functions
+        // function initializeOrganizations() {
+        //   const addOrgBtn = document.getElementById("add-org-btn");
+        //   const orgList = document.getElementById("org-list");
+        //   const orgForm = document.getElementById("org-form");
+        //   const orgModal = new bootstrap.Modal(
+        //     document.getElementById("orgModal")
+        //   );
+        //   let organizations = [];
+        //   let currentOrgId = null;
+
+        //   addOrgBtn.addEventListener("click", () => {
+        //     currentOrgId = null;
+        //     orgForm.reset();
+        //     document.getElementById("orgModalLabel").textContent =
+        //       "Add Organization";
+        //     orgForm.querySelector('button[type="submit"]').textContent =
+        //       "Add Organization";
+        //     orgModal.show();
+        //   });
+
+        //   orgForm.addEventListener("submit", function (e) {
+        //     e.preventDefault();
+        //     const name = document.getElementById("org-name").value;
+        //     const role = document.getElementById("org-role").value;
+        //     const description =
+        //       document.getElementById("org-description").value;
+        //     const imageFile = document.getElementById("org-image").files[0];
+
+        //     if (currentOrgId) {
+        //       const index = organizations.findIndex(
+        //         (org) => org.id === currentOrgId
+        //       );
+        //       organizations[index] = {
+        //         ...organizations[index],
+        //         name,
+        //         role,
+        //         description,
+        //       };
+        //       if (imageFile) {
+        //         const reader = new FileReader();
+        //         reader.onload = function (e) {
+        //           organizations[index].imageUrl = e.target.result;
+        //           renderOrganizations();
+        //         };
+        //         reader.readAsDataURL(imageFile);
+        //       } else {
+        //         renderOrganizations();
+        //       }
+        //     } else {
+        //       const newOrg = { id: Date.now(), name, role, description };
+        //       if (imageFile) {
+        //         const reader = new FileReader();
+        //         reader.onload = function (e) {
+        //           newOrg.imageUrl = e.target.result;
+        //           organizations.push(newOrg);
+        //           renderOrganizations();
+        //         };
+        //         reader.readAsDataURL(imageFile);
+        //       } else {
+        //         organizations.push(newOrg);
+        //         renderOrganizations();
+        //       }
+        //     }
+
+        //     orgModal.hide();
+        //   });
+
+        //   function renderOrganizations() {
+        //     orgList.innerHTML = "";
+        //     organizations.forEach((org) => {
+        //       const col = document.createElement("div");
+        //       col.className = "col";
+        //       col.innerHTML = `
+        //                           <div class="card h-100">
+        //                               ${
+        //                                 org.imageUrl
+        //                                   ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">`
+        //                                   : ""
+        //                               }
+        //                               <div class="card-body">
+        //                                   <h5 class="card-title">${
+        //                                     org.name
+        //                                   }</h5>
+        //                                   <h6 class="card-subtitle mb-2 text-muted">${
+        //                                     org.role
+        //                                   }</h6>
+        //                                   <p class="card-text">${
+        //                                     org.description
+        //                                   }</p>
+        //                                   <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${
+        //                                     org.id
+        //                                   }">Edit</button>
+        //                                   <button class="btn btn-outline-danger btn-sm delete-org" data-id="${
+        //                                     org.id
+        //                                   }">Delete</button>
+        //                               </div>
+        //                           </div>
+        //                       `;
+        //       orgList.appendChild(col);
+        //     });
+
+        //     // Add event listeners for edit and delete buttons
+        //     document.querySelectorAll(".edit-org").forEach((btn) => {
+        //       btn.addEventListener("click", function () {
+        //         const orgId = parseInt(this.getAttribute("data-id"));
+        //         const org = organizations.find((o) => o.id === orgId);
+        //         if (org) {
+        //           currentOrgId = org.id;
+        //           document.getElementById("org-name").value = org.name;
+        //           document.getElementById("org-role").value = org.role;
+        //           document.getElementById("org-description").value =
+        //             org.description;
+        //           document.getElementById("orgModalLabel").textContent =
+        //             "Edit Organization";
+        //           orgForm.querySelector('button[type="submit"]').textContent =
+        //             "Update Organization";
+        //           orgModal.show();
+        //         }
+        //       });
+        //     });
+
+        //     document.querySelectorAll(".delete-org").forEach((btn) => {
+        //       btn.addEventListener("click", function () {
+        //         const orgId = parseInt(this.getAttribute("data-id"));
+        //         organizations = organizations.filter((org) => org.id !== orgId);
+        //         renderOrganizations();
+        //       });
+        //     });
+        //   }
+        // }
+
         function initializeOrganizations() {
           const addOrgBtn = document.getElementById("add-org-btn");
           const orgList = document.getElementById("org-list");
@@ -775,9 +748,53 @@
           const orgModal = new bootstrap.Modal(
             document.getElementById("orgModal")
           );
-          let organizations = [];
-          let currentOrgId = null;
+          const orgTypeFilter = document.getElementById("org-type-filter");
 
+          let organizations = []; // Replace this with data fetching logic from your database
+          let currentOrgId = null;
+          let isEditing = false;
+
+          const currentYear = new Date().getFullYear();
+          const startYear = 1950; // Start year for the dropdowns
+          const dateJoinedDropdown = document.getElementById("org-date-joined");
+          const dateActiveDropdown = document.getElementById("org-date-active");
+
+          // Populate year dropdowns
+          for (let year = currentYear; year >= startYear; year--) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            dateJoinedDropdown.appendChild(option);
+
+            const activeOption = option.cloneNode(true);
+            dateActiveDropdown.insertBefore(
+              activeOption,
+              dateActiveDropdown.firstChild
+            );
+          }
+
+          // Ensure "Present" is the first option in Date Active
+          const presentOption = document.createElement("option");
+          presentOption.value = "present";
+          presentOption.textContent = "Present";
+          dateActiveDropdown.insertBefore(
+            presentOption,
+            dateActiveDropdown.firstChild
+          );
+
+          async function fetchOrganizations() {
+            try {
+              const response = await fetch("/api/organizations");
+              const data = await response.json();
+              organizations = data;
+              renderOrganizations();
+            } catch (err) {
+              console.error("Error:", err);
+              alert("An error occurred while fetching organizations.");
+            }
+          }
+
+          // Handle add organization button click
           addOrgBtn.addEventListener("click", () => {
             currentOrgId = null;
             orgForm.reset();
@@ -788,97 +805,271 @@
             orgModal.show();
           });
 
-          orgForm.addEventListener("submit", function (e) {
+          orgForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            const name = document.getElementById("org-name").value;
-            const role = document.getElementById("org-role").value;
-            const description =
-              document.getElementById("org-description").value;
-            const imageFile = document.getElementById("org-image").files[0];
 
+            const name = document.getElementById("org-name").value.trim();
+            const type = document.getElementById("org-type").value.trim();
+            const category = document
+              .getElementById("org-category")
+              .value.trim();
+            const description = document
+              .getElementById("org-description")
+              .value.trim();
+            const position = document
+              .getElementById("org-position")
+              .value.trim();
+            const date_joined =
+              document.getElementById("org-date-joined").value;
+            const date_active =
+              document.getElementById("org-date-active").value;
+
+            const bannerFile = document.getElementById("org-banner").files[0];
+            const logoFile = document.getElementById("org-image").files[0];
+
+            let orgData = {
+              org_name: name,
+              org_type: type,
+              image_id: null,
+              category: category,
+              description: description,
+              banner_id: null,
+              position: position,
+              date_joined: date_joined,
+              date_active: date_active,
+            };
+
+            // Check if editing an existing organization
             if (currentOrgId) {
-              const index = organizations.findIndex(
-                (org) => org.id === currentOrgId
-              );
-              organizations[index] = {
-                ...organizations[index],
-                name,
-                role,
-                description,
-              };
-              if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                  organizations[index].imageUrl = e.target.result;
-                  renderOrganizations();
-                };
-                reader.readAsDataURL(imageFile);
-              } else {
-                renderOrganizations();
+              if (confirm("Are you sure you want to save changes?")) {
+                createOrganization(orgData, bannerFile, logoFile);
               }
             } else {
-              const newOrg = { id: Date.now(), name, role, description };
-              if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                  newOrg.imageUrl = e.target.result;
-                  organizations.push(newOrg);
-                  renderOrganizations();
-                };
-                reader.readAsDataURL(imageFile);
-              } else {
-                organizations.push(newOrg);
-                renderOrganizations();
+              // Create a new organization entry
+              if (confirm("Are you sure you want to save this entry?")) {
+                createOrganization(orgData, bannerFile, logoFile);
               }
             }
 
             orgModal.hide();
           });
 
-          function renderOrganizations() {
-            orgList.innerHTML = "";
-            organizations.forEach((org) => {
-              const col = document.createElement("div");
-              col.className = "col";
-              col.innerHTML = `
-                            <div class="card h-100">
-                                ${
-                                  org.imageUrl
-                                    ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">`
-                                    : ""
-                                }
-                                <div class="card-body">
-                                    <h5 class="card-title">${org.name}</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">${
-                                      org.role
-                                    }</h6>
-                                    <p class="card-text">${org.description}</p>
-                                    <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${
-                                      org.id
-                                    }">Edit</button>
-                                    <button class="btn btn-outline-danger btn-sm delete-org" data-id="${
-                                      org.id
-                                    }">Delete</button>
-                                </div>
-                            </div>
-                        `;
-              orgList.appendChild(col);
-            });
+          // Upload image to the server
+          async function uploadImage(file, namePrefix) {
+            const formData = new FormData();
+            const extension = file.name.split(".").pop(); // Extract file extension
+            const fileName = `${namePrefix}.${extension}`; // Generate file name
 
-            // Add event listeners for edit and delete buttons
+            // Determine the bucket based on the type of image
+            const bucket = namePrefix.includes("banner")
+              ? "assets/orgBannerImages"
+              : "assets/employeeOrgsImages";
+
+            formData.append("file", file);
+            formData.append("bucket", bucket);
+            formData.append("fileName", fileName);
+
+            console.log("Uploading image: ", formData);
+
+            try {
+              const response = await fetch("/api/organizations/image", {
+                method: "POST",
+                body: formData,
+              });
+
+              if (response.ok) {
+                return await response.json(); // Returns { bucket, fileName, url }
+              } else {
+                console.error("Failed to upload image:", response.statusText);
+              }
+            } catch (error) {
+              console.error("Error uploading image:", error);
+            }
+          }
+
+          // Add organization to the database
+          async function createOrganization(data, bannerFile, logoFile) {
+            try {
+              const organizationData = data;
+
+              // Upload the banner if provided
+              if (bannerFile) {
+                const bannerImage = await uploadImage(
+                  bannerFile,
+                  `${data.org_name}_banner`
+                );
+                organizationData.banner_id = bannerImage.image_id;
+              }
+
+              // Upload the logo if provided
+              if (logoFile) {
+                const logoImage = await uploadImage(
+                  logoFile,
+                  `${data.org_name}_logo`
+                );
+                organizationData.image_id = logoImage.image_id;
+              }
+
+              if (currentOrgId != null) {
+                organizationData.organization_id = currentOrgId;
+              }
+
+              // Send the organization data to the backend
+              const response = await fetch("/api/organizations", {
+                method: isEditing ? "PUT" : "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(organizationData),
+              });
+
+              if (response.ok) {
+                const newOrg = await response.json(); // Backend should return the created or updated organization
+
+                if (isEditing) {
+                  // Update the existing entry in the organizations array
+                  const orgIndex = organizations.findIndex(
+                    (org) => org.organization_id === newOrg.organization_id
+                  );
+                  if (orgIndex !== -1) {
+                    organizations[orgIndex] = newOrg;
+                  }
+                } else {
+                  // Add the new organization
+                  organizations.push(newOrg);
+                }
+
+                alert(
+                  `Organization ${
+                    isEditing ? "updated" : "added"
+                  } successfully!`
+                );
+                isEditing = false;
+                renderOrganizations();
+              } else {
+                const errorMessage = await response.text();
+                console.error(
+                  "Error adding/updating organization:",
+                  errorMessage
+                );
+                alert(
+                  `Failed to ${
+                    isEditing ? "update" : "add"
+                  } the organization. Error: ${response.statusText}`
+                );
+              }
+            } catch (error) {
+              console.error(
+                "An error occurred while adding/updating the organization:",
+                error
+              );
+              alert(`An unexpected error occurred: ${error.message}`);
+            }
+          }
+
+          // Render organizations list
+          function renderOrganizations() {
+            const selectedType = orgTypeFilter.value;
+            orgList.innerHTML = "";
+
+            organizations
+              .filter(
+                (org) => selectedType === "all" || org.org_type === selectedType
+              )
+              .forEach((org) => {
+                const col = document.createElement("div");
+                col.className = "col";
+                col.innerHTML = `
+                                      <div class="card h-100 position-relative">
+                                          <!-- Banner Image -->
+                                          <img src="${
+                                            org.banner_url ||
+                                            "/default-image.png"
+                                          }"
+                                              class="card-img-top"
+                                              alt="${org.org_name}"
+                                              style="height: 200px; object-fit: cover;">
+
+                                          <!-- Circular Logo -->
+                                          <div class="logo-container position-absolute">
+                                              <img src="${
+                                                org.logo_url ||
+                                                "/default-logo.png"
+                                              }"
+                                                  alt="${org.org_name} Logo"
+                                                  class="logo-circle">
+                                          </div>
+
+                                          <!-- Card Body -->
+                                          <div class="card-body">
+                                              <h5 class="card-title">${
+                                                org.org_name
+                                              }</h5>
+                                              <h6 class="card-subtitle mb-2 text-muted">${
+                                                org.org_type
+                                              }</h6>
+                                              <p class="card-text description"
+                                              title="${
+                                                org.description || "N/A"
+                                              }">
+                                              ${
+                                                org.description
+                                                  ? org.description.length > 100
+                                                    ? org.description.slice(
+                                                        0,
+                                                        100
+                                                      ) + "..."
+                                                    : org.description
+                                                  : "N/A"
+                                              }
+                                              </p>
+                                              <p class="card-text">Position: ${
+                                                org.position || "N/A"
+                                              }</p>
+                                              <p class="card-text">Category: ${
+                                                org.category || "N/A"
+                                              }</p>
+                                              <p class="card-text">Date: ${
+                                                org.date_joined || "N/A"
+                                              } - ${
+                  org.date_active || "Present"
+                }</p>
+
+                                              <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${
+                                                org.organization_id
+                                              }">Edit</button>
+                                              <button class="btn btn-outline-danger btn-sm delete-org" data-id="${
+                                                org.organization_id
+                                              }">Delete</button>
+                                          </div>
+                                      </div>
+                                  `;
+                orgList.appendChild(col);
+              });
+
+            // Event listeners for edit and delete buttons
             document.querySelectorAll(".edit-org").forEach((btn) => {
               btn.addEventListener("click", function () {
                 const orgId = parseInt(this.getAttribute("data-id"));
-                const org = organizations.find((o) => o.id === orgId);
+                const org = organizations.find(
+                  (o) => o.organization_id === orgId
+                );
                 if (org) {
-                  currentOrgId = org.id;
-                  document.getElementById("org-name").value = org.name;
-                  document.getElementById("org-role").value = org.role;
+                  isEditing = true;
+                  currentOrgId = org.organization_id;
+                  document.getElementById("org-name").value = org.org_name;
+                  document.getElementById("org-type").value = org.org_type;
                   document.getElementById("org-description").value =
                     org.description;
+                  document.getElementById("org-position").value = org.position;
+                  document.getElementById("org-category").value = org.category;
+                  document.getElementById("org-date-joined").value =
+                    org.date_joined;
+                  document.getElementById("org-date-active").value =
+                    org.date_active;
+                  document.getElementById("org-banner").value = "";
+                  document.getElementById("org-image").value = "";
                   document.getElementById("orgModalLabel").textContent =
                     "Edit Organization";
-                  orgForm.querySelector('button[type="submit"]').textContent =
+                  document.getElementById("submit-btn").textContent =
                     "Update Organization";
                   orgModal.show();
                 }
@@ -886,48 +1077,87 @@
             });
 
             document.querySelectorAll(".delete-org").forEach((btn) => {
-              btn.addEventListener("click", function () {
+              btn.addEventListener("click", async function () {
                 const orgId = parseInt(this.getAttribute("data-id"));
-                organizations = organizations.filter((org) => org.id !== orgId);
+
+                const isConfirmed = confirm(
+                  "Are you sure you want to delete this organization?"
+                );
+                if (!isConfirmed) return;
+
+                const entryData = {
+                  organization_id: orgId,
+                };
+
+                try {
+                  const response = await fetch(`/api/organization/delete`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(entryData), // Send the entry data to the backend
+                  });
+
+                  if (response.ok) {
+                    alert("Organization deleted successfully!");
+                    organizations = organizations.filter(
+                      (org) => org.organization_id !== orgId
+                    ); // Remove the deleted organization from the list
+                    renderOrganizations(); // Re-render the updated achievements list
+                  } else {
+                    const error = await response.json();
+                    alert("Error: " + error.message);
+                  }
+                } catch (error) {
+                  console.error("Error deleting organization:", error);
+                  alert(
+                    "An error occurred while trying to delete the organization."
+                  );
+                }
+
+                organizations = organizations.filter(
+                  (org) => org.organization_id !== orgId
+                );
                 renderOrganizations();
               });
             });
           }
-        }
 
+          // Event listener for the filter dropdown
+          orgTypeFilter.addEventListener("change", renderOrganizations);
+          fetchOrganizations();
+        }
         // contacts page javascript functions
+        // function initializeContacts() {
+        //   const editToggle = document.getElementById("edit-toggle");
+        //   const contactForm = document.getElementById("contact-form");
+        //   const contactName = document.getElementById("contact-name");
+        //   const contactTitle = document.getElementById("contact-title");
+        //   const consultationHours =
+        //     document.getElementById("consultation-hours");
+        //   const socialMediaList = document.getElementById("social-media-list");
+        //   const addSocialMediaBtn = document.getElementById("add-social-media");
+        //   // organizations page javascript functions
+
+        //   // contacts page javascript functions
+
+        //   // schedule page javascript functions
+        // }
+
         function initializeContacts() {
           const editToggle = document.getElementById("edit-toggle");
           const contactForm = document.getElementById("contact-form");
           const contactName = document.getElementById("contact-name");
           const contactTitle = document.getElementById("contact-title");
-          const consultationHours =
-            document.getElementById("consultation-hours");
+
           const socialMediaList = document.getElementById("social-media-list");
           const addSocialMediaBtn = document.getElementById("add-social-media");
 
           let editMode = false;
 
-          const daysOfWeek = [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-          ];
-
           let contactInfo = {
             name: "",
             title: "",
-
-            // Default consultation hours if no schedule is retrieved
-            consultationHours: daysOfWeek.map((day) => ({
-              day,
-              available: false, // Default to not available
-              startTime: "09:00", // Default start time
-              endTime: "17:00", // Default end time
-            })),
           };
 
           async function fetchContacts() {
@@ -938,7 +1168,6 @@
               console.log(data);
 
               const contacts = data.contacts;
-              const schedule = data.schedule;
 
               contactInfo.contactId = contacts.contact_id;
 
@@ -957,22 +1186,7 @@
                 { platform: "linkedin", url: contacts.linkedin_url || "" },
               ];
 
-              // Update consultation hours based on fetched schedule data or keep defaults
-              schedule.forEach((entry) => {
-                const dayIndex = daysOfWeek.indexOf(entry.day); // Find the index of the day in daysOfWeek
-                if (dayIndex !== -1) {
-                  contactInfo.consultationHours[dayIndex] = {
-                    schedule_id: entry.schedule_id,
-                    day: entry.day,
-                    available: entry.available, // Set available if there's a schedule for this day
-                    startTime: entry.start_time,
-                    endTime: entry.end_time,
-                  };
-                }
-              });
-
               renderContactInfo();
-              renderConsultationHours();
               renderSocialMedia();
 
               console.log("Updated contact info:", contactInfo);
@@ -998,76 +1212,30 @@
             document.getElementById("email").value = contactInfo.email;
           }
 
-          function renderConsultationHours() {
-            consultationHours.innerHTML = contactInfo.consultationHours
-              .map(
-                (hour, index) => `
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="available-${
-                                      hour.day
-                                    }"
-                                        ${hour.available ? "checked" : ""} ${
-                  !editMode ? "disabled" : ""
-                }
-                                        data-index="${index}" data-field="available">
-                                    <label class="form-check-label" for="available-${
-                                      hour.day
-                                    }">${hour.day}</label>
-                                </div>
-                            </div>
-                            <div class="col-9">
-                                <div class="input-group">
-                                    <input type="time" class="form-control" value="${
-                                      hour.startTime
-                                    }"
-                                        data-index="${index}" data-field="startTime"
-                                        ${
-                                          !editMode || !hour.available
-                                            ? "disabled"
-                                            : ""
-                                        }>
-                                    <span class="input-group-text">to</span>
-                                    <input type="time" class="form-control" value="${
-                                      hour.endTime
-                                    }"
-                                        data-index="${index}" data-field="endTime"
-                                        ${
-                                          !editMode || !hour.available
-                                            ? "disabled"
-                                            : ""
-                                        }>
-                                </div>
-                            </div>
-                        </div>
-                    `
-              )
-              .join("");
-          }
-
           function renderSocialMedia() {
             socialMediaList.innerHTML = contactInfo.socialMedia
               .map(
                 (social, index) => `
-                        <li class="list-group-item d-flex align-items-center">
-                            <div class="me-2">${
-                              socialMediaIcons[social.platform]
-                            }</div>
-                            <span class="me-2" style="width: 150px;">
-                                ${
-                                  social.platform.charAt(0).toUpperCase() +
-                                  social.platform.slice(1)
-                                }
-                            </span>
-                            <input type="url" class="form-control" placeholder="Enter your ${
-                              social.platform.charAt(0).toUpperCase() +
-                              social.platform.slice(1)
-                            } url" value="${
+                              <li class="list-group-item d-flex align-items-center">
+                                  <div class="me-2">${
+                                    socialMediaIcons[social.platform]
+                                  }</div>
+                                  <span class="me-2" style="width: 150px;">
+                                      ${
+                                        social.platform
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                        social.platform.slice(1)
+                                      }
+                                  </span>
+                                  <input type="url" class="form-control" placeholder="Enter your ${
+                                    social.platform.charAt(0).toUpperCase() +
+                                    social.platform.slice(1)
+                                  } url" value="${
                   social.url
                 }" data-index="${index}" ${!editMode ? "disabled" : ""}>
-                        </li>
-                    `
+                              </li>
+                          `
               )
               .join("");
             //${editMode ? `
@@ -1105,7 +1273,6 @@
             }
 
             editToggle.disabled = false; // Re-enable the button after save is complete
-            renderConsultationHours();
             renderSocialMedia();
           }
 
@@ -1130,29 +1297,9 @@
                 )?.url || "",
             };
 
-            // Collect the updated schedule
-            const updatedSchedule = contactInfo.consultationHours.map(
-              (hour) => {
-                // Create an object without schedule_id initially
-                const scheduleEntry = {
-                  day: hour.day,
-                  available: hour.available,
-                  start_time: hour.startTime,
-                  end_time: hour.endTime,
-                };
-
-                // Conditionally add schedule_id only if it exists
-                if (hour.schedule_id) {
-                  scheduleEntry.schedule_id = hour.schedule_id;
-                }
-
-                return scheduleEntry;
-              }
-            );
-
             let errors = {};
 
-            console.log("New contact info: " + JSON.stringify(updatedSchedule));
+            // console.log("New contact info: " + JSON.stringify(updatedSchedule));
 
             try {
               // Send the updated data to the backend
@@ -1172,23 +1319,6 @@
               const updatedContacts = await contactResponse.json();
               console.log("Contact information saved:", updatedContacts);
 
-              // Send the updated data to the backend
-              const scheduleResponse = await fetch("/api/contacts/schedule", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedSchedule),
-              });
-
-              if (!scheduleResponse.ok) {
-                throw new Error("Failed to save schedule");
-                errors.schedule = "Failed to save schedule";
-              }
-
-              const successSchedule = await scheduleResponse.json();
-              console.log("Contact information saved:", successSchedule);
-
               alert("Contact information saved successfully!");
             } catch (error) {
               console.error("Error saving contact information:", error);
@@ -1201,19 +1331,6 @@
           contactForm.addEventListener("change", function (e) {
             if (e.target.matches("#phone, #landline, #email")) {
               contactInfo[e.target.name] = e.target.value;
-            }
-          });
-
-          consultationHours.addEventListener("change", function (e) {
-            if (e.target.matches('input[type="checkbox"]')) {
-              const index = parseInt(e.target.dataset.index);
-              const available = e.target.checked;
-              contactInfo.consultationHours[index].available = available;
-              renderConsultationHours();
-            } else if (e.target.matches('input[type="time"]')) {
-              const index = parseInt(e.target.dataset.index);
-              const field = e.target.dataset.field;
-              contactInfo.consultationHours[index][field] = e.target.value;
             }
           });
 
@@ -1241,6 +1358,448 @@
           fetchContacts();
         }
 
+        function initializeSchedule() {
+          const consultationHours =
+            document.getElementById("consultation-hours");
+          const editConsultationHours = document.getElementById(
+            "editConsultationHours"
+          );
+          const consultationTypes =
+            document.getElementById("consultation-types");
+          const editConsultationTypes = document.getElementById(
+            "editConsultationTypes"
+          );
+
+          const daysOfWeek = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ];
+
+          let editMode = false;
+
+          let schedule = {
+            consultationHours: daysOfWeek.map((day) => ({
+              day,
+              available: false,
+              start_time: "09:00",
+              end_time: "17:00",
+              location: "",
+            })),
+            consultationTypes: [
+              {
+                consultation: "In-Person",
+                description: "Consultation at the office",
+              },
+              {
+                consultation: "Online",
+                description: "Consultation via video call",
+              },
+              {
+                consultation: "Phone",
+                description: "Consultation via phone call",
+              },
+            ],
+          };
+
+          async function fetchSchedule() {
+            renderDefaultConsultationHours();
+            try {
+              const response = await fetch("/api/schedule");
+              const data = await response.json();
+
+              const { consultationHours, consultationTypes } = data;
+
+              console.log(data);
+
+              consultationHours.forEach((entry) => {
+                const dayIndex = daysOfWeek.indexOf(entry.day); // Find the index of the day in daysOfWeek
+                if (dayIndex !== -1) {
+                  schedule.consultationHours[dayIndex] = {
+                    schedule_id: entry.schedule_id,
+                    day: entry.day,
+                    available: entry.available,
+                    start_time: entry.start_time,
+                    end_time: entry.end_time,
+                    location: entry.location || "",
+                  };
+                }
+              });
+
+              schedule.consultationTypes = consultationTypes.map((type) => ({
+                contype_id: type.contype_id,
+                consultation: type.consultation,
+                description: type.description,
+              }));
+
+              console.log(schedule.consultationTypes);
+
+              if (consultationHours) {
+                populateConsultationHours(schedule.consultationHours);
+              }
+              if (consultationTypes) {
+                populateConsultationTypes(schedule.consultationTypes);
+              }
+
+              // Update Consultation Types
+              consultationTypes.forEach((type, index) => {
+                const typeNameInput = document.getElementById(
+                  `type-${index}-name`
+                );
+                const typeDescriptionInput = document.getElementById(
+                  `type-${index}-description`
+                );
+                if (typeNameInput && typeDescriptionInput) {
+                  typeNameInput.value = type.type_name;
+                  typeDescriptionInput.value = type.type_description;
+                }
+              });
+            } catch (error) {
+              console.error("Error fetching schedule:", error);
+            }
+          }
+
+          function renderDefaultConsultationHours() {
+            consultationHours.innerHTML = schedule.consultationHours
+              .map(
+                (hour, index) => `
+              <div class="row mb-2 align-items-center">
+                  <div class="col-3">
+                      <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="available-${
+                            hour.day
+                          }"
+                              ${hour.available ? "checked" : ""} ${
+                  !editMode ? "disabled" : ""
+                }
+                              data-index="${index}" data-field="available">
+                          <label class="form-check-label" for="available-${
+                            hour.day
+                          }">${hour.day}</label>
+                      </div>
+                  </div>
+                  <div class="col-4">
+                      <div class="input-group">
+                          <input type="time" class="form-control" value="${
+                            hour.start_time
+                          }"
+                              data-index="${index}" data-field="start_time"
+                              ${!editMode || !hour.available ? "disabled" : ""}>
+                          <span class="input-group-text">to</span>
+                          <input type="time" class="form-control" value="${
+                            hour.end_time
+                          }"
+                              data-index="${index}" data-field="end_time"
+                              ${!editMode || !hour.available ? "disabled" : ""}>
+                      </div>
+                  </div>
+                  <div class="col-5">
+                      <div class="d-flex align-items-center">
+                          <label class="form-check-label me-2" for="location-${
+                            hour.day
+                          }">Location:</label>
+                          <input type="text" class="form-control" placeholder="No location set" id="location-${
+                            hour.day
+                          }" value="${hour.location}"
+                              data-index="${index}" data-field="location"
+                              ${!editMode ? "disabled" : ""}>
+                      </div>
+                  </div>
+              </div>
+          `
+              )
+              .join("");
+          }
+
+          function populateConsultationHours(data) {
+            data.forEach((hour, index) => {
+              const availableInput = document.querySelector(
+                `#available-${hour.day}`
+              );
+              const startTimeInput = document.querySelector(
+                `input[data-index="${index}"][data-field="start_time"]`
+              );
+              const endTimeInput = document.querySelector(
+                `input[data-index="${index}"][data-field="end_time"]`
+              );
+              const locationInput = document.querySelector(
+                `input[data-index="${index}"][data-field="location"]`
+              );
+
+              if (availableInput) {
+                availableInput.checked = hour.available;
+              }
+              if (startTimeInput) {
+                startTimeInput.value = hour.start_time;
+              }
+              if (endTimeInput) {
+                endTimeInput.value = hour.end_time;
+              }
+              if (locationInput) {
+                locationInput.value = hour.location || "";
+              }
+            });
+          }
+
+          function populateConsultationTypes(data) {
+            // Iterate through the consultation types data
+            data.forEach((type, index) => {
+              // Select the name and description input fields for each consultation type
+              const nameInput = document.querySelector(
+                `#type-${index}-consultation`
+              );
+              const descriptionInput = document.querySelector(
+                `#type-${index}-description`
+              );
+
+              // Populate the input fields with the corresponding data values
+              if (nameInput) {
+                nameInput.value = type.consultation || ""; // Default to empty string if no value is present
+              }
+              if (descriptionInput) {
+                descriptionInput.value = type.description || ""; // Default to empty string if no value is present
+              }
+            });
+          }
+
+          editConsultationTypes.addEventListener("click", async () => {
+            editMode = !editMode;
+
+            editConsultationTypes.textContent = editMode ? "Save" : "Edit";
+
+            document
+              .querySelectorAll("#consultation-types input")
+              .forEach((input) => {
+                input.disabled = !editMode;
+              });
+
+            if (!editMode) {
+              if (!confirm("Are you sure you want to save changes?")) return;
+
+              editConsultationTypes.textContent = "Updating...";
+              editConsultationTypes.disabled = true;
+
+              try {
+                await updateTypes();
+                editConsultationTypes.textContent = "Edit"; // Revert button text to "Edit" after successful save
+              } catch (error) {
+                console.error("Failed to save contact info:", error);
+                alert("An error occurred while saving. Please try again.");
+                editConsultationTypes.textContent = "Save"; // Keep "Save" text in case of error, to retry
+              }
+            }
+
+            editConsultationTypes.disabled = false; // Re-enable the button after save is complete
+          });
+
+          editConsultationHours.addEventListener("click", async () => {
+            editMode = !editMode;
+
+            editConsultationHours.textContent = editMode ? "Save" : "Edit";
+
+            document
+              .querySelectorAll("#consultation-hours .form-check-input")
+              .forEach((checkbox) => {
+                const index = checkbox.dataset.index;
+
+                // Find associated inputs
+                const startTimeInput = document.querySelector(
+                  `input[data-index="${index}"][data-field="start_time"]`
+                );
+                const endTimeInput = document.querySelector(
+                  `input[data-index="${index}"][data-field="end_time"]`
+                );
+                const locationInput = document.querySelector(
+                  `input[data-index="${index}"][data-field="location"]`
+                );
+
+                // Enable/disable fields based on edit mode and checkbox state
+                const enableFields = editMode && checkbox.checked;
+                checkbox.disabled = !editMode; // Checkboxes are editable only in edit mode
+                startTimeInput.disabled = !enableFields;
+                endTimeInput.disabled = !enableFields;
+                locationInput.disabled = !enableFields;
+
+                // Update fields dynamically when checkbox is toggled
+                checkbox.addEventListener("change", () => {
+                  const isChecked = checkbox.checked;
+                  startTimeInput.disabled = !isChecked;
+                  endTimeInput.disabled = !isChecked;
+                  locationInput.disabled = !isChecked;
+                });
+              });
+
+            if (!editMode) {
+              if (!confirm("Are you sure you want to save changes?")) {
+                return;
+              }
+
+              editConsultationHours.textContent = "Updating...";
+              editConsultationHours.disabled = true;
+
+              try {
+                await updateSchedule();
+                editConsultationHours.textContent = "Edit"; // Revert button text to "Edit" after successful save
+              } catch (error) {
+                console.error("Failed to save consultation hours:", error);
+                alert("An error occurred while saving. Please try again.");
+                editConsultationHours.textContent = "Save"; // Keep "Save" text in case of error, to retry
+              }
+            }
+
+            editConsultationHours.disabled = false; // Re-enable the button after save is complete
+          });
+
+          consultationHours.addEventListener("change", function (e) {
+            const target = e.target;
+
+            if (target.matches('input[type="checkbox"]')) {
+              const index = parseInt(target.dataset.index);
+              const available = target.checked;
+
+              // Update the availability in the schedule object
+              schedule.consultationHours[index].available = available;
+
+              // Enable or disable related inputs dynamically
+              const row = target.closest(".row");
+              row
+                .querySelectorAll(
+                  'input[type="time"], input[data-field="location"]'
+                )
+                .forEach((input) => {
+                  input.disabled = !available;
+                });
+            } else if (target.matches('input[type="time"]')) {
+              const index = parseInt(target.dataset.index);
+              const field = target.dataset.field;
+
+              // Update the start_time or end_time in the schedule object
+              schedule.consultationHours[index][field] = target.value;
+            } else if (target.matches('input[data-field="location"]')) {
+              const index = parseInt(target.dataset.index);
+
+              // Update the location in the schedule object
+              schedule.consultationHours[index].location = target.value;
+            }
+          });
+
+          consultationTypes.addEventListener("change", function (e) {
+            const target = e.target;
+
+            // Determine which field was changed (name or description)
+            if (
+              target.matches(
+                'input[id^="type-"][id$="-consultation"], input[id^="type-"][id$="-description"]'
+              )
+            ) {
+              const index = parseInt(target.id.split("-")[1]); // Extract the index from the input ID
+              const field = target.id.split("-")[2]; // Determine the field (name or description)
+
+              // Update the corresponding consultation type data
+              if (!schedule.consultationTypes[index]) {
+                schedule.consultationTypes[index] = {}; // Ensure the slot exists if it's empty
+              }
+              schedule.consultationTypes[index][field] = target.value;
+
+              // Enable or disable the inputs based on the data in schedule.consultationTypes
+              const nameInput = document.querySelector(
+                `#type-${index}-consultation`
+              );
+              const descriptionInput = document.querySelector(
+                `#type-${index}-description`
+              );
+
+              // Enable fields if there is a name or description in the corresponding slot
+              const hasData =
+                schedule.consultationTypes[index].consultation ||
+                schedule.consultationTypes[index].description;
+              nameInput.disabled = !hasData;
+              descriptionInput.disabled = !hasData;
+            }
+          });
+
+          async function updateSchedule() {
+            // Collect the updated schedule
+            const updatedSchedule = schedule.consultationHours.map((hour) => {
+              // Create an object without schedule_id initially
+              const scheduleEntry = {
+                day: hour.day,
+                available: hour.available,
+                start_time: hour.start_time,
+                end_time: hour.end_time,
+                location: hour.location || null,
+              };
+
+              // Conditionally add schedule_id only if it exists
+              if (hour.schedule_id) {
+                scheduleEntry.schedule_id = hour.schedule_id;
+              }
+
+              return scheduleEntry;
+            });
+
+            console.log(updatedSchedule);
+
+            // Send the updated data to the backend
+            const scheduleResponse = await fetch("/api/schedule/hours", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedSchedule),
+            });
+
+            if (!scheduleResponse.ok) {
+              throw new Error("Failed to save schedule");
+            }
+
+            const successSchedule = await scheduleResponse.json();
+            console.log("Consultation hours saved:", successSchedule);
+            alert("Consultation hours saved");
+          }
+
+          async function updateTypes() {
+            // Collect the updated schedule
+            const updatedTypes = schedule.consultationTypes.map((type) => {
+              // Create an object without schedule_id initially
+              const typeEntry = {
+                consultation: type.consultation,
+                description: type.description,
+              };
+
+              // Conditionally add schedule_id only if it exists
+              if (type.contype_id) {
+                typeEntry.contype_id = type.contype_id;
+              }
+
+              return typeEntry;
+            });
+
+            console.log(updatedTypes);
+
+            // Send the updated data to the backend
+            const typeResponse = await fetch("/api/schedule/types", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedTypes),
+            });
+
+            if (!typeResponse.ok) {
+              throw new Error("Failed to save consultation types");
+            }
+
+            const successTypes = await typeResponse.json();
+            console.log("Consultation types saved:", successTypes);
+            alert("Consultation types saved");
+          }
+
+          fetchSchedule();
+        }
         function initializeLPU() {
           const uploadInput = document.getElementById("upload");
           const canvas = document.getElementById("histoEqCanvas");
@@ -1432,7 +1991,6 @@
             return new ImageData(equalizedData, width, height);
           }
         }
-
         initializeOverview();
       });
     </script>
