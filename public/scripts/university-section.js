@@ -106,7 +106,7 @@ async function fetchAwards() {
     for (const id of awardImageIds) {
       const awardImageResponse = await fetch(`/lpu/1/award/image/${id}`);
       const imageData = await awardImageResponse.json();
-      awardImages.push(imageData.data[0].signedURL); // Collect all fetched images
+      awardImages.push(imageData.data.image_url); // Collect all fetched images
     }
     console.log(awardImages);
 

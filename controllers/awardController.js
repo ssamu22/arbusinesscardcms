@@ -20,7 +20,7 @@ exports.getAwards = async (req, res) => {
 };
 
 exports.getAwardImage = async (req, res) => {
-  const image = await Image.getImage(req.params.imageId);
+  const image = await Image.getImageById(req.params.imageId);
   if (!image) {
     return res.status(404).json({
       status: "fail",
