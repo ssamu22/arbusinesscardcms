@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //     e.preventDefault();
   //     console.log('Dashboard clicked');
   // });
+  showSection(membersSection);
 
   membersLink.addEventListener("click", function (e) {
     e.preventDefault();
@@ -166,8 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-
-
 });
 
 const departments = [
