@@ -57,3 +57,16 @@ exports.addAward = async (req, res) => {
     data: awards,
   });
 };
+
+exports.editAward = async (req, res) => {
+  updatedAward = await Award.editAward(
+    req.params.awardid,
+    req.body.awardTitle,
+    req.body.awardCategory
+  );
+  res.status(200).json({
+    status: "success",
+    message: "successfully edited lpu awards!",
+    data: updatedAward,
+  });
+};

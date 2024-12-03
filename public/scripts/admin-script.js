@@ -372,6 +372,8 @@ function handleFileSelect(event) {
   console.log(blob);
   reader.readAsDataURL(file);
 }
+
+
 function dataURLToBlob(dataURL) {
   const [header, base64] = dataURL.split(",");
   const binary = atob(base64);
@@ -441,10 +443,9 @@ function histogramEqualization(imageData, blendRatio = 1) {
   // Apply equalization
   for (let i = 0; i < data.length; i += 4) {
     const intensity = data[i];
-    equalizedData[i] =
-      equalizedData[i + 1] =
-      equalizedData[i + 2] =
-        Math.round(blendRatio * cdf[intensity] + (1 - blendRatio) * intensity);
+    equalizedData[i] = equalizedData[i + 1] = equalizedData[i + 2] = Math.round(
+      blendRatio * cdf[intensity] + (1 - blendRatio) * intensity
+    );
     equalizedData[i + 3] = data[i + 3]; // Alpha channel
   }
 
