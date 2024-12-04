@@ -57,3 +57,53 @@ exports.addAward = async (req, res) => {
     data: awards,
   });
 };
+
+exports.editAward = async (req, res) => {
+  updatedAward = await Award.editAward(
+    req.params.awardid,
+    req.body.awardTitle,
+    req.body.awardCategory
+  );
+  res.status(200).json({
+    status: "success",
+    message: "successfully edited lpu awards!",
+    data: updatedAward,
+  });
+};
+
+exports.uploadAwardImage = async (req, res) => {
+  try {
+    console.log("Request Body: ", req.body);
+    console.log("Uploaded File: ", req.file); // Provided by multer middleware
+    const { bucket, fileName } = req.body;
+
+    if (!req.file || !bucket || !fileName) {
+      return res.status(400).json({
+        error: "Missing required parameters (file, bucket, fileName).",
+      });
+    }
+
+    console.log(req.file);
+    // Use the Image model to handle upload and creation
+    const uploadedImage = await Image.uploadImage(
+      req.file,
+      bucket,
+      req.file.originalname
+    );
+    const theImage = await Image.getImageById(uploadedImage.image_id);
+    const newAwardData = await Award.changeAwardImgId(
+      req.params.awardid,
+      uploadedImage.image_id
+    );
+
+    console.log(theImage);
+    res.status(200).json({
+      status: "success",
+      awardId: req.params.awardid,
+      data: theImage,
+    });
+  } catch (error) {
+    console.error("Error in uploadImage:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
