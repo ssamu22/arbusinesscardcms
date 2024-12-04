@@ -17,6 +17,24 @@ class Award {
     return data;
   }
 
+  static async addAward(awTitle, awCategory, imgId) {
+    const { data, error } = await supabase
+      .from("award") // Specify the table name
+      .insert([
+        {
+          award_title: awTitle, // Column name: title
+          award_category: awCategory, // Column name: category
+          image_id: imgId, // Column name: image_id
+        },
+      ]);
+
+    if (error) {
+      console.error(`Error `);
+    }
+
+    return { success: true, data };
+  }
+
   static async editAward(award_id, awTitle, awCategory) {
     if (!award_id || !awTitle || !awCategory) {
       console.error(

@@ -27,11 +27,216 @@ const uploadCanvas = document.querySelector(".upload-canvas");
 const closeUploadBtn = document.getElementById("close-upload-div");
 const uploadAwardImg = document.getElementById("file-awardupload");
 const submitAwardImgBtn = document.getElementById("submit-award-img");
+const addAwardBtn = document.getElementById("add-award-btn");
+const addAwardOverlay = document.querySelector(".add-award-overlay");
+const closeAddAwardBtn = document.getElementById("close-add-div");
+const addCategoryInput = document.getElementById("new-cat-input");
+const addTitleInput = document.getElementById("new-title-input");
+const addFileInput = document.getElementById("file-add-award");
+const newAwardCanvas = document.querySelector(".add-award-canvas");
+const submitNewAwardbtn = document.getElementById("submit-add-award");
 let editImageAwardId = "";
 const awardBucket = "assets/awardImages";
 let awardFile = null;
 let awardFilename = "";
 
+addFileInput.addEventListener("change", (event) => {
+  awardFile = event.target.files[0]; // Get the uploaded file
+  awardFilename = `award_${Date.now()}_${awardFile.name}`;
+
+  if (awardFile) {
+    submitAwardImgBtn.disabled = false;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+
+      img.onload = function () {
+        // Set canvas size to match the image size
+        newAwardCanvas.width = img.naturalWidth;
+        newAwardCanvas.height = img.naturalHeight;
+
+        const ctx = newAwardCanvas.getContext("2d");
+
+        // Disable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        // Clear canvas before drawing new image
+        ctx.clearRect(0, 0, newAwardCanvas.width, newAwardCanvas.height);
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, newAwardCanvas.width, newAwardCanvas.height);
+      };
+
+      img.src = e.target.result; // Set the image source to the file's data URL
+    };
+
+    reader.readAsDataURL(awardFile); // Read the file as a data URL
+  }
+});
+
+addAwardBtn.addEventListener("click", (ev) => {
+  addAwardOverlay.style.display = "flex";
+});
+
+closeAddAwardBtn.addEventListener("click", (ev) => {
+  addAwardOverlay.style.display = "none";
+  addCategoryInput.value = "";
+  addTitleInput.value = "";
+  addFileInput.value = "";
+  const ctx = newAwardCanvas.getContext("2d");
+  ctx.clearRect(0, 0, newAwardCanvas.width, newAwardCanvas.height);
+  awardFile = null;
+  awardFilename = "";
+});
+
+submitNewAwardbtn.addEventListener("click", () => {
+  // Get the values from the inputs
+  const title = addTitleInput.value.trim(); // Trim to remove any extra spaces
+  const category = addCategoryInput.value.trim();
+  const file = awardFile;
+  console.log("DUD");
+  // Check if any of the inputs are empty or null
+  if (!title) {
+    alert("Please enter a title for the award.");
+    return;
+  }
+
+  if (!category) {
+    alert("Please select a category for the award.");
+    return;
+  }
+
+  if (!file) {
+    alert("Please upload an image file.");
+    return;
+  }
+
+  // If all fields are valid, create FormData and call addNewAward
+  const newAwardData = new FormData();
+  newAwardData.append("title", title);
+  newAwardData.append("category", category);
+  newAwardData.append("bucket", "assets/awardImages"); // Assuming bucket path is static
+  newAwardData.append("image", file);
+
+  // Call the function to add the new award
+  addNewAward(newAwardData);
+});
+
+async function addNewAward(formData) {
+  try {
+    const response = await fetch(`/lpu/1/awards/add`, {
+      method: "POST", // or PUT if you need to update
+      body: formData,
+    });
+    if (response.ok) {
+      const result = await response.json(); // Assuming the response is JSON
+      console.log("Success:", result);
+      alert("New award successfully registered!");
+      console.log(result);
+      createNewAward(
+        result.award_data.data[0].award_id,
+        result.award_data.data[0].award_category,
+        result.award_data.data[0].award_title,
+        result.image_data.image_url
+      );
+    } else {
+      console.error("Error:", response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+
+function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
+  const awardItem = document.createElement("div");
+  awardItem.classList.add("award-item");
+  awardItem.innerHTML = `
+    
+<div class="award-image-div" id = "award-div-${awardid}" style="background-image: url('${imgUrl}')">
+  <button type = "button" id = "edit-img-${awardid}" class = "edit-award-img">Upload</button>
+</div>
+
+    <div class="award-texts">
+      <label for="award-desc-${awardid}">Category</label>
+      <input type="text" id="award-desc-${awardid}" class="award-cat" value="${awardCategory}" disabled/>
+      
+      <label for="award-title-${awardid}">Title</label>
+      <input type="text" id="award-title-${awardid}" class="award-tit" value="${awardTit}" disabled/>
+    </div>
+
+    <button type="button" id="ach-edit-${awardid}" class="ach-edit-btn">Edit</button>
+    <button type="button" id="ach-submit-${awardid}" class="ach-submit-btn" style="display: none;">Submit</button>
+  `;
+
+  awardContainer.appendChild(awardItem);
+  // Selecting the buttons inside this specific awardItem
+
+  const imageEditBtn = awardItem.querySelector(`#edit-img-${awardid}`);
+  imageEditBtn.addEventListener("click", (ev) => {
+    editImageOverlay.style.display = "flex";
+    editImageAwardId = awardid;
+    editImageUrl = awardImages[idx];
+  });
+
+  const awardImgDiv = awardItem.querySelector(`#award-div-${awardid}`);
+  awardImgDiv.addEventListener("mouseover", (ev) => {
+    imageEditBtn.style.display = "inline";
+  });
+  awardImgDiv.addEventListener("mouseleave", (ev) => {
+    imageEditBtn.style.display = "none";
+  });
+
+  const awardEditBtn = awardItem.querySelector(`#ach-edit-${awardid}`);
+  const awardSubmitBtn = awardItem.querySelector(`#ach-submit-${awardid}`);
+  const awardCat = awardItem.querySelector(`.award-cat`);
+  const awardTitle = awardItem.querySelector(`.award-tit`);
+
+  // Edit Button Logic
+  awardEditBtn.addEventListener("click", () => {
+    const isCancelMode = awardEditBtn.classList.contains("cancel-btn");
+
+    if (isCancelMode) {
+      // Revert to Edit mode (cancel)
+      awardEditBtn.textContent = "Edit";
+      awardSubmitBtn.style.display = "none";
+      awardEditBtn.classList.remove("cancel-btn");
+      awardCat.disabled = true;
+      awardTitle.disabled = true;
+    } else {
+      // Enter Edit mode
+      awardEditBtn.textContent = "Cancel";
+      awardSubmitBtn.style.display = "inline";
+      awardEditBtn.classList.add("cancel-btn");
+      awardCat.disabled = false;
+      awardTitle.disabled = false;
+    }
+  });
+
+  // Submit Button Logic
+  awardSubmitBtn.addEventListener("click", () => {
+    console.log("Submit clicked for award:", awardid);
+
+    const requestBody = {
+      awardTitle: awardTitle.value,
+      awardCategory: awardCat.value,
+    };
+
+    // Call the function and pass the requestBody and award ID
+    updateAward(requestBody, awardid)
+      .then(() => {
+        // Revert to initial state after successful submission
+        awardCat.disabled = true;
+        awardTitle.disabled = true;
+        awardSubmitBtn.style.display = "none";
+        awardEditBtn.textContent = "Edit";
+        awardEditBtn.classList.remove("cancel-btn");
+        alert("SUCCESSFULLY UPDATED AWARD");
+      })
+      .catch((error) => {
+        console.error("Update failed:", error);
+      });
+  });
+}
 async function uploadNewAwardImg(formData, formAwardId) {
   try {
     const response = await fetch(`/lpu/1/award/images/${formAwardId}`, {
@@ -44,8 +249,9 @@ async function uploadNewAwardImg(formData, formAwardId) {
       const result = await response.json(); // Assuming the response is JSON
       console.log("Success:", result);
       alert("SUCCESS BRO");
-      document.querySelector(`#award-div-${formAwardId}`).style.backgroundImage = `url('${result.data.image_url}')`;
-
+      document.querySelector(
+        `#award-div-${formAwardId}`
+      ).style.backgroundImage = `url('${result.data.image_url}')`;
     } else {
       console.error("Error:", response.status, response.statusText);
     }

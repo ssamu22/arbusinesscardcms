@@ -1,669 +1,1020 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .sidebar {
-            height: 100vh;
-            background-color: #ffffff;
-            color: #333333;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .main-content {
-            height: 100vh;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .card {
-            border-radius: 10px;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .nav-link {
-            color: #333333;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
-        .nav-link:hover, .nav-link.active {
-            background-color: #e9ecef;
-        }
-        .btn-custom {
-            background-color: #3b82f6;
-            color: white;
-            border-radius: 5px;
-        }
-        .btn-custom:hover {
-            background-color: #2563eb;
-            color: white;
-        }
-        .top-bar {
-            background-color: #3b82f6;
-            color: white;
-            padding: 10px 0;
-        }
-        .profile-section {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-        .profile-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 10px;
-        }
-        .no-data-found {
-            text-align: center;
-            padding: 50px 0;
-        }
-        .no-data-found img {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
+      body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #ffffff;
+        color: #333333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .main-content {
+        height: 100vh;
+        overflow-y: auto;
+        padding: 20px;
+      }
+      .card {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .nav-link {
+        color: #333333;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: #e9ecef;
+      }
+      .btn-custom {
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 5px;
+      }
+      .btn-custom:hover {
+        background-color: #2563eb;
+        color: white;
+      }
+      .top-bar {
+        background-color: #3b82f6;
+        color: white;
+        padding: 10px 0;
+      }
+      .profile-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+      }
+      .no-data-found {
+        text-align: center;
+        padding: 50px 0;
+      }
+      .no-data-found img {
+        max-width: 200px;
+        margin-bottom: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container-fluid">
-        <div class="row">
-            <!-- Top Bar -->
-            <div class="col-12 top-bar">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <h3 class="m-0">Content Management System</h3>
-                        </div>
-                        <div class="col-6 profile-section">
-                            <div class="profile-icon">
-                                <i class="bi bi-bell"></i>
-                            </div>
-                            <div class="profile-icon">
-                                <i class="bi bi-chat"></i>
-                            </div>
-                            <div class="profile-icon">
-                                <i class="bi bi-person"></i>
-                            </div>
-                        </div>
-                    </div>
+      <div class="row">
+        <!-- Top Bar -->
+        <div class="col-12 top-bar">
+          <div class="container">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <h3 class="m-0">Content Management System</h3>
+              </div>
+              <div class="col-6 profile-section">
+                <div class="profile-icon">
+                  <i class="bi bi-bell"></i>
                 </div>
+                <div class="profile-icon">
+                  <i class="bi bi-chat"></i>
+                </div>
+                <div class="profile-icon">
+                  <i class="bi bi-person"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+          <div class="position-sticky pt-3">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="overview">
+                  <i class="bi bi-house-door me-2"></i> Overview
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="timeline">
+                  <i class="bi bi-calendar-event me-2"></i> Timeline
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="achievements">
+                  <i class="bi bi-trophy me-2"></i> Achievements
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="organizations">
+                  <i class="bi bi-building me-2"></i> Organizations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="contacts">
+                  <i class="bi bi-person-lines-fill me-2"></i> Contacts
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="about-lpu-c">
+                  <i class="bi bi-info-circle me-2"></i> About LPU-C
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+          <!-- Overview Section -->
+          <div id="overview" class="content-section active">
+            <div
+              class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
+            >
+              <h1 class="h2">Overview</h1>
             </div>
 
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="overview">
-                                <i class="bi bi-house-door me-2"></i> Overview
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="timeline">
-                                <i class="bi bi-calendar-event me-2"></i> Timeline
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="achievements">
-                                <i class="bi bi-trophy me-2"></i> Achievements
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="organizations">
-                                <i class="bi bi-building me-2"></i> Organizations
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="contacts">
-                                <i class="bi bi-person-lines-fill me-2"></i> Contacts
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="about-lpu-c">
-                                <i class="bi bi-info-circle me-2"></i> About LPU-C
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <!-- Profile Section (now part of Overview) -->
+            <!-- Profile Section (now part of Overview) -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Profile Information</h5>
+                <p class="card-text text-muted">
+                  Update your personal and professional information
+                </p>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-                <!-- Overview Section -->
-                <div id="overview" class="content-section active">
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                        <h1 class="h2">Overview</h1>
-                    </div>
+                <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link active"
+                      id="personal-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#personal"
+                      type="button"
+                      role="tab"
+                      aria-controls="personal"
+                      aria-selected="true"
+                    >
+                      <i class="bi bi-person me-2"></i>Personal
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="professional-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#professional"
+                      type="button"
+                      role="tab"
+                      aria-controls="professional"
+                      aria-selected="false"
+                    >
+                      <i class="bi bi-briefcase me-2"></i>Professional
+                    </button>
+                  </li>
+                </ul>
 
-                    <!-- Profile Section (now part of Overview) -->
-                    <!-- Profile Section (now part of Overview) -->
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Profile Information</h5>
-        <p class="card-text text-muted">Update your personal and professional information</p>
-        
-        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">
-                    <i class="bi bi-person me-2"></i>Personal
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="professional-tab" data-bs-toggle="tab" data-bs-target="#professional" type="button" role="tab" aria-controls="professional" aria-selected="false">
-                    <i class="bi bi-briefcase me-2"></i>Professional
-                </button>
-            </li>
-        </ul>
-    
-        <div class="tab-content mt-3" id="profileTabsContent">
-            <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                <form>
-                    <div class="row mb-3">
+                <div class="tab-content mt-3" id="profileTabsContent">
+                  <div
+                    class="tab-pane fade show active"
+                    id="personal"
+                    role="tabpanel"
+                    aria-labelledby="personal-tab"
+                  >
+                    <form>
+                      <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="Enter your first name">
+                          <label for="firstName" class="form-label"
+                            >First Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="firstName"
+                            placeholder="Enter your first name"
+                          />
                         </div>
                         <div class="col-md-6">
-                            <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="middleName" placeholder="Enter your middle name">
+                          <label for="middleName" class="form-label"
+                            >Middle Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="middleName"
+                            placeholder="Enter your middle name"
+                          />
                         </div>
-                    </div>
-                    <div class="row mb-3">
+                      </div>
+                      <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" placeholder="Enter your last name">
+                          <label for="lastName" class="form-label"
+                            >Last Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="lastName"
+                            placeholder="Enter your last name"
+                          />
                         </div>
                         <div class="col-md-6">
-                            <label for="honorifics" class="form-label">Honorifics</label>
-                            <input type="text" class="form-control" id="honorifics" placeholder="Enter honorifics">
+                          <label for="honorifics" class="form-label"
+                            >Honorifics</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="honorifics"
+                            placeholder="Enter honorifics"
+                          />
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="introduction" class="form-label">Introduction</label>
-                        <textarea class="form-control" id="introduction" rows="4" placeholder="Write a brief introduction about yourself"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="tab-pane fade" id="professional" role="tabpanel" aria-labelledby="professional-tab">
-                <form>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Position</label>
-                        <input type="text" class="form-control" id="position" placeholder="Enter your position (e.g., President, Researcher)">
-                    </div>
-                    <div class="mb-3">
-                        <label for="researchFields" class="form-label">Research Fields</label>
-                        <select class="form-select" id="researchFields" multiple aria-label="Select research fields">
-                            <option value="AI">Artificial Intelligence</option>
-                            <option value="ML">Machine Learning</option>
-                            <option value="DS">Data Science</option>
-                            <option value="CV">Computer Vision</option>
-                            <option value="NLP">Natural Language Processing</option>
-                            <option value="RL">Reinforcement Learning</option>
-                            <option value="RO">Robotics</option>
+                      </div>
+                      <div class="mb-3">
+                        <label for="introduction" class="form-label"
+                          >Introduction</label
+                        >
+                        <textarea
+                          class="form-control"
+                          id="introduction"
+                          rows="4"
+                          placeholder="Write a brief introduction about yourself"
+                        ></textarea>
+                      </div>
+                    </form>
+                  </div>
+                  <div
+                    class="tab-pane fade"
+                    id="professional"
+                    role="tabpanel"
+                    aria-labelledby="professional-tab"
+                  >
+                    <form>
+                      <div class="mb-3">
+                        <label for="position" class="form-label"
+                          >Position</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="position"
+                          placeholder="Enter your position (e.g., President, Researcher)"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="researchFields" class="form-label"
+                          >Research Fields</label
+                        >
+                        <select
+                          class="form-select"
+                          id="researchFields"
+                          multiple
+                          aria-label="Select research fields"
+                        >
+                          <option value="AI">Artificial Intelligence</option>
+                          <option value="ML">Machine Learning</option>
+                          <option value="DS">Data Science</option>
+                          <option value="CV">Computer Vision</option>
+                          <option value="NLP">
+                            Natural Language Processing
+                          </option>
+                          <option value="RL">Reinforcement Learning</option>
+                          <option value="RO">Robotics</option>
                         </select>
-                        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple fields</small>
-                    </div>
-                    <div class="mb-3">
-                        <label for="department" class="form-label">Department</label>
-                        <input type="text" class="form-control" id="department" placeholder="Enter your department">
-                    </div>
-                </form>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-custom mt-3" id="saveProfile">Save Profile</button>
-    </div>
-</div>
-                </div>
-
-                <!-- Other sections -->
-                <div id="timeline" class="content-section">
-                    <h2>Timeline</h2>
-                    <form id="timeline-form" class="mb-4">
-                        <div class="mb-3">
-                            <label for="timeline-year" class="form-label">Year</label>
-                            <input type="text" class="form-control" id="timeline-year" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="timeline-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="timeline-description" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="timeline-submit">Add Entry</button>
+                        <small class="form-text text-muted"
+                          >Hold Ctrl (Cmd on Mac) to select multiple
+                          fields</small
+                        >
+                      </div>
+                      <div class="mb-3">
+                        <label for="department" class="form-label"
+                          >Department</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="department"
+                          placeholder="Enter your department"
+                        />
+                      </div>
                     </form>
-                    <div class="card">
-                        <div class="card-header">Timeline Entries</div>
-                        <ul class="list-group list-group-flush" id="timeline-entries"></ul>
-                    </div>
+                  </div>
                 </div>
+                <button
+                  type="submit"
+                  class="btn btn-custom mt-3"
+                  id="saveProfile"
+                >
+                  Save Profile
+                </button>
+              </div>
+            </div>
+          </div>
 
-                <div id="achievements" class="content-section container mt-4">
-                    <h2 class="mb-4">Achievements</h2>
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <select id="achievement-filter" class="form-select">
-                                <option value="all">All Achievements</option>
-                                <option value="award">Awards</option>
-                                <option value="teaching">Teaching</option>
-                                <option value="recognition">Recognition</option>
-                                <option value="supervision">Supervision</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <button id="add-achievement-btn" class="btn btn-primary">Add Achievement</button>
-                        </div>
-                    </div>
-                    <div id="achievements-list">
-                        <!-- Achievements will be dynamically added here -->
-                    </div>
-                    <div class="modal fade" id="achievementModal" tabindex="-1" aria-labelledby="achievementModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="achievementModalLabel">Add New Achievement</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="achievement-form">
-                                        <div class="mb-3">
-                                            <label for="achievement-title" class="form-label">Title</label>
-                                            <input type="text" class="form-control" id="achievement-title" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="achievement-description" class="form-label">Description</label>
-                                            <textarea class="form-control" id="achievement-description" rows="3" required></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="achievement-year" class="form-label">Year</label>
-                                            <input type="number" class="form-control" id="achievement-year" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="achievement-type" class="form-label">Type</label>
-                                            <select class="form-select" id="achievement-type" required>
-                                                <option value="award">Award</option>
-                                                <option value="teaching">Teaching</option>
-                                                <option value="recognition">Recognition</option>
-                                                <option value="supervision">Supervision</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" id="save-achievement">Add Achievement</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <!-- Other sections -->
+          <div id="timeline" class="content-section">
+            <h2>Timeline</h2>
+            <form id="timeline-form" class="mb-4">
+              <div class="mb-3">
+                <label for="timeline-year" class="form-label">Year</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="timeline-year"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="timeline-description" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="timeline-description"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="timeline-submit"
+              >
+                Add Entry
+              </button>
+            </form>
+            <div class="card">
+              <div class="card-header">Timeline Entries</div>
+              <ul
+                class="list-group list-group-flush"
+                id="timeline-entries"
+              ></ul>
+            </div>
+          </div>
 
-                <div id="organizations" class="content-section">
-                    <h2 class="mb-4">Organizations</h2>
-    <button id="add-org-btn" class="btn btn-primary mb-4">Add Organization</button>
-    
-    <div id="org-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <!-- Organizations will be dynamically added here -->
-    </div>
-    <div class="modal fade" id="orgModal" tabindex="-1" aria-labelledby="orgModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orgModalLabel">Add Organization</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div id="achievements" class="content-section container mt-4">
+            <h2 class="mb-4">Achievements</h2>
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <select id="achievement-filter" class="form-select">
+                  <option value="all">All Achievements</option>
+                  <option value="award">Awards</option>
+                  <option value="teaching">Teaching</option>
+                  <option value="recognition">Recognition</option>
+                  <option value="supervision">Supervision</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <button id="add-achievement-btn" class="btn btn-primary">
+                  Add Achievement
+                </button>
+              </div>
+            </div>
+            <div id="achievements-list">
+              <!-- Achievements will be dynamically added here -->
+            </div>
+            <div
+              class="modal fade"
+              id="achievementModal"
+              tabindex="-1"
+              aria-labelledby="achievementModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="achievementModalLabel">
+                      Add New Achievement
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="achievement-form">
+                      <div class="mb-3">
+                        <label for="achievement-title" class="form-label"
+                          >Title</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="achievement-title"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="achievement-description" class="form-label"
+                          >Description</label
+                        >
+                        <textarea
+                          class="form-control"
+                          id="achievement-description"
+                          rows="3"
+                          required
+                        ></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="achievement-year" class="form-label"
+                          >Year</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="achievement-year"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="achievement-type" class="form-label"
+                          >Type</label
+                        >
+                        <select
+                          class="form-select"
+                          id="achievement-type"
+                          required
+                        >
+                          <option value="award">Award</option>
+                          <option value="teaching">Teaching</option>
+                          <option value="recognition">Recognition</option>
+                          <option value="supervision">Supervision</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      id="save-achievement"
+                    >
+                      Add Achievement
+                    </button>
+                  </div>
                 </div>
-                <div class="modal-body">
+              </div>
+            </div>
+          </div>
+
+          <div id="organizations" class="content-section">
+            <h2 class="mb-4">Organizations</h2>
+            <button id="add-org-btn" class="btn btn-primary mb-4">
+              Add Organization
+            </button>
+
+            <div
+              id="org-list"
+              class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
+            >
+              <!-- Organizations will be dynamically added here -->
+            </div>
+            <div
+              class="modal fade"
+              id="orgModal"
+              tabindex="-1"
+              aria-labelledby="orgModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="orgModalLabel">
+                      Add Organization
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
                     <form id="org-form">
-                        <div class="mb-3">
-                            <label for="org-name" class="form-label">Organization Name</label>
-                            <input type="text" class="form-control" id="org-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="org-role" class="form-label">Your Role</label>
-                            <input type="text" class="form-control" id="org-role" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="org-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="org-description" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="org-image" class="form-label">Organization Image</label>
-                            <input type="file" class="form-control" id="org-image" accept="image/*">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Organization</button>
+                      <div class="mb-3">
+                        <label for="org-name" class="form-label"
+                          >Organization Name</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="org-name"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="org-role" class="form-label"
+                          >Your Role</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="org-role"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="org-description" class="form-label"
+                          >Description</label
+                        >
+                        <textarea
+                          class="form-control"
+                          id="org-description"
+                          rows="3"
+                          required
+                        ></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="org-image" class="form-label"
+                          >Organization Image</label
+                        >
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="org-image"
+                          accept="image/*"
+                        />
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        Add Organization
+                      </button>
                     </form>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
-</div>
+          </div>
 
-<div id="contacts" class="content-section container mt-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+          <div id="contacts" class="content-section container mt-4">
+            <div class="card">
+              <div class="card-body">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-4"
+                >
+                  <div>
                     <h2 id="contact-name">Dr. John Carlo</h2>
                     <p id="contact-title" class="text-muted">Professor</p>
+                  </div>
+                  <button id="edit-toggle" class="btn btn-primary">Edit</button>
                 </div>
-                <button id="edit-toggle" class="btn btn-primary">Edit</button>
+
+                <form id="contact-form">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h3>Contact Information</h3>
+                      <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <div class="input-group">
+                          <span class="input-group-text"
+                            ><i class="bi bi-telephone"></i
+                          ></span>
+                          <input
+                            type="tel"
+                            class="form-control"
+                            id="phone"
+                            name="phone"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="landline" class="form-label"
+                          >Landline</label
+                        >
+                        <div class="input-group">
+                          <span class="input-group-text"
+                            ><i class="bi bi-telephone"></i
+                          ></span>
+                          <input
+                            type="tel"
+                            class="form-control"
+                            id="landline"
+                            name="landline"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <div class="input-group">
+                          <span class="input-group-text"
+                            ><i class="bi bi-envelope"></i
+                          ></span>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <h3>Consultation Hours</h3>
+                      <div id="consultation-hours" class="mt-3"></div>
+                    </div>
+                  </div>
+
+                  <h3 class="mt-4">Social Media</h3>
+                  <ul id="social-media-list" class="list-group"></ul>
+                  <button
+                    id="add-social-media"
+                    class="btn btn-success mt-2"
+                    style="display: none"
+                  >
+                    Add Social Media
+                  </button>
+                </form>
+              </div>
             </div>
+          </div>
 
-            <form id="contact-form">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>Contact Information</h3>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                <input type="tel" class="form-control" id="phone" name="phone" disabled>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="landline" class="form-label">Landline</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                <input type="tel" class="form-control" id="landline" name="landline" disabled>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" disabled>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Consultation Hours</h3>
-                        <div id="consultation-hours" class="mt-3"></div>
-                    </div>
-                </div>
-
-                <h3 class="mt-4">Social Media</h3>
-                <ul id="social-media-list" class="list-group"></ul>
-                <button id="add-social-media" class="btn btn-success mt-2" style="display: none;">Add Social Media</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-                <div id="about-lpu-c" class="content-section">
-                    <h2>About LPU-C</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
-            </main>
-        </div>
+          <div id="about-lpu-c" class="content-section">
+            <h2>About LPU-C</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
-        // Navigation handling
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.sidebar .nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
+      // Navigation handling
+      document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll(".sidebar .nav-link");
+        const contentSections = document.querySelectorAll(".content-section");
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
 
-                    const targetSection = this.getAttribute('data-section');
+            const targetSection = this.getAttribute("data-section");
 
-                    // Update active states for nav links
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
+            // Update active states for nav links
+            navLinks.forEach((l) => l.classList.remove("active"));
+            this.classList.add("active");
 
-                    // Show the corresponding content section and hide others
-                    contentSections.forEach(section => {
-                        if (section.id === targetSection) {
-                            section.classList.add('active');
-                            section.style.display = "block";
-                        } else {
-                            section.classList.remove('active');
-                            section.style.display = "none";
-                        }
-                    });
-                });
+            // Show the corresponding content section and hide others
+            contentSections.forEach((section) => {
+              if (section.id === targetSection) {
+                section.classList.add("active");
+                section.style.display = "block";
+              } else {
+                section.classList.remove("active");
+                section.style.display = "none";
+              }
             });
+          });
+        });
+      });
+
+      let tagify;
+
+      // Fetch current introduction from the server and populate the textarea
+      async function fetchDetails() {
+        const response = await fetch("/api/details");
+        const data = await response.json();
+        document.getElementById("introduction").value = data.introduction;
+        document.getElementById("position").value = data.position;
+
+        let fieldsInput = document.getElementById("researchFields");
+        tagify = new Tagify(fieldsInput, {
+          delimiters: ",", // Tags are separated by commas
+          maxTags: 10, // Optional limit
+          editTags: true, // Allow users to edit tags
         });
 
-        let tagify;
+        tagify.addTags(data.fields);
+      }
 
-        // Fetch current introduction from the server and populate the textarea
-        async function fetchDetails() {
-            const response = await fetch('/api/details');
-            const data = await response.json();
-            document.getElementById('introduction').value = data.introduction; 
-            document.getElementById('position').value = data.position;
+      // Fetch departments and populate dropdown
+      async function fetchDepartments() {
+        const response = await fetch("/api/departments");
+        const departments = await response.json();
 
-            let fieldsInput = document.getElementById('researchFields');
-            tagify = new Tagify(fieldsInput, {
-                delimiters: ",", // Tags are separated by commas
-                maxTags: 10,      // Optional limit
-                editTags: true    // Allow users to edit tags
-            });
+        const dropdown = document.getElementById("departmentDropdown");
+        departments.forEach((department) => {
+          const option = document.createElement("option");
+          option.value = department.department_id;
+          option.textContent = department.department_name;
+          dropdown.appendChild(option);
+        });
 
-            tagify.addTags(data.fields);
-        }
+        // Set the selected department based on the logged-in user (session info)
+        const currentDepartmentId = "<%= user.department_id %>"; // Assuming you pass session info from the backend
+        dropdown.value = currentDepartmentId;
+      }
 
-        // Fetch departments and populate dropdown
-        async function fetchDepartments() {
-            const response = await fetch('/api/departments');
-            const departments = await response.json();
-            
-            const dropdown = document.getElementById('departmentDropdown');
-            departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.department_id;
-                option.textContent = department.department_name;
-                dropdown.appendChild(option);
-            });
+      //Consultation Hours Javascript
+      document.addEventListener("DOMContentLoaded", function () {
+        const editToggle = document.getElementById("edit-toggle");
+        const contactForm = document.getElementById("contact-form");
+        const contactName = document.getElementById("contact-name");
+        const contactTitle = document.getElementById("contact-title");
+        const consultationHours = document.getElementById("consultation-hours");
+        const socialMediaList = document.getElementById("social-media-list");
+        const addSocialMediaBtn = document.getElementById("add-social-media");
 
-            // Set the selected department based on the logged-in user (session info)
-            const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
-            dropdown.value = currentDepartmentId;
-        }
+        let editMode = false;
 
+        const daysOfWeek = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ];
 
-        //Consultation Hours Javascript
-        document.addEventListener('DOMContentLoaded', function() {
-    const editToggle = document.getElementById('edit-toggle');
-    const contactForm = document.getElementById('contact-form');
-    const contactName = document.getElementById('contact-name');
-    const contactTitle = document.getElementById('contact-title');
-    const consultationHours = document.getElementById('consultation-hours');
-    const socialMediaList = document.getElementById('social-media-list');
-    const addSocialMediaBtn = document.getElementById('add-social-media');
-
-    let editMode = false;
-
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-    const contactInfo = {
-        name: 'Dr. John Carlo',
-        title: 'Professor',
-        phone: '09696969696',
-        landline: '09696969696',
-        email: 'john@example.com',
-        consultationHours: daysOfWeek.map(day => ({
+        const contactInfo = {
+          name: "Dr. John Carlo",
+          title: "Professor",
+          phone: "09696969696",
+          landline: "09696969696",
+          email: "john@example.com",
+          consultationHours: daysOfWeek.map((day) => ({
             day,
-            available: day !== 'Sunday',
-            startTime: '14:00',
-            endTime: '16:00'
-        })),
-        socialMedia: [
-            { platform: 'facebook', url: 'https://facebook.com' },
-            { platform: 'twitter', url: 'https://twitter.com' },
-            { platform: 'instagram', url: 'https://instagram.com' },
-        ],
-    };
+            available: day !== "Sunday",
+            startTime: "14:00",
+            endTime: "16:00",
+          })),
+          socialMedia: [
+            { platform: "facebook", url: "https://facebook.com" },
+            { platform: "twitter", url: "https://twitter.com" },
+            { platform: "instagram", url: "https://instagram.com" },
+          ],
+        };
 
-    const socialMediaIcons = {
-        facebook: '<i class="bi bi-facebook"></i>',
-        twitter: '<i class="bi bi-twitter"></i>',
-        instagram: '<i class="bi bi-instagram"></i>',
-        linkedin: '<i class="bi bi-linkedin"></i>',
-        github: '<i class="bi bi-github"></i>',
-        youtube: '<i class="bi bi-youtube"></i>',
-    };
+        const socialMediaIcons = {
+          facebook: '<i class="bi bi-facebook"></i>',
+          twitter: '<i class="bi bi-twitter"></i>',
+          instagram: '<i class="bi bi-instagram"></i>',
+          linkedin: '<i class="bi bi-linkedin"></i>',
+          github: '<i class="bi bi-github"></i>',
+          youtube: '<i class="bi bi-youtube"></i>',
+        };
 
-    function renderContactInfo() {
-        contactName.textContent = contactInfo.name;
-        contactTitle.textContent = contactInfo.title;
-        document.getElementById('phone').value = contactInfo.phone;
-        document.getElementById('landline').value = contactInfo.landline;
-        document.getElementById('email').value = contactInfo.email;
-    }
+        function renderContactInfo() {
+          contactName.textContent = contactInfo.name;
+          contactTitle.textContent = contactInfo.title;
+          document.getElementById("phone").value = contactInfo.phone;
+          document.getElementById("landline").value = contactInfo.landline;
+          document.getElementById("email").value = contactInfo.email;
+        }
 
-    function renderConsultationHours() {
-        consultationHours.innerHTML = contactInfo.consultationHours.map((hour, index) => `
+        function renderConsultationHours() {
+          consultationHours.innerHTML = contactInfo.consultationHours
+            .map(
+              (hour, index) => `
             <div class="row mb-2 align-items-center">
                 <div class="col-3">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="available-${hour.day}" 
-                               ${hour.available ? 'checked' : ''} ${!editMode ? 'disabled' : ''}
+                        <input class="form-check-input" type="checkbox" id="available-${
+                          hour.day
+                        }" 
+                               ${hour.available ? "checked" : ""} ${
+                !editMode ? "disabled" : ""
+              }
                                data-index="${index}" data-field="available">
-                        <label class="form-check-label" for="available-${hour.day}">${hour.day}</label>
+                        <label class="form-check-label" for="available-${
+                          hour.day
+                        }">${hour.day}</label>
                     </div>
                 </div>
                 <div class="col-9">
                     <div class="input-group">
-                        <input type="time" class="form-control" value="${hour.startTime}" 
+                        <input type="time" class="form-control" value="${
+                          hour.startTime
+                        }" 
                                data-index="${index}" data-field="startTime" 
-                               ${!editMode || !hour.available ? 'disabled' : ''}>
+                               ${
+                                 !editMode || !hour.available ? "disabled" : ""
+                               }>
                         <span class="input-group-text">to</span>
-                        <input type="time" class="form-control" value="${hour.endTime}" 
+                        <input type="time" class="form-control" value="${
+                          hour.endTime
+                        }" 
                                data-index="${index}" data-field="endTime" 
-                               ${!editMode || !hour.available ? 'disabled' : ''}>
+                               ${
+                                 !editMode || !hour.available ? "disabled" : ""
+                               }>
                     </div>
                 </div>
             </div>
-        `).join('');
-    }
+        `
+            )
+            .join("");
+        }
 
-    function renderSocialMedia() {
-        socialMediaList.innerHTML = contactInfo.socialMedia.map((social, index) => `
+        function renderSocialMedia() {
+          socialMediaList.innerHTML = contactInfo.socialMedia
+            .map(
+              (social, index) => `
             <li class="list-group-item d-flex align-items-center">
                 <div class="me-2">${socialMediaIcons[social.platform]}</div>
-                <select class="form-select me-2" style="width: 150px;" data-index="${index}" ${!editMode ? 'disabled' : ''}>
-                    ${Object.keys(socialMediaIcons).map(platform => `
-                        <option value="${platform}" ${platform === social.platform ? 'selected' : ''}>
-                            ${platform.charAt(0).toUpperCase() + platform.slice(1)}
+                <select class="form-select me-2" style="width: 150px;" data-index="${index}" ${
+                !editMode ? "disabled" : ""
+              }>
+                    ${Object.keys(socialMediaIcons)
+                      .map(
+                        (platform) => `
+                        <option value="${platform}" ${
+                          platform === social.platform ? "selected" : ""
+                        }>
+                            ${
+                              platform.charAt(0).toUpperCase() +
+                              platform.slice(1)
+                            }
                         </option>
-                    `).join('')}
+                    `
+                      )
+                      .join("")}
                 </select>
-                <input type="url" class="form-control" value="${social.url}" data-index="${index}" ${!editMode ? 'disabled' : ''}>
-                ${editMode ? `
+                <input type="url" class="form-control" value="${
+                  social.url
+                }" data-index="${index}" ${!editMode ? "disabled" : ""}>
+                ${
+                  editMode
+                    ? `
                     <button class="btn btn-danger btn-sm ms-2 remove-social-media" data-index="${index}">Remove</button>
-                ` : ''}
+                `
+                    : ""
+                }
             </li>
-        `).join('');
-    }
-
-    function toggleEditMode() {
-        editMode = !editMode;
-        editToggle.textContent = editMode ? 'Save' : 'Edit';
-        addSocialMediaBtn.style.display = editMode ? 'block' : 'none';
-        
-        const inputs = contactForm.querySelectorAll('input, select');
-        inputs.forEach(input => input.disabled = !editMode);
-
-        renderConsultationHours();
-        renderSocialMedia();
-    }
-
-    editToggle.addEventListener('click', toggleEditMode);
-
-    contactForm.addEventListener('change', function(e) {
-        if (e.target.matches('#phone, #landline, #email')) {
-            contactInfo[e.target.name] = e.target.value;
+        `
+            )
+            .join("");
         }
-    });
 
-    consultationHours.addEventListener('change', function(e) {
-        if (e.target.matches('input[type="checkbox"]')) {
+        function toggleEditMode() {
+          editMode = !editMode;
+          editToggle.textContent = editMode ? "Save" : "Edit";
+          addSocialMediaBtn.style.display = editMode ? "block" : "none";
+
+          const inputs = contactForm.querySelectorAll("input, select");
+          inputs.forEach((input) => (input.disabled = !editMode));
+
+          renderConsultationHours();
+          renderSocialMedia();
+        }
+
+        editToggle.addEventListener("click", toggleEditMode);
+
+        contactForm.addEventListener("change", function (e) {
+          if (e.target.matches("#phone, #landline, #email")) {
+            contactInfo[e.target.name] = e.target.value;
+          }
+        });
+
+        consultationHours.addEventListener("change", function (e) {
+          if (e.target.matches('input[type="checkbox"]')) {
             const index = parseInt(e.target.dataset.index);
             const available = e.target.checked;
             contactInfo.consultationHours[index].available = available;
             renderConsultationHours();
-        } else if (e.target.matches('input[type="time"]')) {
+          } else if (e.target.matches('input[type="time"]')) {
             const index = parseInt(e.target.dataset.index);
             const field = e.target.dataset.field;
             contactInfo.consultationHours[index][field] = e.target.value;
-        }
-    });
+          }
+        });
 
-    socialMediaList.addEventListener('change', function(e) {
-        if (e.target.matches('select, input')) {
+        socialMediaList.addEventListener("change", function (e) {
+          if (e.target.matches("select, input")) {
             const index = parseInt(e.target.dataset.index);
-            const field = e.target.tagName === 'SELECT' ? 'platform' : 'url';
+            const field = e.target.tagName === "SELECT" ? "platform" : "url";
             contactInfo.socialMedia[index][field] = e.target.value;
-        }
-    });
+          }
+        });
 
-    socialMediaList.addEventListener('click', function(e) {
-        if (e.target.matches('.remove-social-media')) {
+        socialMediaList.addEventListener("click", function (e) {
+          if (e.target.matches(".remove-social-media")) {
             const index = parseInt(e.target.dataset.index);
             contactInfo.socialMedia.splice(index, 1);
             renderSocialMedia();
-        }
-    });
+          }
+        });
 
-    addSocialMediaBtn.addEventListener('click', function() {
-        contactInfo.socialMedia.push({ platform: 'facebook', url: '' });
+        addSocialMediaBtn.addEventListener("click", function () {
+          contactInfo.socialMedia.push({ platform: "facebook", url: "" });
+          renderSocialMedia();
+        });
+
+        renderContactInfo();
+        renderConsultationHours();
         renderSocialMedia();
-    });
+      });
+      //Achivements Page Javascript
+      document.addEventListener("DOMContentLoaded", function () {
+        const achievementsList = document.getElementById("achievements-list");
+        const achievementFilter = document.getElementById("achievement-filter");
+        const addAchievementBtn = document.getElementById(
+          "add-achievement-btn"
+        );
+        const achievementModal = new bootstrap.Modal(
+          document.getElementById("achievementModal")
+        );
+        const achievementForm = document.getElementById("achievement-form");
+        const saveAchievementBtn = document.getElementById("save-achievement");
 
-    renderContactInfo();
-    renderConsultationHours();
-    renderSocialMedia();
-});
-//Achivements Page Javascript
-        document.addEventListener('DOMContentLoaded', function() {
-    const achievementsList = document.getElementById('achievements-list');
-    const achievementFilter = document.getElementById('achievement-filter');
-    const addAchievementBtn = document.getElementById('add-achievement-btn');
-    const achievementModal = new bootstrap.Modal(document.getElementById('achievementModal'));
-    const achievementForm = document.getElementById('achievement-form');
-    const saveAchievementBtn = document.getElementById('save-achievement');
+        let achievements = [
+          {
+            id: 1,
+            title: "Best Paper Award, ICML 2022",
+            description:
+              "For 'Interpretable Deep Learning in Dynamic Decision Processes'",
+            year: 2022,
+            type: "award",
+          },
+          {
+            id: 2,
+            title: "1M+ students taught worldwide",
+            description: "Through online courses and in-person lectures",
+            year: 2022,
+            type: "teaching",
+          },
+          {
+            id: 3,
+            title: "IEEE Fellow, 2020",
+            description: "For contributions to machine learning and AI ethics",
+            year: 2020,
+            type: "recognition",
+          },
+          {
+            id: 4,
+            title: "25+ Ph.D. students supervised",
+            description:
+              "Many now leading researchers in academia and industry",
+            year: 2022,
+            type: "supervision",
+          },
+          {
+            id: 5,
+            title: "World Economic Forum Technology Pioneer, 2019",
+            description: "Recognized for contributions to AI for social good",
+            year: 2019,
+            type: "recognition",
+          },
+        ];
 
-    let achievements = [
-        { id: 1, title: "Best Paper Award, ICML 2022", description: "For 'Interpretable Deep Learning in Dynamic Decision Processes'", year: 2022, type: "award" },
-        { id: 2, title: "1M+ students taught worldwide", description: "Through online courses and in-person lectures", year: 2022, type: "teaching" },
-        { id: 3, title: "IEEE Fellow, 2020", description: "For contributions to machine learning and AI ethics", year: 2020, type: "recognition" },
-        { id: 4, title: "25+ Ph.D. students supervised", description: "Many now leading researchers in academia and industry", year: 2022, type: "supervision" },
-        { id: 5, title: "World Economic Forum Technology Pioneer, 2019", description: "Recognized for contributions to AI for social good", year: 2019, type: "recognition" },
-    ];
+        const achievementIcons = {
+          award: '<i class="bi bi-award"></i>',
+          teaching: '<i class="bi bi-people"></i>',
+          recognition: '<i class="bi bi-trophy"></i>',
+          supervision: '<i class="bi bi-book"></i>',
+          other: '<i class="bi bi-globe"></i>',
+        };
 
-    const achievementIcons = {
-        award: '<i class="bi bi-award"></i>',
-        teaching: '<i class="bi bi-people"></i>',
-        recognition: '<i class="bi bi-trophy"></i>',
-        supervision: '<i class="bi bi-book"></i>',
-        other: '<i class="bi bi-globe"></i>',
-    };
+        function renderAchievements(filter = "all") {
+          const filteredAchievements =
+            filter === "all"
+              ? achievements
+              : achievements.filter((a) => a.type === filter);
 
-    function renderAchievements(filter = 'all') {
-        const filteredAchievements = filter === 'all' 
-            ? achievements 
-            : achievements.filter(a => a.type === filter);
-
-        achievementsList.innerHTML = filteredAchievements.map((achievement, index) => `
-            <div class="card mb-3 ${index % 2 === 0 ? 'bg-light' : 'bg-white'}">
+          achievementsList.innerHTML = filteredAchievements
+            .map(
+              (achievement, index) => `
+            <div class="card mb-3 ${index % 2 === 0 ? "bg-light" : "bg-white"}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
@@ -672,93 +1023,112 @@
                         <div class="col-10 col-md-11">
                             <h5 class="card-title">${achievement.title}</h5>
                             <p class="card-text">${achievement.description}</p>
-                            <span class="badge bg-secondary">${achievement.year}</span>
+                            <span class="badge bg-secondary">${
+                              achievement.year
+                            }</span>
                         </div>
                     </div>
                 </div>
             </div>
-        `).join('');
-    }
+        `
+            )
+            .join("");
+        }
 
-    achievementFilter.addEventListener('change', function() {
-        renderAchievements(this.value);
-    });
+        achievementFilter.addEventListener("change", function () {
+          renderAchievements(this.value);
+        });
 
-    addAchievementBtn.addEventListener('click', function() {
-        achievementModal.show();
-    });
+        addAchievementBtn.addEventListener("click", function () {
+          achievementModal.show();
+        });
 
-    saveAchievementBtn.addEventListener('click', function() {
-        const title = document.getElementById('achievement-title').value;
-        const description = document.getElementById('achievement-description').value;
-        const year = parseInt(document.getElementById('achievement-year').value);
-        const type = document.getElementById('achievement-type').value;
+        saveAchievementBtn.addEventListener("click", function () {
+          const title = document.getElementById("achievement-title").value;
+          const description = document.getElementById(
+            "achievement-description"
+          ).value;
+          const year = parseInt(
+            document.getElementById("achievement-year").value
+          );
+          const type = document.getElementById("achievement-type").value;
 
-        const newAchievement = { id: Date.now(), title, description, year, type };
-        achievements.push(newAchievement);
-        renderAchievements(achievementFilter.value);
-        achievementModal.hide();
-        achievementForm.reset();
-    });
+          const newAchievement = {
+            id: Date.now(),
+            title,
+            description,
+            year,
+            type,
+          };
+          achievements.push(newAchievement);
+          renderAchievements(achievementFilter.value);
+          achievementModal.hide();
+          achievementForm.reset();
+        });
 
-    renderAchievements();
-});
+        renderAchievements();
+      });
 
-//Overview Javascript Page
+      //Overview Javascript Page
 
-document.addEventListener('DOMContentLoaded', function() {
-    const saveButton = document.querySelector('#saveProfile');
+      document.addEventListener("DOMContentLoaded", function () {
+        const saveButton = document.querySelector("#saveProfile");
 
-    let profileData = {
-        personal: {},
-        professional: {}
-    };
-
-    function updateProfileData() {
-        profileData.personal = {
-            firstName: document.getElementById('firstName').value,
-            middleName: document.getElementById('middleName').value,
-            lastName: document.getElementById('lastName').value,
-            honorifics: document.getElementById('honorifics').value,
-            introduction: document.getElementById('introduction').value
+        let profileData = {
+          personal: {},
+          professional: {},
         };
-        profileData.professional = {
-            position: document.getElementById('position').value,
-            researchFields: Array.from(document.getElementById('researchFields').selectedOptions).map(option => option.value),
-            department: document.getElementById('department').value
-        };
-    }
 
-    saveButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        updateProfileData();
-        console.log('Profile data saved:', profileData);
-        alert('Profile saved successfully!');
-    });
-});
+        function updateProfileData() {
+          profileData.personal = {
+            firstName: document.getElementById("firstName").value,
+            middleName: document.getElementById("middleName").value,
+            lastName: document.getElementById("lastName").value,
+            honorifics: document.getElementById("honorifics").value,
+            introduction: document.getElementById("introduction").value,
+          };
+          profileData.professional = {
+            position: document.getElementById("position").value,
+            researchFields: Array.from(
+              document.getElementById("researchFields").selectedOptions
+            ).map((option) => option.value),
+            department: document.getElementById("department").value,
+          };
+        }
 
-//Timeline Page Javascript
+        saveButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          updateProfileData();
+          console.log("Profile data saved:", profileData);
+          alert("Profile saved successfully!");
+        });
+      });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const timelineForm = document.getElementById('timeline-form');
-    const timelineEntries = document.getElementById('timeline-entries');
-    let entries = [];
+      //Timeline Page Javascript
 
-    timelineForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const year = document.getElementById('timeline-year').value;
-        const description = document.getElementById('timeline-description').value;
-        
-        entries.push({ id: Date.now(), year, description });
-        renderEntries();
-        timelineForm.reset();
-    });
+      document.addEventListener("DOMContentLoaded", function () {
+        const timelineForm = document.getElementById("timeline-form");
+        const timelineEntries = document.getElementById("timeline-entries");
+        let entries = [];
 
-    function renderEntries() {
-        timelineEntries.innerHTML = '';
-        entries.forEach(entry => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        timelineForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const year = document.getElementById("timeline-year").value;
+          const description = document.getElementById(
+            "timeline-description"
+          ).value;
+
+          entries.push({ id: Date.now(), year, description });
+          renderEntries();
+          timelineForm.reset();
+        });
+
+        function renderEntries() {
+          timelineEntries.innerHTML = "";
+          entries.forEach((entry) => {
+            const li = document.createElement("li");
+            li.className =
+              "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `
                 <div>
                     <strong>${entry.year}:</strong> ${entry.description}
@@ -769,135 +1139,164 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             timelineEntries.appendChild(li);
-        });
-    }
-
-    window.editEntry = function(id) {
-        const entry = entries.find(e => e.id === id);
-        if (entry) {
-            document.getElementById('timeline-year').value = entry.year;
-            document.getElementById('timeline-description').value = entry.description;
-            document.getElementById('timeline-submit').textContent = 'Update Entry';
-            timelineForm.onsubmit = function(e) {
-                e.preventDefault();
-                entry.year = document.getElementById('timeline-year').value;
-                entry.description = document.getElementById('timeline-description').value;
-                renderEntries();
-                timelineForm.reset();
-                document.getElementById('timeline-submit').textContent = 'Add Entry';
-                timelineForm.onsubmit = null;
-            };
+          });
         }
-    };
 
-    window.deleteEntry = function(id) {
-        entries = entries.filter(e => e.id !== id);
-        renderEntries();
-    };
-});
+        window.editEntry = function (id) {
+          const entry = entries.find((e) => e.id === id);
+          if (entry) {
+            document.getElementById("timeline-year").value = entry.year;
+            document.getElementById("timeline-description").value =
+              entry.description;
+            document.getElementById("timeline-submit").textContent =
+              "Update Entry";
+            timelineForm.onsubmit = function (e) {
+              e.preventDefault();
+              entry.year = document.getElementById("timeline-year").value;
+              entry.description = document.getElementById(
+                "timeline-description"
+              ).value;
+              renderEntries();
+              timelineForm.reset();
+              document.getElementById("timeline-submit").textContent =
+                "Add Entry";
+              timelineForm.onsubmit = null;
+            };
+          }
+        };
 
-// Organization Page Javascript
-document.addEventListener('DOMContentLoaded', function() {
-    const addOrgBtn = document.getElementById('add-org-btn');
-    const orgList = document.getElementById('org-list');
-    const orgForm = document.getElementById('org-form');
-    const orgModal = new bootstrap.Modal(document.getElementById('orgModal'));
-    let organizations = [];
-    let currentOrgId = null;
+        window.deleteEntry = function (id) {
+          entries = entries.filter((e) => e.id !== id);
+          renderEntries();
+        };
+      });
 
-    addOrgBtn.addEventListener('click', () => {
-        currentOrgId = null;
-        orgForm.reset();
-        document.getElementById('orgModalLabel').textContent = 'Add Organization';
-        orgForm.querySelector('button[type="submit"]').textContent = 'Add Organization';
-        orgModal.show();
-    });
+      // Organization Page Javascript
+      document.addEventListener("DOMContentLoaded", function () {
+        const addOrgBtn = document.getElementById("add-org-btn");
+        const orgList = document.getElementById("org-list");
+        const orgForm = document.getElementById("org-form");
+        const orgModal = new bootstrap.Modal(
+          document.getElementById("orgModal")
+        );
+        let organizations = [];
+        let currentOrgId = null;
 
-    orgForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('org-name').value;
-        const role = document.getElementById('org-role').value;
-        const description = document.getElementById('org-description').value;
-        const imageFile = document.getElementById('org-image').files[0];
+        addOrgBtn.addEventListener("click", () => {
+          currentOrgId = null;
+          orgForm.reset();
+          document.getElementById("orgModalLabel").textContent =
+            "Add Organization";
+          orgForm.querySelector('button[type="submit"]').textContent =
+            "Add Organization";
+          orgModal.show();
+        });
 
-        if (currentOrgId) {
-            const index = organizations.findIndex(org => org.id === currentOrgId);
-            organizations[index] = { ...organizations[index], name, role, description };
+        orgForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const name = document.getElementById("org-name").value;
+          const role = document.getElementById("org-role").value;
+          const description = document.getElementById("org-description").value;
+          const imageFile = document.getElementById("org-image").files[0];
+
+          if (currentOrgId) {
+            const index = organizations.findIndex(
+              (org) => org.id === currentOrgId
+            );
+            organizations[index] = {
+              ...organizations[index],
+              name,
+              role,
+              description,
+            };
             if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    organizations[index].imageUrl = e.target.result;
-                    renderOrganizations();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                organizations[index].imageUrl = e.target.result;
                 renderOrganizations();
+              };
+              reader.readAsDataURL(imageFile);
+            } else {
+              renderOrganizations();
             }
-        } else {
+          } else {
             const newOrg = { id: Date.now(), name, role, description };
             if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    newOrg.imageUrl = e.target.result;
-                    organizations.push(newOrg);
-                    renderOrganizations();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                newOrg.imageUrl = e.target.result;
                 organizations.push(newOrg);
                 renderOrganizations();
+              };
+              reader.readAsDataURL(imageFile);
+            } else {
+              organizations.push(newOrg);
+              renderOrganizations();
             }
-        }
+          }
 
-        orgModal.hide();
-    });
+          orgModal.hide();
+        });
 
-    function renderOrganizations() {
-        orgList.innerHTML = '';
-        organizations.forEach(org => {
-            const col = document.createElement('div');
-            col.className = 'col';
+        function renderOrganizations() {
+          orgList.innerHTML = "";
+          organizations.forEach((org) => {
+            const col = document.createElement("div");
+            col.className = "col";
             col.innerHTML = `
                 <div class="card h-100">
-                    ${org.imageUrl ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">` : ''}
+                    ${
+                      org.imageUrl
+                        ? `<img src="${org.imageUrl}" class="card-img-top" alt="${org.name}">`
+                        : ""
+                    }
                     <div class="card-body">
                         <h5 class="card-title">${org.name}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">${org.role}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">${
+                          org.role
+                        }</h6>
                         <p class="card-text">${org.description}</p>
-                        <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${org.id}">Edit</button>
-                        <button class="btn btn-outline-danger btn-sm delete-org" data-id="${org.id}">Delete</button>
+                        <button class="btn btn-outline-primary btn-sm me-2 edit-org" data-id="${
+                          org.id
+                        }">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm delete-org" data-id="${
+                          org.id
+                        }">Delete</button>
                     </div>
                 </div>
             `;
             orgList.appendChild(col);
-        });
+          });
 
-        // Add event listeners for edit and delete buttons
-        document.querySelectorAll('.edit-org').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const orgId = parseInt(this.getAttribute('data-id'));
-                const org = organizations.find(o => o.id === orgId);
-                if (org) {
-                    currentOrgId = org.id;
-                    document.getElementById('org-name').value = org.name;
-                    document.getElementById('org-role').value = org.role;
-                    document.getElementById('org-description').value = org.description;
-                    document.getElementById('orgModalLabel').textContent = 'Edit Organization';
-                    orgForm.querySelector('button[type="submit"]').textContent = 'Update Organization';
-                    orgModal.show();
-                }
+          // Add event listeners for edit and delete buttons
+          document.querySelectorAll(".edit-org").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const orgId = parseInt(this.getAttribute("data-id"));
+              const org = organizations.find((o) => o.id === orgId);
+              if (org) {
+                currentOrgId = org.id;
+                document.getElementById("org-name").value = org.name;
+                document.getElementById("org-role").value = org.role;
+                document.getElementById("org-description").value =
+                  org.description;
+                document.getElementById("orgModalLabel").textContent =
+                  "Edit Organization";
+                orgForm.querySelector('button[type="submit"]').textContent =
+                  "Update Organization";
+                orgModal.show();
+              }
             });
-        });
+          });
 
-        document.querySelectorAll('.delete-org').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const orgId = parseInt(this.getAttribute('data-id'));
-                organizations = organizations.filter(org => org.id !== orgId);
-                renderOrganizations();
+          document.querySelectorAll(".delete-org").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const orgId = parseInt(this.getAttribute("data-id"));
+              organizations = organizations.filter((org) => org.id !== orgId);
+              renderOrganizations();
             });
-        });
-    }
-});
+          });
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
