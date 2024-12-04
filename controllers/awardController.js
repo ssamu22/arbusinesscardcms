@@ -51,10 +51,30 @@ exports.getAwardImages = async (req, res) => {
 };
 
 exports.addAward = async (req, res) => {
+  const awardTitle = req.body.title;
+  const awardCategory = req.body.category;
+  const awardBucket = req.body.bucket;
+  const awardImgFile = req.file;
+
+  const uploadedImage = await Image.uploadImage(
+    awardImgFile,
+    awardBucket,
+    awardImgFile.originalname
+  );
+  const theImage = await Image.getImageById(uploadedImage.image_id);
+  console.log("This is the image data: ");
+  console.log(theImage);
+
+  const newAward = await Award.addAward(
+    awardTitle,
+    awardCategory,
+    uploadedImage.image_id
+  );
   res.status(200).json({
     status: "success",
-    message: "successfully retrieved lpu awards!",
-    data: awards,
+    message: "successfully added an lpu award!",
+    image_data: theImage,
+    award_data: newAward,
   });
 };
 
