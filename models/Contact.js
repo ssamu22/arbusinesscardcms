@@ -58,26 +58,49 @@ class Contact {
 
   // Save the current instance (create or update)
   async save() {
-    const { data, error } = await supabase
-      .from('contact')
-      .update({
-        phone_number: this.phone_number,
-        landline: this.landline,
-        email: this.email,
-        facebook_url: this.facebook_url,
-        instagram_url: this.instagram_url,
-        linkedin_url: this.linkedin_url,
-      })
-      .eq('contact_id', this.contact_id);
+    if (this.contact_id) {
+      const { data, error } = await supabase
+        .from('contact')
+        .update({
+          phone_number: this.phone_number,
+          landline: this.landline,
+          email: this.email,
+          facebook_url: this.facebook_url,
+          instagram_url: this.instagram_url,
+          linkedin_url: this.linkedin_url,
+        })
+        .eq('contact_id', this.contact_id);
 
-    if (error) {
-      console.error('Error updating contact:', error);
-      throw error;
+      if (error) {
+        console.error('Error updating contact:', error);
+        throw error;
+      }
+
+      return data[0]; // Return updated contact
+    } else {
+      const { data, error } = await supabase
+       .from('contact')
+       .insert({
+          employee_id: this.employee_id,
+          phone_number: this.phone_number,
+          landline: this.landline,
+          email: this.email,
+          facebook_url: this.facebook_url,
+          instagram_url: this.instagram_url,
+          linkedin_url: this.linkedin_url,
+        });
+        
+      if (error) {
+        console.error('Error creating contact:', error);
+        throw error;
+      }
+      
+      return data[0]; // Return created contact
     }
-
-    return data[0]; // Return updated contact
+    
     
   }
+  
   
 }
 

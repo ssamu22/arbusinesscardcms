@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const adminController = require('../controllers/adminController');
 const ensureAuthenticated = require('../middlewares/authMiddleware');
+const ensureAdmin = require('../middlewares/authMiddleware');
 const path = require('path');
 
 // Route for the public index page
@@ -32,9 +33,10 @@ router.get('/logout', authController.logout);
 // Serve partial pages dynamically
 router.get('/home/:page', ensureAuthenticated, (req, res) => {
   const page = req.params.page;
+  const isAdmin = req.session.admin || null;
   const allowedPages = ['overview', 'achievements', 'organizations', 'contacts', 'schedule', 'about-lpu-c'];
   if (allowedPages.includes(page)) {
-      res.render(`pages/user/components/${page}`, { user: req.session.user });
+      res.render(`pages/user/components/${page}`, { user: req.session.user, isAdmin });
   } else {
       res.status(404).send('Page not found');
   }
@@ -43,7 +45,8 @@ router.get('/home/:page', ensureAuthenticated, (req, res) => {
 // Protecting home route
 router.get('/home', ensureAuthenticated, (req, res) => {
   const user = req.session.user; // Access logged-in user's information
-  res.render(path.join(__dirname, '..', 'public', 'index.ejs'), { user });
+  const isAdmin = req.session.admin || null;
+  res.render(path.join(__dirname, '..', 'public', 'index.ejs'), { user, isAdmin });
 });
 
 // Route for updating profile data
@@ -65,6 +68,9 @@ router.get('/admin/logout', adminController.logout);
 // Protecting admin home route
 router.get('/admin/home', ensureAuthenticated.ensureAdmin, (req, res) => {
   const admin = req.session.admin; // Access logged-in user's information
+  if (req.session.user){
+    delete req.session.user;
+  }
   const adminPath = 'resources/views/pages/admin';
   res.render(path.join(__dirname, '..', adminPath, 'home.ejs'), { admin });
 });

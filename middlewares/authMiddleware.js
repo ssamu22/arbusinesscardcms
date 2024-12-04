@@ -11,7 +11,7 @@ const ensureAdmin = (req, res, next) => {
       return next(); // Proceed if authenticated
   } else {
       if(ensureAuthenticated){
-        return res.status(403).json({ error: 'Unauthorized access' });
+        res.redirect('/home');
       }else{
         res.redirect('/login'); // Redirect to login if not authenticated
       }

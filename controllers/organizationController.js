@@ -12,7 +12,7 @@ exports.getOrganizations = async (req, res) => {
 
         // Check if any orgs were retrieved
         if (!orgs || orgs.length === 0) {
-            return res.status(404).json({ message: 'No organizations found for this employee.' });
+            return res.json([]);
         }
 
         // Map through organizations and include image URLs
@@ -46,11 +46,19 @@ exports.getOrganizations = async (req, res) => {
 }
 
 exports.createOrganization = async (req, res) => {
-    const { org_name, org_type, image_id, category, description, banner_id, position, date_joined, date_active } = req.body;
+    const { org_name, org_type, category, description, position, date_joined, date_active } = req.body;
+    let { image_id, banner_id} = req.body;
     const employee_id = req.session.user.employee_id; // Assuming the employee ID comes from the session
 
     try {
+        if (image_id === null) { // Use default org logo if no image is uploaded
+            image_id = 69;
+        }
+        if (banner_id === null) { // Use default org banner if no banner is uploaded
+            banner_id = 70;
+        } 
         const newOrganization = new Organization(null, org_name, employee_id, org_type, image_id, category, description, banner_id, position, date_joined, date_active);
+        
         const createdOrganization = await newOrganization.save(); // Save the new organization
 
         const response = await Promise.all(
