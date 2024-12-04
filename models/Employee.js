@@ -19,6 +19,7 @@ class Employee {
         this.image_id = employeeData.image_id;
         this.position = employeeData.position;
         this.department_id = employeeData.department_id;
+        this.date_created = employeeData.date_created;
 
         // Private fields
         this.#password = employeeData.password;
@@ -103,20 +104,22 @@ class Employee {
 
     // Delete an employee
     static async delete(employee_id) {
-        try {
-            const { error } = await supabase
-                .from('employee')
-                .delete()
-                .eq('employee_id', employee_id);
-
-            if (error) {
-                throw new Error(`Failed to delete employee: ${error.message}`);
-            }
-            return true;
-        } catch (err) {
-            console.error(err.message);
-            throw err;
-        }
+        if (!employee_id) {
+            throw new Error('employee ID is required to delete');
+          }
+      
+          const { data, error } = await supabase
+            .from('employee')
+            .delete()
+            .eq('employee_id', employee_id);
+      
+          if (error) {
+            console.error(`Error deleting employee with ID ${employee_id}:`, error);
+            throw error;
+          }
+      
+          return data;
+        
     }
 
     // List all employees (without private fields)
@@ -124,7 +127,7 @@ class Employee {
         try {
             const { data, error } = await supabase
                 .from('employee')
-                .select('employee_id, first_name, middle_name, last_name, honorifics, field, introduction, image_id, position, department_id');
+                .select('employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created');
 
             if (error) {
                 throw new Error(`Failed to list employees: ${error.message}`);
