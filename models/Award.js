@@ -47,6 +47,33 @@ class Award {
     }
   }
 
+  static async changeAwardImgId(award_id, imgId) {
+    if (!award_id || !imgId) {
+      console.error("Invalid input: award_id and imgId are required.");
+      return { success: false, message: "Invalid input data" };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("award")
+        .update({ image_id: imgId })
+        .eq("award_id", award_id);
+      if (error) {
+        console.error(
+          `Error updating award with ID ${award_id}:`,
+          error.message
+        );
+        return { success: false, error: error.message };
+      }
+
+      console.log("Successfully updated award image ID! 📝");
+      return { success: true, data };
+    } catch (err) {
+      console.error("Unexpected error in editAward:", err);
+      return { success: false, error: "An unexpected error occurred." };
+    }
+  }
+
   // static async getBranch(lpu_branch_id) {
   //   const id = parseInt(lpu_branch_id);
   //   if (isNaN(id)) {

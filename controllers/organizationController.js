@@ -102,6 +102,7 @@ exports.uploadImage = async (req, res) => {
         // Use the Image model to handle upload and creation
         const uploadedImage = await Image.uploadImage(file, bucket, fileName);
 
+        
         console.log(JSON.stringify(uploadedImage));
 
         // Return the Image object as the response

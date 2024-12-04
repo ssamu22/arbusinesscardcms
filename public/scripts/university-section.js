@@ -22,7 +22,94 @@ const philoText = document.getElementById("lpu-philo");
 const principleTexts = document.querySelectorAll(".lpu-principle");
 const principleForms = document.querySelectorAll(".principle-form");
 const awardContainer = document.querySelector(".award-item-container");
+const editImageOverlay = document.querySelector(".edit-image-overlay");
+const uploadCanvas = document.querySelector(".upload-canvas");
+const closeUploadBtn = document.getElementById("close-upload-div");
+const uploadAwardImg = document.getElementById("file-awardupload");
+const submitAwardImgBtn = document.getElementById("submit-award-img");
+let editImageAwardId = "";
+const awardBucket = "assets/awardImages";
+let awardFile = null;
+let awardFilename = "";
 
+async function uploadNewAwardImg(formData, formAwardId) {
+  try {
+    const response = await fetch(`/lpu/1/award/images/${formAwardId}`, {
+      method: "POST", // or PUT if you need to update
+
+      body: formData,
+    });
+
+    if (response.ok) {
+      const result = await response.json(); // Assuming the response is JSON
+      console.log("Success:", result);
+      alert("SUCCESS BRO");
+      document.querySelector(`#award-div-${formAwardId}`).style.backgroundImage = `url('${result.data.image_url}')`;
+
+    } else {
+      console.error("Error:", response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+submitAwardImgBtn.addEventListener("click", (ev) => {
+  const awardImgFormData = new FormData();
+  awardImgFormData.append("bucket", awardBucket);
+  awardImgFormData.append("fileName", awardFilename);
+  awardImgFormData.append("file", awardFile);
+
+  for (let pair of awardImgFormData.entries()) {
+    console.log(pair[0] + ": " + pair[1]);
+  }
+
+  uploadNewAwardImg(awardImgFormData, editImageAwardId);
+});
+uploadAwardImg.addEventListener("change", (event) => {
+  awardFile = event.target.files[0]; // Get the uploaded file
+  awardFilename = `award_${Date.now()}_${awardFile.name}`;
+
+  console.log(editImageAwardId);
+  console.log(awardFile);
+  console.log(awardBucket);
+  console.log(awardFilename);
+  if (awardFile) {
+    submitAwardImgBtn.disabled = false;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+
+      img.onload = function () {
+        // Set canvas size to match the image size
+        uploadCanvas.width = img.naturalWidth;
+        uploadCanvas.height = img.naturalHeight;
+
+        const ctx = uploadCanvas.getContext("2d");
+
+        // Disable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        // Clear canvas before drawing new image
+        ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, uploadCanvas.width, uploadCanvas.height);
+      };
+
+      img.src = e.target.result; // Set the image source to the file's data URL
+    };
+
+    reader.readAsDataURL(awardFile); // Read the file as a data URL
+  }
+});
+
+closeUploadBtn.addEventListener("click", (ev) => {
+  editImageOverlay.style.display = "none";
+  const ctx = uploadCanvas.getContext("2d");
+  ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+
+  uploadAwardImg.value = "";
+});
 const achievementsTabContent = document.querySelector(
   ".admin-achievements-content"
 );
@@ -166,7 +253,9 @@ function generateAwards(awards, awardImages) {
 
     const imageEditBtn = awardItem.querySelector(`#edit-img-${award.award_id}`);
     imageEditBtn.addEventListener("click", (ev) => {
-      alert("EDITING IMAGE");
+      editImageOverlay.style.display = "flex";
+      editImageAwardId = award.award_id;
+      editImageUrl = awardImages[idx];
     });
 
     const awardImgDiv = awardItem.querySelector(`#award-div-${award.award_id}`);
@@ -177,7 +266,6 @@ function generateAwards(awards, awardImages) {
       imageEditBtn.style.display = "none";
     });
 
-    
     const awardEditBtn = awardItem.querySelector(`#ach-edit-${award.award_id}`);
     const awardSubmitBtn = awardItem.querySelector(
       `#ach-submit-${award.award_id}`

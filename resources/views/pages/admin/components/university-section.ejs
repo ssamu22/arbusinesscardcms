@@ -1,5 +1,16 @@
 <section id="university-section" class="university-contents">
-  <div class="edit-image-overlay"></div>
+  <div class="edit-image-overlay">
+    <div class="upload-image-div">
+      <button type="button" id="close-upload-div">X</button>
+      <div class="upload-container">
+        <canvas class="upload-canvas"></canvas>
+        <input type="file" id="file-awardupload" class="upload-btn" accept="image/*" />
+        <button type="button" id="submit-award-img" class="submit-btn" disabled>
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
 
   <h2>University Contents</h2>
   <div class="university-tabs">
