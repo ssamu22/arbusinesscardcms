@@ -58,10 +58,16 @@ exports.updateProfile = async (req, res) => {
         const { firstName, middleName, lastName, honorifics, introduction, position, researchFields, department } = req.body;
 
         // Sanitize researchFields
-        const formattedResearchFields = Array.isArray(researchFields)
-            ? researchFields.map(field => field.value) // Extract values if it's an array of objects
-            : JSON.parse(researchFields).map(field => field.value); // Parse and extract values if it's a JSON string
-
+        let formattedResearchFields = [];
+        if (researchFields && (Array.isArray(researchFields) || typeof researchFields === 'string')) {
+            if (Array.isArray(researchFields)) {
+                // Extract values if it's an array of objects
+                formattedResearchFields = researchFields.map(field => field.value);
+            } else {
+                // Parse and extract values if it's a JSON string
+                formattedResearchFields = JSON.parse(researchFields).map(field => field.value);
+            }
+        }
         // Create the updated profile data
         const updatedProfileData = {
                 first_name: firstName,
@@ -81,6 +87,11 @@ exports.updateProfile = async (req, res) => {
         await Employee.update(req.session.user.employee_id, updatedProfileData);
         
         // Update session with the new profile data, while preserving existing values
+        if (req.session.admin){
+            const adminSession = req.session.admin; // Store admin session data temporarily
+            req.session.admin = adminSession; // Restore the admin session
+            console.log(adminSession);
+        }
         req.session.user = {
             ...req.session.user, // Spread existing session values (preserve email, employee_id, etc.)
             first_name: firstName,

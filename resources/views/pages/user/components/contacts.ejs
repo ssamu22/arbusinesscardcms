@@ -3,8 +3,8 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 id="contact-name">Dr. John Carlo</h2>
-                    <p id="contact-title" class="text-muted">Professor</p>
+                    <h2 id="contact-name"></h2>
+                    <p id="contact-title" class="text-muted"></p>
                 </div>
                 <button id="edit-toggle" class="btn btn-primary">Edit</button>
             </div>
@@ -17,27 +17,43 @@
                             <label for="phone" class="form-label">Phone</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                <input type="tel" class="form-control" id="phone" name="phone" disabled>
+                                <input type="tel" class="form-control" placeholder="Enter your phone number" id="phone" name="phone" disabled>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="landline" class="form-label">Landline</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                <input type="tel" class="form-control" id="landline" name="landline" disabled>
+                                <input type="tel" class="form-control" placeholder="Enter your landline number" id="landline" name="landline" disabled>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" disabled>
+                                <input type="email" class="form-control" placeholder="Enter your email" id="email" name="email" disabled>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <h3 class="mt-4">Social Media</h3>
-                        <ul id="social-media-list" class="list-group"></ul>
+                        <ul id="social-media-list" class="list-group">
+                            <li class="list-group-item d-flex align-items-center">
+                                <div class="me-2"><!-- Icon for Facebook --></div>
+                                <span class="me-2" style="width: 150px;">Facebook</span>
+                                <input type="url" class="form-control" placeholder="Enter your Facebook URL" value="" data-index="0" disabled>
+                              </li>
+                              <li class="list-group-item d-flex align-items-center">
+                                <div class="me-2"><!-- Icon for Instagram --></div>
+                                <span class="me-2" style="width: 150px;">Instagram</span>
+                                <input type="url" class="form-control" placeholder="Enter your Instagram URL" value="" data-index="1" disabled>
+                              </li>
+                              <li class="list-group-item d-flex align-items-center">
+                                <div class="me-2"><!-- Icon for LinkedIn --></div>
+                                <span class="me-2" style="width: 150px;">LinkedIn</span>
+                                <input type="url" class="form-control" placeholder="Enter your LinkedIn URL" value="" data-index="2" disabled>
+                              </li>
+                        </ul>
                         <button id="add-social-media" class="btn btn-success mt-2" style="display: none;">Add Social Media</button>
                     </div>
                 </div>

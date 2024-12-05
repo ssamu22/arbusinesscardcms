@@ -214,7 +214,10 @@
               console.log(data);
               achievements = data; // Store fetched entries
 
-              renderAchievements(); // Render the fetched entries
+              if (achievements.length > 0) {
+                renderAchievements(); // Render the fetched entries
+              }
+              
             } catch (error) {
               console.error("Error fetching achievements:", error);
             }
@@ -684,7 +687,9 @@
               const response = await fetch("/api/organizations");
               const data = await response.json();
               organizations = data;
-              renderOrganizations();
+              if (organizations.length > 0) {
+                renderOrganizations();
+              }
             } catch (err) {
               console.error("Error:", err);
               alert("An error occurred while fetching organizations.");
@@ -1055,6 +1060,10 @@
           let contactInfo = {
             name: "",
             title: "",
+            phone: "",
+            landline: "",
+            email: "",
+            socialMedia: [],
           };
 
           async function fetchContacts() {
@@ -1066,22 +1075,26 @@
 
               const contacts = data.contacts;
 
-              contactInfo.contactId = contacts.contact_id;
-
               contactInfo.name = data.name;
               contactInfo.title = data.position;
 
-              // Update the fields in contactInfo based on the fetched contact data
-              contactInfo.phone = contacts.phone_number;
-              contactInfo.landline = contacts.landline;
-              contactInfo.email = contacts.email;
+              if(contacts){
+                if(contacts.contact_id){
+                  contactInfo.contactId = contacts.contact_id;
+                }
 
-              // Update social media URLs
-              contactInfo.socialMedia = [
-                { platform: "facebook", url: contacts.facebook_url || "" },
-                { platform: "instagram", url: contacts.instagram_url || "" },
-                { platform: "linkedin", url: contacts.linkedin_url || "" },
-              ];
+                // Update the fields in contactInfo based on the fetched contact data
+                contactInfo.phone = contacts.phone_number || "";
+                contactInfo.landline = contacts.landline || "";
+                contactInfo.email = contacts.email || "";
+
+                // Update social media URLs
+                contactInfo.socialMedia = [
+                  { platform: "facebook", url: contacts.facebook_url || "" },
+                  { platform: "instagram", url: contacts.instagram_url || "" },
+                  { platform: "linkedin", url: contacts.linkedin_url || "" },
+                ];
+              }
 
               renderContactInfo();
               renderSocialMedia();
@@ -1110,34 +1123,38 @@
           }
 
           function renderSocialMedia() {
-            socialMediaList.innerHTML = contactInfo.socialMedia
+            // Define static platforms
+            const platforms = ["facebook", "instagram", "linkedin"];
+          
+            // Initialize the list with static input fields
+            socialMediaList.innerHTML = platforms
               .map(
-                (social, index) => `
-                              <li class="list-group-item d-flex align-items-center">
-                                  <div class="me-2">${
-                                    socialMediaIcons[social.platform]
-                                  }</div>
-                                  <span class="me-2" style="width: 150px;">
-                                      ${
-                                        social.platform
-                                          .charAt(0)
-                                          .toUpperCase() +
-                                        social.platform.slice(1)
-                                      }
-                                  </span>
-                                  <input type="url" class="form-control" placeholder="Enter your ${
-                                    social.platform.charAt(0).toUpperCase() +
-                                    social.platform.slice(1)
-                                  } url" value="${
-                  social.url
-                }" data-index="${index}" ${!editMode ? "disabled" : ""}>
-                              </li>
-                          `
+                (platform, index) => `
+                  <li class="list-group-item d-flex align-items-center">
+                    <div class="me-2">${socialMediaIcons[platform] || ""}</div>
+                    <span class="me-2" style="width: 150px;">
+                      ${platform.charAt(0).toUpperCase() + platform.slice(1)}
+                    </span>
+                    <input type="url" class="form-control" placeholder="Enter your ${
+                      platform.charAt(0).toUpperCase() + platform.slice(1)
+                    } URL" value="" data-index="${index}" ${!editMode ? "disabled" : ""}>
+                  </li>
+                `
               )
               .join("");
-            //${editMode ? `
-            //            <button class="btn btn-danger btn-sm ms-2 remove-social-media" data-index="${index}">Remove</button>
-            //        ` : ''}
+          
+            // Populate the retrieved data from the database
+            if (contactInfo.socialMedia && Array.isArray(contactInfo.socialMedia)) {
+              contactInfo.socialMedia.forEach((social) => {
+                // Find the corresponding input for the platform
+                const input = socialMediaList.querySelector(
+                  `input[data-index="${platforms.indexOf(social.platform.toLowerCase())}"]`
+                );
+                if (input) {
+                  input.value = social.url || ""; // Set the value from the database
+                }
+              });
+            }
           }
 
           async function toggleEditMode() {
@@ -1154,6 +1171,7 @@
               );
               if (!isConfirmed) {
                 editToggle.disabled = false; // Re-enable if saving was cancelled
+                return;
               }
 
               editToggle.disabled = true; // Disable the button while saving
@@ -1176,7 +1194,7 @@
           async function saveContactInfo() {
             // Gather data from contactInfo
             const updatedContactInfo = {
-              contact_id: contactInfo.contactId,
+              ...contactInfo.contactId && { contact_id: contactInfo.contactId },
               phone_number: contactInfo.phone,
               landline: contactInfo.landline,
               email: contactInfo.email,

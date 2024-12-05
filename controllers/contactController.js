@@ -7,25 +7,18 @@ exports.getContacts = async (req, res) => {
     const employee_id = req.session.user.employee_id; // Get the user ID from the session
     try {
         const contacts = await Contact.getAllContact(employee_id); // Fetch user info from the database
-        const schedule = await Employee_schedule.getAllSchedule(employee_id); // Fetch schedule data from the database
         const honorifics = req.session.user.honorifics;
         const fname = req.session.user.first_name;
         const lname = req.session.user.last_name;
         const name = `${honorifics} ${fname} ${lname}`; // Combine first and last name to form the full name
         const position = req.session.user.position;
 
-        // Check if any contacts were retrieved
-        if (!contacts || contacts.length === 0) {
-            return res.status(404).json({ message: 'No contacts found for this employee.' });
-        }
-
-        console.log(JSON.stringify(contacts));
+        console.log(JSON.stringify(contacts || [])); // Log contacts or an empty array
 
         res.json({
             name,
             position,
-            contacts,
-            schedule
+            contacts: contacts || [], // Return an empty array if no contacts are found
         });
     } catch (error) {
         console.error(error);
@@ -34,30 +27,52 @@ exports.getContacts = async (req, res) => {
 };
 
 exports.updateContacts = async (req, res) => {
-    const { contact_id, phone_number, landline, email, facebook_url, instagram_url, linkedin_url } = req.body;
-    const employee_id = req.session.user.employee_id; 
+    const entry = req.body;
+    const employee_id = req.session.user.employee_id;
 
     try {
-        const contact = await Contact.getById(contact_id);
+        // Check if a contact exists for the given contact_id
+        if (entry.contact_id) {
+            const { contact_id, phone_number, landline, email, facebook_url, instagram_url, linkedin_url } = entry;
+            const contact = await Contact.getById(contact_id);
 
-        if (!contact || contact.employee_id !== employee_id) {
-            return res.status(404).json({ error: 'contact not found or unauthorized' });
+            if (contact) {
+                // If the contact exists and belongs to the current employee, update it
+                contact.phone_number = phone_number;
+                contact.landline = landline;
+                contact.email = email;
+                contact.facebook_url = facebook_url;
+                contact.instagram_url = instagram_url;
+                contact.linkedin_url = linkedin_url;
+
+                const updatedContact = await contact.save();
+                console.log(JSON.stringify(updatedContact));
+                return res.status(200).json(updatedContact); // Return updated contact
+            } else {
+                console.error(`Contact with ID ${contact_id} not found`);
+            }
+        } else {
+            // If no contact exists, create a new one
+            const { phone_number, landline, email, facebook_url, instagram_url, linkedin_url } = entry;
+            const newContact = new Contact(
+                null,
+                employee_id,
+                phone_number,
+                landline,
+                email,
+                facebook_url,
+                instagram_url,
+                linkedin_url,
+            );
+
+            const createdContact = await newContact.save(); // Call a create method to insert a new contact
+            console.log(JSON.stringify(createdContact));
+            return res.status(201).json(createdContact); // Return the newly created contact
         }
+        
 
-        contact.phone_number = phone_number;
-        contact.landline = landline;
-        contact.email = email;
-        contact.facebook_url = facebook_url;
-        contact.instagram_url = instagram_url;
-        contact.linkedin_url = linkedin_url;
-
-        const updatedcontact = await contact.save(); // Save the new contact
-
-        console.log(JSON.stringify(updatedcontact));
-
-        res.status(201).json(updatedcontact); // Return the created contact
     } catch (error) {
-        console.error('Error updating contact:', error);
-        res.status(500).json({ error: 'Failed to update contact' });
+        console.error('Error updating or creating contact:', error);
+        res.status(500).json({ error: 'Failed to update or create contact' });
     }
-}
+};

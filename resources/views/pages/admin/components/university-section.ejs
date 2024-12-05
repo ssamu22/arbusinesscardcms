@@ -4,8 +4,37 @@
       <button type="button" id="close-upload-div">X</button>
       <div class="upload-container">
         <canvas class="upload-canvas"></canvas>
-        <input type="file" id="file-awardupload" class="upload-btn" accept="image/*" />
+        <input
+          type="file"
+          id="file-awardupload"
+          class="upload-btn"
+          accept="image/*"
+        />
         <button type="button" id="submit-award-img" class="submit-btn" disabled>
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="add-award-overlay">
+    <div class="add-award-div">
+      <button type="button" id="close-add-div">X</button>
+      <div class="add-award-container">
+        <canvas class="add-award-canvas"></canvas>
+        <input
+          type="file"
+          id="file-add-award"
+          class="upload-btn"
+          accept="image/*"
+        />
+        <div>
+          <label for="new-cat-input">Category</label>
+          <input type="text" id="new-cat-input" value="" />
+          <label for="new-title-input">Title</label>
+          <input type="text" id="new-title-input" value="" />
+        </div>
+        <button type="button" id="submit-add-award" class="submit-btn">
           Submit
         </button>
       </div>
@@ -14,11 +43,11 @@
 
   <h2>University Contents</h2>
   <div class="university-tabs">
-    <div class="university-tab active" data-tab="home">Home</div>
-    <div class="university-tab" data-tab="achievements">Achievements</div>
+    <div class="university-tab active" data-tab="home">Principles</div>
+    <div class="university-tab" data-tab="achievements">Awards</div>
   </div>
   <div id="home-tab" class="university-tab-content active">
-    <div class="university-preview">
+    <!-- <div class="university-preview">
       <img
         id="preview-background"
         src="university-background.jpg"
@@ -52,7 +81,7 @@
           />
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- UNIVERSITY PRINCIPLES -->
     <div class="university-form">
@@ -171,7 +200,7 @@
         <div class="award-item-container"></div>
       </div>
     </div>
-    <button>Add Award</button>
+    <button id = "add-award-btn">Add Award</button>
   </div>
 </section>
 

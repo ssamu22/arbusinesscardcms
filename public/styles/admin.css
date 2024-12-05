@@ -220,6 +220,10 @@ header {
     color: #3498db;
     text-decoration: none;
 }
+.delete-btn {
+    color: #db3434;
+    text-decoration: none;
+}
 .pagination {
     display: flex;
     justify-content: space-between;
