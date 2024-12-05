@@ -1,41 +1,78 @@
-<nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-    <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="#" data-section="overview">
-                    <i class="bi bi-house-door me-2"></i> Overview
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-section="achievements">
-                    <i class="bi bi-trophy me-2"></i> Achievements
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-section="organizations">
-                    <i class="bi bi-building me-2"></i> Organizations
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-section="contacts">
-                    <i class="bi bi-person-lines-fill me-2"></i> Contacts
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-section="schedule">
-                    <i class="bi bi-calendar-event me-2"></i> Schedule
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-section="about-lpu-c">
-                    <i class="bi bi-info-circle me-2"></i> About LPU-C
-                </a>
-            </li>
-            <li class="nav-item mt-3">
-                <a class="nav-link text-danger" href="/logout">
-                    <i class="bi bi-box-arrow-right me-2"></i> Logout
-                </a>
-            </li>
-        </ul>
+<nav class="col-md-3 col-lg-2 d-md-block sidebar">
+    <div class="sidebar-header">
+        <div class="d-flex align-items-center">
+            <img src="/images/AwardImage.png" width="40px" height="40px">
+            <span class="sidebar-title">ARCMS</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+    <div class="position-sticky">
+        <!-- General Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header">
+                General
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="overview">
+                        <i class="bi bi-house-door"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="contacts">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Contacts</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Community Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header">
+                Community
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="organizations">
+                        <i class="bi bi-building me-2"></i> 
+                        <span>Organizations</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="achievements">
+                        <i class="bi bi-trophy me-2"></i> 
+                        <span>Achievements</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="schedule">
+                        <i class="bi bi-calendar-event me-2"></i> 
+                        <span>Schedule</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Other Links -->
+        <div class="sidebar-section">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="about-lpu-c">
+                        <i class="bi bi-info-circle me-2"></i> 
+                        <span>LPU-C</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-2">
+                    <a class="nav-link text-light logout" href="/logout">
+                        <i class="bi bi-box-arrow-right me-2 "></i> 
+                        <span>&nbspLogout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
