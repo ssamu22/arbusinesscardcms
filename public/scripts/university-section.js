@@ -248,7 +248,7 @@ async function uploadNewAwardImg(formData, formAwardId) {
     if (response.ok) {
       const result = await response.json(); // Assuming the response is JSON
       console.log("Success:", result);
-      alert("SUCCESS BRO");
+      alert("Successfully updated award logo!");
       document.querySelector(
         `#award-div-${formAwardId}`
       ).style.backgroundImage = `url('${result.data.image_url}')`;
