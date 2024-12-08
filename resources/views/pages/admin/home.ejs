@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="/styles/admin.css" />
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
   </head>
   <body>
     <div class="container">
@@ -79,58 +83,7 @@
         <!-- UNIVERSITY CONTENTS SECTION -->
         <%- include('./components/university-section.ejs')%>
 
-        <section
-          id="university-management-section"
-          class="university-management-section"
-        >
-          <h2 class="section-title">University Management</h2>
-          <div class="management-grid">
-            <div class="management-card">
-              <h3>Departments</h3>
-              <ul id="departments-list" class="management-list">
-                <!-- Departments will be dynamically added here -->
-              </ul>
-              <button class="add-btn" onclick="openModal('department')">
-                <i class="fas fa-plus"></i> Add Department
-              </button>
-            </div>
-            <div class="management-card">
-              <h3>Offices</h3>
-              <ul id="offices-list" class="management-list">
-                <!-- Offices will be dynamically added here -->
-              </ul>
-              <button class="add-btn" onclick="openModal('office')">
-                <i class="fas fa-plus"></i> Add Office
-              </button>
-            </div>
-            <div class="management-card">
-              <h3>Consultation Types</h3>
-              <ul id="consultation-types-list" class="management-list">
-                <!-- Consultation Types will be dynamically added here -->
-              </ul>
-              <button class="add-btn" onclick="openModal('consultation')">
-                <i class="fas fa-plus"></i> Add Consultation Type
-              </button>
-            </div>
-          </div>
-
-          <!-- Add/Edit Modal -->
-          <div id="management-modal" class="modal">
-            <div class="modal-content">
-              <span class="close" onclick="closeModal()">&times;</span>
-              <h3 id="modal-title">Add New Item</h3>
-              <form id="management-form" class="management-form">
-                <input
-                  type="text"
-                  id="item-name"
-                  required
-                  placeholder="Enter name"
-                />
-                <button type="submit" class="submit-btn">Save</button>
-              </form>
-            </div>
-          </div>
-        </section>
+        <%- include('./components/university-content-section.ejs')%>
 
         <%- include('./components/markers-section.ejs')%>
       </main>

@@ -114,6 +114,7 @@
 
             document.getElementById("introduction").value = data.introduction;
             document.getElementById("position").value = data.position;
+            document.getElementById("profile-picture").src = data.image_url;
 
             let fieldsInput = document.getElementById("researchFields");
             tagify = new Tagify(fieldsInput, {
@@ -146,6 +147,47 @@
           fetchDetails();
           fetchDepartments();
 
+          document.getElementById("profile-img").addEventListener("change", (evt) => {
+              const file = evt.target.files[0];
+              if (file) {
+                  const reader = new FileReader();
+                  reader.onload = function(e) {
+                      document.getElementById("profile-picture").src = e.target.result;
+                  };
+                  reader.readAsDataURL(file);
+              }
+          });
+
+          async function uploadImage(file, namePrefix) {
+            const formData = new FormData();
+            const extension = file.name.split(".").pop(); // Extract file extension
+            const fileName = `${namePrefix}.${extension}`; // Generate file name
+
+            // Determine the bucket based on the type of image
+            const bucket = "assets/employeeImages";
+
+            formData.append("file", file);
+            formData.append("bucket", bucket);
+            formData.append("fileName", fileName);
+
+            console.log("Uploading image: ", formData);
+
+            try {
+              const response = await fetch("/api/information/image", {
+                method: "POST",
+                body: formData,
+              });
+
+              if (response.ok) {
+                return await response.json(); // Returns { bucket, fileName, url }
+              } else {
+                console.error("Failed to upload image:", response.statusText);
+              }
+            } catch (error) {
+              console.error("Error uploading image:", error);
+            }
+          }
+
           document
             .getElementById("saveProfile")
             .addEventListener("click", async function (event) {
@@ -155,6 +197,13 @@
               if (confirm("Are you sure you want to update your profile?")) {
                 const form = document.getElementById("profileForm");
                 const formData = new FormData(form);
+
+                const profilePic = document.getElementById("profile-img").files[0];
+
+                if (profilePic) {
+                  const imageData = await uploadImage(profilePic, `profile`);
+                  formData.append("image_id", imageData.image_id);
+                }
 
                 // Convert form data to JSON
                 const data = {};
