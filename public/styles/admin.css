@@ -397,6 +397,10 @@ header {
     color: #db3434;
     text-decoration: none;
 }
+.edit-btn {
+    color: #2fa135;
+    text-decoration: none;
+}
 .pagination {
     display: flex;
     justify-content: space-between;
@@ -648,8 +652,13 @@ header {
     margin-bottom: 5px;
     border-radius: 4px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Space between text and buttons */
     align-items: center;
+}
+
+.items-list li .buttons {
+    display: flex; /* Arrange buttons in a row */
+    gap: 10px; /* Add space between buttons */
 }
 
 .items-list li button {
@@ -662,34 +671,62 @@ header {
     transition: background-color 0.3s;
 }
 
-.items-list li button:hover {
+.items-list li button.edit-btn {
+    background-color: #3498db; /* Blue for edit button */
+}
+
+.items-list li button.edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.items-list li button.delete-btn:hover {
     background-color: #c0392b;
 }
+
+#achievement-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+#achievement-list .left-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between the icon and name */
+} 
+
 .university-management-section {
-padding: 20px;
-background-color: #f8f9fa;
-border-radius: 8px;
-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
-.section-title {
-font-size: 24px;
-margin-bottom: 20px;
-color: #333;
-}
 
-.management-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-gap: 20px;
-}
-
-.management-card {
-background-color: #fff;
-border-radius: 8px;
-padding: 20px;
-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for Departments and Achievement Types */
+    gap: 20px;
+    grid-template-rows: auto 1fr; /* Auto rows for top, 1fr row for bottom */
+  }
+  
+  .management-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
 
 .management-card h3 {
 font-size: 18px;
@@ -706,16 +743,49 @@ overflow-y: auto;
 }
 
 .management-list li {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px;
-border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    border-radius: 4px;
 }
 
 .management-list li:last-child {
 border-bottom: none;
 }
+
+#faq-container {
+    margin-bottom: 20px;
+  }
+  #faq-section {
+    grid-column: span 2; /* Makes it span across both columns */
+    margin-top: 20px;
+  }
+  
+  
+  /* Grid for FAQ items */
+.faq-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for FAQs */
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .faq-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .faq-item input,
+  .faq-item textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
 
 .add-btn, .submit-btn {
 background-color: #3498db;

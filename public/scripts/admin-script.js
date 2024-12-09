@@ -173,6 +173,18 @@ const departments = [
   "Department of Computer Studies",
   "Department of Engineering",
   "Department of Architecture",
+  "Department of Computer Studies",
+  "Department of Engineering",
+  "Department of Architecture",
+  "Department of Computer Studies",
+  "Department of Engineering",
+  "Department of Architecture",
+  "Department of Computer Studies",
+  "Department of Engineering",
+  "Department of Architecture",
+  "Department of Computer Studies",
+  "Department of Engineering",
+  "Department of Architecture",
 ];
 const offices = [
   "COECSA Dean's Office",
@@ -184,6 +196,127 @@ const consultationTypes = [
   "Career Counseling",
   "Research Guidance",
 ];
+
+async function fetchDepartments() {
+  const response = await fetch("/api/departments");
+  const departments = await response.json();
+
+  const container = document.getElementById("departments-list");
+  container.innerHTML = "";
+
+  departments.forEach((department) => {
+    const li = document.createElement("li");
+    li.value = department.department_id;
+    li.textContent = department.department_name;
+
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "buttons";
+    
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    deleteBtn.className = "delete-btn";
+    deleteBtn.onclick = function () {
+      deleteItem(listId, item);
+    };
+
+    const editBtn = document.createElement("button");
+    editBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
+    editBtn.className = "edit-btn";
+    editBtn.onclick = function () {
+      deleteItem(listId, item);
+    };
+
+    buttonsContainer.appendChild(editBtn);
+    buttonsContainer.appendChild(deleteBtn);
+
+    li.appendChild(buttonsContainer);
+    container.appendChild(li);
+  });
+
+}
+
+async function fetchAchievementTypes() {
+  const container = document.getElementById("achievement-list");
+  const response = await fetch("/api/achievement-types");
+  const data = await response.json();
+
+  container.innerHTML = "";
+
+  data.forEach((type) => {
+    const li = document.createElement("li");
+    li.setAttribute("data-achievement-id", type.achievement_id);
+
+    // Create a container for the icon and name
+    const leftContainer = document.createElement("div");
+    leftContainer.className = "left-container";
+
+    // Parse the icon HTML string into a DOM element
+    const iconElement = document.createElement("span");
+    iconElement.innerHTML = type.icon;
+
+    // Create the name text node
+    const nameElement = document.createElement("span");
+    nameElement.className = "achievement-name";
+    nameElement.textContent =
+      type.name.charAt(0).toUpperCase() + type.name.slice(1);
+
+    // Append icon and name to the left container
+    leftContainer.appendChild(iconElement);
+    leftContainer.appendChild(nameElement);
+
+    // Create buttons container
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "buttons";
+
+    // Delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    deleteBtn.className = "delete-btn";
+    deleteBtn.onclick = function () {
+      deleteItem(type.achievement_id);
+    };
+
+    // Edit button
+    const editBtn = document.createElement("button");
+    editBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
+    editBtn.className = "edit-btn";
+    editBtn.onclick = function () {
+      editItem(type.achievement_id);
+    };
+
+    // Append buttons to the container
+    buttonsContainer.appendChild(editBtn);
+    buttonsContainer.appendChild(deleteBtn);
+
+    // Append containers to the list item
+    li.appendChild(leftContainer);
+    li.appendChild(buttonsContainer);
+
+    // Append the list item to the container
+    container.appendChild(li);
+  });
+}
+
+async function fetchFaqs() {
+  const container = document.getElementById("faq-items");
+  const response = await fetch("/admin/faq");
+  const data = await response.json();
+
+  data.forEach((faq, index) => {
+    const questionInput = document.getElementById(`faq-question-${index}`);
+    const answerTextarea = document.getElementById(`faq-answer-${index}`);
+
+    if (questionInput && answerTextarea) {
+      // Set the question and answer values
+      questionInput.value = faq.question;
+      answerTextarea.value = faq.answer;
+
+      // Also set the FAQ ID in the data-faq-id attribute
+      questionInput.setAttribute('data-faq-id', faq.faq_id);
+      answerTextarea.setAttribute('data-faq-id', faq.faq_id);
+    }
+  });
+}
 
 function populateList(listId, items) {
   const list = document.getElementById(listId);
@@ -257,9 +390,9 @@ function closeModal() {
 
 // Initialize lists
 document.addEventListener("DOMContentLoaded", function () {
-  populateList("departments-list", departments);
-  populateList("offices-list", offices);
-  populateList("consultation-types-list", consultationTypes);
+  fetchDepartments();
+  fetchAchievementTypes();
+  fetchFaqs();
 });
 
 // Close modal when clicking outside

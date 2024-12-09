@@ -55,7 +55,7 @@ exports.logout = (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { firstName, middleName, lastName, honorifics, introduction, position, researchFields, department } = req.body;
+        const { firstName, middleName, lastName, honorifics, introduction, position, researchFields, department, image_id } = req.body;
 
         // Sanitize researchFields
         let formattedResearchFields = [];
@@ -77,8 +77,11 @@ exports.updateProfile = async (req, res) => {
                 introduction: introduction,
                 position: position,
                 field: formattedResearchFields, 
-                department_id: department
+                department_id: department,
         };
+        if (image_id) {
+            updatedProfileData.image_id = image_id;
+        }
 
         console.log(updatedProfileData);
 

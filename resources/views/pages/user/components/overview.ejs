@@ -2,16 +2,17 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="profile-header">
-                <img src="images/tyrone.jpg" alt="Profile Picture" class="profile-picture">
+                <img src="" alt="Profile Picture" id="profile-picture" class="profile-picture">
                 <div class="profile-actions">
-                    <button class="btn-outline">
+                    <button onclick="document.getElementById('profile-img').click()" class="btn-outline">
                         <i class="bi bi-camera"></i>
                         Change
                     </button>
-                    <button class="btn-outline">
+                    <input type="file" id="profile-img" class="form-control" accept="image/png, image/jpeg, image/jpg" hidden>
+                    <!-- <button class="btn-outline">
                         <i class="bi bi-trash"></i>
                         Remove
-                    </button>
+                    </button> -->
                 </div>
             </div>
 
