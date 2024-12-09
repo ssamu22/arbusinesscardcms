@@ -47,146 +47,54 @@
     <div class="university-tab" data-tab="achievements">Awards</div>
   </div>
   <div id="home-tab" class="university-tab-content active">
-    <!-- <div class="university-preview">
-      <img
-        id="preview-background"
-        src="university-background.jpg"
-        alt="University Background"
-        class="university-preview-background"
-      />
-      <div class="university-preview-content">
-        <div class="university-preview-text">
-          <h3 id="preview-title">LPU Cavite Opens Doors to Community</h3>
-          <p id="preview-text">
-            LPU Cavite opens doors to community: Shared sports facilities boost
-            health and wellbeing.
-          </p>
-          <button id="preview-button">Read more</button>
-        </div>
-        <div class="university-carousel">
-          <img
-            id="preview-image-1"
-            src="university-image-1.jpg"
-            alt="University Image 1"
-          />
-          <img
-            id="preview-image-2"
-            src="university-image-2.jpg"
-            alt="University Image 2"
-          />
-          <img
-            id="preview-image-3"
-            src="university-image-3.jpg"
-            alt="University Image 3"
-          />
-        </div>
-      </div>
-    </div> -->
-
-    <!-- UNIVERSITY PRINCIPLES -->
     <div class="university-form">
       <h3>University Principles</h3>
+      <div class="principles-grid">
+        <div class="principle-column">
+          <!-- VISION FORM -->
+          <form action="/lpu/1/vision" id="vision-form" class="principle-form" method="POST">
+            <label for="lpu-vision">Vision</label>
+            <textarea id="lpu-vision" rows="2" class="lpu-principle" name="newText" disabled>University Vision</textarea>
+            <div class="button-group">
+              <button type="button" id="edit-vision" class="uni-edit-btn">Edit</button>
+              <button type="submit" id="submit-vision" class="uni-submit-btn">Submit</button>
+            </div>
+          </form>
 
-      <!-- VISION FORM -->
-      <form
-        action="/lpu/1/vision"
-        id="vision-form"
-        class="principle-form"
-        method="POST"
-      >
-        <label for="lpu-vision">Vision</label>
-        <textarea
-          id="lpu-vision"
-          rows="4"
-          class="lpu-principle"
-          name="newText"
-          disabled
-        >
-        University Vision</textarea
-        >
-        <button type="button" id="edit-vision" class="uni-edit-btn">
-          Edit
-        </button>
-        <button type="submit" id="submit-vision" class="uni-submit-btn">
-          Submit
-        </button>
-      </form>
+          <!-- MISSION FORM -->
+          <form action="/lpu/1/mission" id="mission-form" class="principle-form" method="POST">
+            <label for="lpu-mission">Mission</label>
+            <textarea id="lpu-mission" rows="2" class="lpu-principle" name="newText" disabled>University Mission</textarea>
+            <div class="button-group">
+              <button type="button" id="edit-mission" class="uni-edit-btn">Edit</button>
+              <button type="submit" id="submit-mission" class="uni-submit-btn">Submit</button>
+            </div>
+          </form>
+        </div>
 
-      <!-- MISSION FORM -->
-      <form
-        action="/lpu/1/mission"
-        id="mission-form"
-        class="principle-form"
-        method="POST"
-      >
-        <label for="lpu-mission">Misison</label>
-        <textarea
-          id="lpu-mission"
-          rows="4"
-          class="lpu-principle"
-          name="newText"
-          disabled
-        >
-        University Mission</textarea
-        >
-        <button type="button" id="edit-mission" class="uni-edit-btn">
-          Edit
-        </button>
-        <button type="submit" id="submit-mission" class="uni-submit-btn">
-          Submit
-        </button>
-      </form>
+        <div class="principle-column">
+          <!-- CORE VALUES FORM -->
+          <form action="/lpu/1/core_values" id="values-form" class="principle-form" method="POST">
+            <label for="lpu-values">Core Values</label>
+            <textarea id="lpu-values" rows="2" class="lpu-principle" name="newText" disabled>University Core Values</textarea>
+            <div class="button-group">
+              <button type="button" id="edit-values" class="uni-edit-btn">Edit</button>
+              <button type="submit" id="submit-values" class="uni-submit-btn">Submit</button>
+            </div>
+          </form>
 
-      <!-- CORE VALUES FORM -->
-      <form
-        action="/lpu/1/core_values"
-        id="values-form"
-        class="principle-form"
-        method="POST"
-      >
-        <label for="lpu-values">Core Values</label>
-        <textarea
-          id="lpu-values"
-          rows="4"
-          class="lpu-principle"
-          name="newText"
-          disabled
-        >
-        University Core Values</textarea
-        >
-        <button
-          type="button"
-          id="submit-values"
-          id="edit-values"
-          class="uni-edit-btn"
-        >
-          Edit
-        </button>
-        <button type="submit" class="uni-submit-btn">Submit</button>
-      </form>
-
-      <!-- PHILOSOPPHY FORM -->
-      <form
-        action="/lpu/1/philosophy"
-        id="philo-form"
-        class="principle-form"
-        method="POST"
-      >
-        <label for="lpu-philo">Philosophy</label>
-        <textarea
-          id="lpu-philo"
-          rows="4"
-          class="lpu-principle"
-          name="newText"
-          disabled
-        >
-        University Philosophy</textarea
-        >
-        <button type="button" id="edit-philo" class="uni-edit-btn">Edit</button>
-        <button type="submit" class="uni-submit-btn">Submit</button>
-      </form>
+          <!-- PHILOSOPHY FORM -->
+          <form action="/lpu/1/philosophy" id="philo-form" class="principle-form" method="POST">
+            <label for="lpu-philo">Philosophy</label>
+            <textarea id="lpu-philo" rows="2" class="lpu-principle" name="newText" disabled>University Philosophy</textarea>
+            <div class="button-group">
+              <button type="button" id="edit-philo" class="uni-edit-btn">Edit</button>
+              <button type="submit" class="uni-submit-btn">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-    <!-- END OF UNIVERSITY PRINCIPLES -->
   </div>
 
   <div
