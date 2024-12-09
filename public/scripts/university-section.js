@@ -558,3 +558,4 @@ function removeCancelClass(cancelBtn, submitBtn) {
   cancelBtn.classList.remove("cancel-btn");
   cancelBtn.textContent = "Edit";
 }
+

@@ -12,17 +12,20 @@
     <link rel="stylesheet" href="/styles/admin.css" />
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
+
   </head>
   <body>
     <div class="container">
       <aside class="sidebar">
-        <div class="logo">
-          <img
-            src="/images/temporary.jpg"
-            alt="ARCMS Logo"
-            style="border-radius: 2em"
-          />
-        </div>
+        <div class="sidebar-header">
+          <div class="d-flex">
+              <img src="/images/temporary.jpg" alt="Logo">
+              <span class="sidebar-title">ARCMS</span>
+          </div>
+          <button class="sidebar-toggle" id="sidebarToggle">
+              <i class="bi bi-chevron-left"></i>
+          </button>
+      </div>
         <div class="user-info">
           <img src="/images/tyrone.jpg" alt="User Avatar" class="avatar" />
           <div>
@@ -79,54 +82,46 @@
         <!-- UNIVERSITY CONTENTS SECTION -->
         <%- include('./components/university-section.ejs')%>
 
-        <section
-          id="university-management-section"
-          class="university-management-section"
-        >
-          <h2 class="section-title">University Management</h2>
-          <div class="management-grid">
-            <div class="management-card">
-              <h3>Departments</h3>
-              <ul id="departments-list" class="management-list">
+        <section id="university-management-section" class="university-management-section um-section">
+          <h2 class="section-title um-title">University Management</h2>
+          <div class="management-grid um-grid">
+            <div class="management-card um-card">
+              <h3 class="um-card-title"><i class="fas fa-building"></i> Departments</h3>
+              <ul id="departments-list" class="management-list um-list">
                 <!-- Departments will be dynamically added here -->
               </ul>
-              <button class="add-btn" onclick="openModal('department')">
+              <button class="add-btn um-add-btn" onclick="openModal('department')">
                 <i class="fas fa-plus"></i> Add Department
               </button>
             </div>
-            <div class="management-card">
-              <h3>Offices</h3>
-              <ul id="offices-list" class="management-list">
+            <div class="management-card um-card">
+              <h3 class="um-card-title"><i class="fas fa-briefcase"></i> Offices</h3>
+              <ul id="offices-list" class="management-list um-list">
                 <!-- Offices will be dynamically added here -->
               </ul>
-              <button class="add-btn" onclick="openModal('office')">
+              <button class="add-btn um-add-btn" onclick="openModal('office')">
                 <i class="fas fa-plus"></i> Add Office
               </button>
             </div>
-            <div class="management-card">
-              <h3>Consultation Types</h3>
-              <ul id="consultation-types-list" class="management-list">
+            <div class="management-card um-card">
+              <h3 class="um-card-title"><i class="fas fa-comments"></i> Consultation Types</h3>
+              <ul id="consultation-types-list" class="management-list um-list">
                 <!-- Consultation Types will be dynamically added here -->
               </ul>
-              <button class="add-btn" onclick="openModal('consultation')">
+              <button class="add-btn um-add-btn" onclick="openModal('consultation')">
                 <i class="fas fa-plus"></i> Add Consultation Type
               </button>
             </div>
           </div>
-
+        
           <!-- Add/Edit Modal -->
-          <div id="management-modal" class="modal">
-            <div class="modal-content">
-              <span class="close" onclick="closeModal()">&times;</span>
-              <h3 id="modal-title">Add New Item</h3>
-              <form id="management-form" class="management-form">
-                <input
-                  type="text"
-                  id="item-name"
-                  required
-                  placeholder="Enter name"
-                />
-                <button type="submit" class="submit-btn">Save</button>
+          <div id="management-modal" class="modal um-modal">
+            <div class="modal-content um-modal-content">
+              <span class="close um-close" onclick="closeModal()">&times;</span>
+              <h3 id="modal-title" class="um-modal-title">Add New Item</h3>
+              <form id="management-form" class="management-form um-form">
+                <input type="text" id="item-name" class="um-input" required placeholder="Enter name" />
+                <button type="submit" class="submit-btn um-submit-btn">Save</button>
               </form>
             </div>
           </div>

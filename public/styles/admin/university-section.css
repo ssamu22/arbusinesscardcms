@@ -1,10 +1,139 @@
+:root {
+  --primary-color: #9b3838;
+  --primary-dark: #6b1f1f;
+  --secondary-color: #af8e01;
+  --tertiary-color: #808080;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #ddd;
+}
+.university-contents {
+  padding: 20px;
+  background-color: var(--background-color);
+}
+.university-contents h2 {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin-bottom: 25px;
+}
+
+.university-tabs {
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.university-tab {
+  padding: 12px 24px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-weight: 500;
+  color: var(--tertiary-color);
+}
+
+.university-tab.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Principles Form Styling */
+.university-form {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.university-form h3 {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.principles-grid {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.principle-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.principle-form {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.principle-form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
 .lpu-principle {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
   resize: none;
 }
 
-.uni-submit-btn,
-.ach-submit-btn {
-  display: none;
+
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.lpu-principle:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.uni-edit-btn {
+  background-color: var(--secondary-color);
+  color: white;
+}
+.uni-edit-btn:hover {
+  background-color: #8f7501;
+}
+
+.uni-submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+.uni-edit-btn.cancel-btn {
+  background-color: var(--tertiary-color);
+}
+
+
+.uni-edit-btn.cancel-btn:hover {
+  background-color: #666;
+}
+.uni-edit-btn, .uni-submit-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+.uni-submit-btn:hover {
+  background-color: var(--primary-dark);
 }
 
 .award-image-div {
@@ -93,4 +222,120 @@
 .add-award-canvas {
   height: 300px;
   width: 300px;
+}
+
+.markers-section {
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.markers-section h2 {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.markers-section h3 {
+  color: var(--secondary-color);
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.markers-list {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.no-data-found {
+  text-align: center;
+  color: var(--tertiary-color);
+  padding: 20px;
+}
+
+.no-data-found img {
+  max-width: 200px;
+  margin-bottom: 10px;
+}
+
+.markers-section input[type="file"] {
+  display: none;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.file-upload-label:hover {
+  background-color: #8f7501;
+}
+
+.canvasDiv {
+  margin: 20px 0;
+  text-align: center;
+}
+
+#histoEqCanvas {
+  max-width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+#uploadForm {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 20px;
+}
+
+#uploadForm label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+#uploadForm input[type="text"],
+#uploadForm input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+#submitBCard {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#submitBCard:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+#submitBCard:disabled {
+  background-color: var(--tertiary-color);
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .markers-section {
+      padding: 15px;
+  }
 }

@@ -1,13 +1,15 @@
 <section id="markers-section" class="markers-section">
   <h2>About LPU-C</h2>
-  <div>
+  <div class="markers-list">
     <h3>List of registered Business Cards</h3>
-    <div class=""></div>
+    <div class="no-data-found">
+      <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
+      <p>No Data Found!</p>
+    </div>
   </div>
-  <!-- <div class="no-data-found">
-                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                <p>No Data Found!</p>
-            </div> -->
+  <label for="upload" class="file-upload-label">
+    <i class="fas fa-cloud-upload-alt"></i> Choose a file
+  </label>
   <input type="file" id="upload" accept="image/*" />
 
   <div class="canvasDiv">
@@ -20,7 +22,7 @@
     enctype="multipart/form-data"
     method="post"
   >
-    <label for="name">Marker Name</label>
+    <label for="marker-name">Marker Name</label>
     <input type="text" name="name" id="marker-name" placeholder="Marker Name" />
     <label for="marker-id">Employee ID</label>
     <input type="number" id="marker-id" />
