@@ -169,33 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-const departments = [
-  "Department of Computer Studies",
-  "Department of Engineering",
-  "Department of Architecture",
-  "Department of Computer Studies",
-  "Department of Engineering",
-  "Department of Architecture",
-  "Department of Computer Studies",
-  "Department of Engineering",
-  "Department of Architecture",
-  "Department of Computer Studies",
-  "Department of Engineering",
-  "Department of Architecture",
-  "Department of Computer Studies",
-  "Department of Engineering",
-  "Department of Architecture",
-];
-const offices = [
-  "COECSA Dean's Office",
-  "Human Resources Office",
-  "Quality Assurance Office",
-];
-const consultationTypes = [
-  "Academic Consultation",
-  "Career Counseling",
-  "Research Guidance",
-];
+
+// Functions for University management page
 
 async function fetchDepartments() {
   const response = await fetch("/api/departments");
@@ -207,32 +182,137 @@ async function fetchDepartments() {
   departments.forEach((department) => {
     const li = document.createElement("li");
     li.value = department.department_id;
-    li.textContent = department.department_name;
+
+    const nameContainer = document.createElement("span");
+    nameContainer.textContent = department.department_name;
+    nameContainer.className = "department-name";
 
     const buttonsContainer = document.createElement("div");
     buttonsContainer.className = "buttons";
     
     const deleteBtn = document.createElement("button");
-    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    deleteBtn.className = "delete-btn";
-    deleteBtn.onclick = function () {
-      deleteItem(listId, item);
+    deleteBtn.className = "delete-btn-dept";
+    deleteBtn.onclick = function (e) {
+      e.preventDefault();
+      if (confirm("Are you sure you want to delete this department?")){
+        deleteDepartment(department.department_id);
+      }
     };
 
     const editBtn = document.createElement("button");
-    editBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
-    editBtn.className = "edit-btn";
-    editBtn.onclick = function () {
-      deleteItem(listId, item);
+    editBtn.className = "edit-btn-dept";
+    editBtn.onclick = function (e) {
+      e.preventDefault();
+      toggleEditMode(department.department_id, nameContainer, editBtn, deleteBtn);
     };
 
     buttonsContainer.appendChild(editBtn);
     buttonsContainer.appendChild(deleteBtn);
 
+    li.appendChild(nameContainer);
     li.appendChild(buttonsContainer);
     container.appendChild(li);
   });
 
+  function toggleEditMode(departmentId, nameContainer, editBtn, deleteBtn) {
+    const isEditing = nameContainer.querySelector("input");
+  
+    if (isEditing) {
+      // Save mode
+      const input = nameContainer.querySelector("input");
+      const newName = input.value;
+  
+      // Replace input with text content
+      nameContainer.textContent = newName;
+  
+      // Revert button to Edit
+      editBtn.className = "edit-btn-dept";
+  
+      // Re-enable delete button
+      deleteBtn.disabled = false;
+      
+      saveDepartmentName(departmentId, newName);
+
+    } else {
+      // Edit mode
+      const currentName = nameContainer.textContent;
+  
+      // Replace text content with an input field
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentName;
+      input.className = "edit-input";
+
+      editBtn.classList.add("active");
+  
+      nameContainer.textContent = ""; // Clear current text
+      nameContainer.appendChild(input);
+  
+      // Disable delete button
+      deleteBtn.disabled = true;
+    }
+  }
+  
+}
+
+async function saveDepartmentName(departmentId, newName) {
+  try {
+    const response = await fetch(`/admin/department/${departmentId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ department_name: newName }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to save department name");
+      throw new Error("Failed to save department name.");
+    }
+
+    console.log("Department name updated successfully.");
+    alert("Department name updated successfully.");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function createDepartment(name) {
+  try {
+    const response = await fetch("/admin/department", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ department_name: name }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to create new department");
+      throw new Error("Failed to create new department.");
+    }
+
+    alert("New department created successfully.");
+    fetchDepartments();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteDepartment(departmentId) {
+  try {
+    const response = await fetch(`/admin/department/${departmentId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      alert("Failed to delete department");
+      throw new Error("Failed to delete department.");
+    }
+    alert("Department deleted successfully.");
+    fetchDepartments();
+  } catch (error) {
+    console.error("Failed to delete department: ", error);
+  }
 }
 
 async function fetchAchievementTypes() {
@@ -281,7 +361,7 @@ async function fetchAchievementTypes() {
     editBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
     editBtn.className = "edit-btn";
     editBtn.onclick = function () {
-      editItem(type.achievement_id);
+      
     };
 
     // Append buttons to the container
@@ -364,8 +444,7 @@ function openModal(type) {
     if (name) {
       switch (type) {
         case "department":
-          departments.push(name);
-          populateList("departments-list", departments);
+          createDepartment(name);
           break;
         case "office":
           offices.push(name);

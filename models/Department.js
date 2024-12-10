@@ -8,8 +8,6 @@ class Department {
     this.college_id = college_id;
     this.acronym = acronym;
   }
-
-  // Instance Methods: These will operate on the instance of the department (e.g., saving an instance)
   
   // Save the current instance (create or update)
   async save() {
@@ -19,8 +17,6 @@ class Department {
         .from('department')
         .update({
           department_name: this.department_name,
-          college_id: this.college_id,
-          acronym: this.acronym
         })
         .eq('department_id', this.department_id);
       
@@ -36,8 +32,6 @@ class Department {
         .from('department')
         .insert({
           department_name: this.department_name,
-          college_id: this.college_id,
-          acronym: this.acronym
         });
 
       if (error) {

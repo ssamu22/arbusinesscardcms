@@ -2,6 +2,7 @@
 :root {
   --primary-color: #9b3838;
   --primary-dark: #6b1f1f;
+  --primary-diabled: #f07d7d;
   --secondary-color: #af8e01;
   --tertiary-color: #808080;
   --background-color: #f8f9fa;
@@ -136,7 +137,7 @@
 
 .form-group input {
   width: 100%;
-  padding: 10px;
+  padding: 7px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 16px;
@@ -208,8 +209,11 @@
   border-color: var(--secondary-color);
 }
 
-  .edit-btn,
-.delete-btn {
+/* Base styles for both buttons */
+.edit-btn,
+.delete-btn,
+.edit-btn-dept,
+.delete-btn-dept {
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 14px;
@@ -218,35 +222,66 @@
   transition: all 0.3s;
 }
 
-.edit-btn {
+/* Styles specific to edit buttons */
+.edit-btn,
+.edit-btn-dept {
   background-color: var(--secondary-color);
   color: #fff;
 }
 
-.edit-btn:hover {
+.edit-btn:hover,
+.edit-btn-dept:hover {
   background-color: #8f7501;
 }
 
-.delete-btn {
+/* Styles specific to delete buttons */
+.delete-btn,
+.delete-btn-dept {
   background-color: var(--primary-color);
   color: #fff;
 }
 
-.delete-btn:hover {
+.delete-btn:hover,
+.delete-btn-dept:hover {
   background-color: var(--primary-dark);
+}
+
+.delete-btn-dept:disabled {
+  background-color: var(--primary-diabled);
 }
 
 /* Add icons to buttons */
 .edit-btn::before,
-.delete-btn::before {
+.delete-btn::before,
+.edit-btn-dept::before,
+.delete-btn-dept::before {
   font-family: "Font Awesome 5 Free";
   margin-right: 5px;
 }
 
-.edit-btn::before {
+.edit-btn::before,
+.edit-btn-dept::before {
   content: "\f044"; /* Edit icon */
 }
 
-.delete-btn::before {
+.edit-btn.active::before,
+.edit-btn-dept.active::before {
+  content: "\f00c"; /* Check icon */
+}
+
+.delete-btn::before,
+.delete-btn-dept::before {
   content: "\f2ed"; /* Trash icon */
+}
+
+.department-name {
+  width: 70%;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
 }
