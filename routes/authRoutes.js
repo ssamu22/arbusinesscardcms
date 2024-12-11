@@ -19,9 +19,11 @@ router.get('/', (req, res) => {
 
 // Route for login page
 router.get('/login', (req, res) => {
-  if (req.session.user) {
+    if (req.session.admin) {
+      res.redirect('/admin/home'); // Redirect to home if already logged in
+    } else if (req.session.user) {
       res.redirect('/home'); // Redirect to home if already logged in
-  } else {
+    } else {
       res.render('auth/user/login'); // Render login.ejs
   }
 });
@@ -55,9 +57,11 @@ router.post('/update-profile', ensureAuthenticated, authController.updateProfile
 // Route for admin login page
 router.get('/admin/login', (req, res) => {
   if (req.session.admin) {
-      res.redirect('/admin/home'); // Redirect to admin home if already logged in
+    res.redirect('/admin/home'); // Redirect to admin home if already logged in
+  } else if (req.session.user){
+    res.redirect('/home'); // Redirect to home if already logged in
   } else {
-      res.render('auth/admin/login'); // Render admin login page
+    res.render('auth/admin/login'); // Render admin login page
   }
 });
 
