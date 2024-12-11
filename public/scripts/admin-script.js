@@ -569,11 +569,11 @@ function handleFileSelect(event) {
 
       drawEnhancedImage(histoEqData, "histoEqCanvas");
 
-      addDownloadButton(
-        "histoEqCanvas",
-        "Download Histogram Equalized Image",
-        "histo-equalized.jpg"
-      );
+      // addDownloadButton(
+      //   "histoEqCanvas",
+      //   "Download Histogram Equalized Image",
+      //   "histo-equalized.jpg"
+      // );
     };
     img.src = e.target.result;
   };

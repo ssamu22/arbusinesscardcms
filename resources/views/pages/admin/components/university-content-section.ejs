@@ -1,68 +1,103 @@
-<section id="university-management-section" class="university-management-section">
-    <h2 class="section-title">University Management</h2>
-    <div class="management-grid">
-      <div class="management-card">
-        <h3>Departments</h3>
-        <ul id="departments-list" class="management-list">
-          <!-- Departments will be dynamically added here -->
-        </ul>
-        <button class="add-btn" onclick="openModal('department')">
-          <i class="fas fa-plus"></i> Add Department
-        </button>
-      </div>
-      <div class="management-card">
-        <h3>Achievement Types</h3>
-        <ul id="achievement-list" class="management-list">
-          <!-- Achievement types will be dynamically added here -->
-        </ul>
-        <button class="add-btn" onclick="openModal('achievement')">
-          <i class="fas fa-plus"></i> Add Achievement Type
-        </button>
-      </div>
-      <!-- FAQ section spans the full width at the bottom -->
-      <div id="faq-section" class="management-card">
-        <h3>FAQs</h3>
-        <div class="faq-items">
-          <div class="faq-item">
-            <label for="faq-question-0">Question 1:</label>
-            <input type="text" id="faq-question-0" placeholder="Enter the question">
-            <label for="faq-answer-0">Answer 1:</label>
-            <textarea id="faq-answer-0" placeholder="Enter the answer"></textarea>
-          </div>
-          <div class="faq-item">
-            <label for="faq-question-1">Question 2:</label>
-            <input type="text" id="faq-question-1" placeholder="Enter the question">
-            <label for="faq-answer-1">Answer 2:</label>
-            <textarea id="faq-answer-1" placeholder="Enter the answer"></textarea>
-          </div>
-          <div class="faq-item">
-            <label for="faq-question-2">Question 3:</label>
-            <input type="text" id="faq-question-2" placeholder="Enter the question">
-            <label for="faq-answer-2">Answer 3:</label>
-            <textarea id="faq-answer-2" placeholder="Enter the answer"></textarea>
-          </div>
-          <div class="faq-item">
-            <label for="faq-question-3">Question 4:</label>
-            <input type="text" id="faq-question-3" placeholder="Enter the question">
-            <label for="faq-answer-3">Answer 4:</label>
-            <textarea id="faq-answer-3" placeholder="Enter the answer"></textarea>
-          </div>
+<section
+  id="university-management-section"
+  class="university-management-section"
+>
+  <h2 class="section-title">University Management</h2>
+  <div class="management-grid">
+    <div class="management-card">
+      <h3>Departments</h3>
+      <ul id="departments-list" class="management-list">
+        <!-- Departments will be dynamically added here -->
+      </ul>
+      <button class="add-btn" onclick="openModal('department')">
+        <i class="fas fa-plus"></i> Add Department
+      </button>
+    </div>
+    <div class="management-card">
+      <h3>Achievement Types</h3>
+      <ul id="achievement-list" class="management-list">
+        <!-- Achievement types will be dynamically added here -->
+      </ul>
+      <button class="add-btn" onclick="openModal('achievement')">
+        <i class="fas fa-plus"></i> Add Achievement Type
+      </button>
+    </div>
+    <!-- FAQ section spans the full width at the bottom -->
+    <div id="faq-section" class="management-card">
+      <h3>FAQs</h3>
+      <div class="faq-items">
+        <div class="faq-item">
+          <label for="faq-question-0">Question 1:</label>
+          <input
+            type="text"
+            id="faq-question-0"
+            placeholder="Enter the question"
+          />
+          <label for="faq-answer-0">Answer 1:</label>
+          <textarea
+            class="faq-answers"
+            id="faq-answer-0"
+            placeholder="Enter the answer"
+          ></textarea>
         </div>
-        <button class="add-btn" onclick="openModal('faq')">
-          <i class="fas fa-plus"></i> Edit FAQs
-        </button>
+        <div class="faq-item">
+          <label for="faq-question-1">Question 2:</label>
+          <input
+            type="text"
+            id="faq-question-1"
+            placeholder="Enter the question"
+          />
+          <label for="faq-answer-1">Answer 2:</label>
+          <textarea
+            class="faq-answers"
+            id="faq-answer-1"
+            placeholder="Enter the answer"
+          ></textarea>
+        </div>
+        <div class="faq-item">
+          <label for="faq-question-2">Question 3:</label>
+          <input
+            type="text"
+            id="faq-question-2"
+            placeholder="Enter the question"
+          />
+          <label for="faq-answer-2">Answer 3:</label>
+          <textarea
+            class="faq-answers"
+            id="faq-answer-2"
+            placeholder="Enter the answer"
+          ></textarea>
+        </div>
+        <div class="faq-item">
+          <label for="faq-question-3">Question 4:</label>
+          <input
+            type="text"
+            id="faq-question-3"
+            placeholder="Enter the question"
+          />
+          <label for="faq-answer-3">Answer 4:</label>
+          <textarea
+            class="faq-answers"
+            id="faq-answer-3"
+            placeholder="Enter the answer"
+          ></textarea>
+        </div>
       </div>
+      <!-- <button class="add-btn" onclick="openModal('faq')">
+        <i class="fas fa-plus"></i> Edit FAQs
+      </button> -->
     </div>
-  
-    <!-- Add/Edit Modal -->
-    <div id="management-modal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3 id="modal-title">Add New Item</h3>
-        <form id="management-form" class="management-form">
-          <input type="text" id="item-name" required placeholder="Enter name" />
-          <button type="submit" class="submit-btn">Save</button>
-        </form>
-      </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="management-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title">Add New Item</h3>
+      <form id="management-form" class="management-form">
+        <input type="text" id="item-name" required placeholder="Enter name" />
+        <button type="submit" class="submit-btn">Save</button>
+      </form>
     </div>
-  </section>
+  </div>
+</section>
