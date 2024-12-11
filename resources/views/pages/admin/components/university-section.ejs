@@ -45,6 +45,7 @@
   <div class="university-tabs">
     <div class="university-tab active" data-tab="home">Principles</div>
     <div class="university-tab" data-tab="achievements">Awards</div>
+    <div class="university-tab" data-tab="events">Events</div>
   </div>
   <div id="home-tab" class="university-tab-content active">
     <div class="university-form">
@@ -110,6 +111,60 @@
     </div>
     <button id = "add-award-btn">Add Award</button>
   </div>
+
+
+  <div id="events-tab" class="university-tab-content">
+    <!-- Events List Section -->
+    <div class="events-content">
+      <div class="events-header">
+        <h3>University Events</h3>
+        <button id="add-event-btn" class="add-event-btn">
+          <i class="fas fa-plus"></i> Add New Event
+        </button>
+      </div>
+  
+      <div class="events-filters">
+        <div class="filter-group">
+          <input type="text" placeholder="Search events..." class="event-search">
+        </div>
+      </div>
+  
+      <div class="events-grid">
+        <!-- Events will be populated here dynamically -->
+      </div>
+    </div>
+  
+    <!-- Add/Edit Event Modal -->
+    <div id="event-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Add New Event</h3>
+        <form id="event-form" class="event-form">
+          <div class="form-group">
+            <label for="event-title">Event Title</label>
+            <input type="text" id="event-title" required>
+          </div>
+          <div class="form-group">
+            <label for="event-description">Description</label>
+            <textarea id="event-description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="event-date">Date</label>
+            <input type="datetime-local" id="event-date" required>
+          </div>
+          <div class="form-group">
+            <label for="event-image">Event Image</label>
+            <input type="file" id="event-image" accept="image/*">
+          </div>
+          <button type="submit" class="submit-btn">Save Event</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
 </section>
 
 <!-- <form id="achievements-form">
