@@ -1014,4 +1014,6 @@ border-radius: 5px;
     }
   }
 
-  
+  .faq-answers{
+    resize: none;
+  }

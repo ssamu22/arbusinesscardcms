@@ -115,6 +115,7 @@
 .uni-submit-btn {
   background-color: var(--primary-color);
   color: white;
+  display: none;
 }
 .uni-edit-btn.cancel-btn {
   background-color: var(--tertiary-color);
