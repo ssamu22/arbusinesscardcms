@@ -129,12 +129,12 @@ body {
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(201, 212, 44, 0.1);
   color: white;
 }
 
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #af8e01;
   color: white;
   font-weight: 500;
 }
@@ -187,9 +187,16 @@ body {
 }
 
 .logout {
+  font-size: 20px;
   margin-top: auto;
   padding: 0 12px;
+  
 }
+
+.logout .logout-side .fas{
+  color: white !important;
+}
+
 
 .logout .nav-link {
   font-size: x-large;
@@ -256,7 +263,7 @@ nav a {
     transition: background-color 0.3s;
 }
 nav a:hover {
-    background-color: #34495e;
+    background-color: #c9aa20;
 }
 nav a i {
     margin-right: 10px;
@@ -308,7 +315,7 @@ header {
     margin-bottom: 20px;
 }
 .add-member-btn {
-    background-color: #3498db;
+    background-color: #af8e01;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -317,7 +324,7 @@ header {
     transition: background-color 0.3s;
 }
 .add-member-btn:hover {
-    background-color: #2980b9;
+    background-color: #af8e01;
 }
 .members-actions {
     display: flex;
@@ -576,7 +583,7 @@ header {
 
 /* Add a style for the active sidebar link */
 .sidebar-active {
-    background-color: #3498db;
+    background-color: #af8e01;
 }
 
 /* New styles for University Management section */
@@ -676,7 +683,7 @@ header {
 }
 
 .items-list li button.edit-btn:hover {
-    background-color: #2980b9;
+    background-color: #af8e01;
 }
 
 .items-list li button.delete-btn:hover {
@@ -798,7 +805,7 @@ transition: background-color 0.3s;
 }
 
 .add-btn:hover, .submit-btn:hover {
-background-color: #2980b9;
+background-color: #af8e01;
 }
 
 .modal {
