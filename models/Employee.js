@@ -47,6 +47,26 @@ class Employee {
         this.#password = newPassword;
     }
 
+    static async changePassword(employee_id, newPassword) {
+        try {
+            const { data, error } = await supabase
+                .from('employee')
+                .update({ password: newPassword })
+                .eq('employee_id', employee_id);
+
+            if (error) {
+                throw new Error(`Failed to retrieve employee: ${error.message}`);
+            }
+
+            return data;
+
+        } catch (error) {
+            console.error(error.message);
+            throw error;
+
+        }
+    }
+
     // Create a new employee
     static async create(employeeData) {
         try {
@@ -67,6 +87,7 @@ class Employee {
     // Read an employee by ID
     static async findById(employee_id) {
         try {
+            employee_id = Number(employee_id);
             const { data, error } = await supabase
                 .from('employee')
                 .select('*')

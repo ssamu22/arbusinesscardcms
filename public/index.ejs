@@ -96,6 +96,8 @@
                 initializeSchedule();
               } else if (section === "about-lpu-c") {
                 initializeLPU();
+              } else if (section === "change-password") {
+                initializeChangePassword();
               }
             })
             .catch((error) => {
@@ -1958,6 +1960,67 @@
             return new ImageData(equalizedData, width, height);
           }
         }
+
+        function initializeChangePassword() {
+          const formContainer = document.getElementById('changePasswordForm');
+
+          const currentPassword = document.getElementById('currentPassword');
+          const newPassword = document.getElementById('newPassword');
+          const confirmPassword = document.getElementById('confirmPassword');
+
+          window.resetChangePasswordForm = () => {
+            formContainer.reset();
+          }
+
+          async function changePassword(){
+            const oldPassword = currentPassword.value.trim();
+            const updatedPassword = newPassword.value.trim();
+
+            const passwordData = {
+              oldPassword: oldPassword,
+              newPassword: updatedPassword,
+            };
+
+            try {
+              const response = await fetch("/change-password", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(passwordData),
+              });
+
+              const responseData = await response.json();
+          
+              if (!response.ok) {
+                throw new Error(responseData.message || "Failed to change password");
+              }
+          
+              console.log("Password successfully saved");
+              alert("Password updated successfully!");
+              resetChangePasswordForm();
+            } catch (error) {
+              console.error("Error saving password:", error);
+              alert(error.message);
+            }
+          }
+
+          formContainer.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+
+            if (newPassword.value.trim() !== confirmPassword.value.trim()) {
+              alert("Confirm password does not match the new password!");
+              return;
+            }
+
+            if (confirm("Do you want to save changes?")) {
+              await changePassword();
+            }
+
+            
+          });
+        }
+
         initializeOverview();
       });
     </script>
