@@ -1,40 +1,39 @@
+let activeEmployees = [];
+let inactiveEmployees = [];
+let currentPageForActive = 1;
+let currentPageForInactive = 1;
+const itemsPerPage = 5;
 
-let employees = []; 
-let currentPage = 1;
+// FOR ACTIVE EMPLOYEES
+const totalPagesActive = Math.ceil(activeEmployees.length / itemsPerPage);
+const tableBodyActive = document.getElementById("activeMembersTableBody");
 
-async function fetchAllEmployee() {
+async function fetchAllActiveEmployee() {
   try {
-    console.log("Fetching employee details...");
+    console.log("Fetching active employees...");
 
-    const response = await fetch("/admin/employees");
+    const response = await fetch("/admin/employees/active");
 
     if (!response.ok) {
-        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      throw new Error(`Failed to fetch employees: ${response.statusText}`);
     }
 
     const { employeesList } = await response.json();
 
-    employees = employeesList;
+    activeEmployees = employeesList;
 
-    // Step 5: Log the data to verify
-    console.log("Fetched Employees:", employees);
+    console.log("Fetched Active Employees:", activeEmployees);
 
-    displayMembers(currentPage); // Default to page 1
-    setupPagination();
+    displayActiveMembers(currentPageForActive); // Default to page 1
+    setupPaginationActive();
   } catch (error) {
     console.error("Error fetching employees:", error);
   }
 }
 
-// Number of items to display per page
-const itemsPerPage = 5;
-const totalPages = Math.ceil(employees.length / itemsPerPage);
-const tableBody = document.getElementById("membersTableBody");
-
-// Generate pagination buttons
-function setupPagination() {
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
-  const paginationContainer = document.querySelector(".number-buttons");
+function setupPaginationActive() {
+  const totalPages = Math.ceil(activeEmployees.length / itemsPerPage);
+  const paginationContainer = document.querySelector(".number-buttons-active");
 
   paginationContainer.innerHTML = ""; // Clear existing pagination buttons
   for (let i = 1; i <= totalPages; i++) {
@@ -45,52 +44,67 @@ function setupPagination() {
 
     pageButton.addEventListener("click", function (event) {
       event.preventDefault();
-      currentPage = i;
-      displayMembers(i);
-      updatePaginationState();
-      updateActivePage(i);
+      currentPageForActive = i;
+      displayActiveMembers(i);
+      updatePaginationStateForActive();
+      updateActivePageForActive(i);
     });
 
-    if (i === currentPage) {
+    if (i === currentPageForActive) {
       pageButton.classList.add("active");
     }
 
     paginationContainer.appendChild(pageButton);
   }
 
-  updatePaginationState();
+  updatePaginationStateForActive();
 }
 
-function updateActivePage(selectedPage) {
-  const pageButtons = document.querySelectorAll(".number-buttons a");
+function updateActivePageForActive(selectedPage) {
+  const pageButtons = document.querySelectorAll(".number-buttons-active a");
   pageButtons.forEach((btn) => {
     btn.classList.remove("active"); // Remove active class from all buttons
   });
 
-  const selectedButton = document.querySelector(`.number-buttons a:nth-child(${selectedPage})`);
+  const selectedButton = document.querySelector(
+    `.number-buttons-active a:nth-child(${selectedPage})`
+  );
   selectedButton.classList.add("active"); // Add active class to the clicked button
 }
 
-function updatePaginationState() {
-  const totalResults = employees.length;
-  const startIndex = (currentPage - 1) * itemsPerPage + 1;
-  const endIndex = Math.min(currentPage * itemsPerPage, totalResults);
+function updatePaginationStateForActive() {
+  const totalResults = activeEmployees.length;
+  const startIndex = (currentPageForActive - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPageForActive * itemsPerPage, totalResults);
 
-  document.querySelector(".pagination-info span:nth-child(1)").textContent = startIndex;
-  document.querySelector(".pagination-info span:nth-child(2)").textContent = endIndex;
-  document.querySelector(".pagination-info span:nth-child(3)").textContent = totalResults;
-  
+  document.querySelector(
+    ".pagination-info-active span:nth-child(1)"
+  ).textContent = startIndex;
+
+  document.querySelector(
+    ".pagination-info-active span:nth-child(2)"
+  ).textContent = endIndex;
+  document.querySelector(
+    ".pagination-info-active span:nth-child(3)"
+  ).textContent = totalResults;
 }
 
-async function displayMembers(pageNumber) {
+async function displayActiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const membersToDisplay = employees.slice(startIndex, endIndex);
+  const membersToDisplay = activeEmployees.slice(startIndex, endIndex);
 
-  tableBody.innerHTML = ""; // Clear existing content
+  tableBodyActive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
     const row = document.createElement("tr");
-    const name = (member.honorifics || "") + " " + member.first_name + " " + (member.middle_name || "") + " " + member.last_name;
+    const name =
+      (member.honorifics || "") +
+      " " +
+      member.first_name +
+      " " +
+      (member.middle_name || "") +
+      " " +
+      member.last_name;
     row.innerHTML = `
                 <td>${startIndex + index + 1}</td>
                 <td class="member-info">
@@ -102,15 +116,22 @@ async function displayMembers(pageNumber) {
                 </td>
                 <td>${member.date_created}</td>
                 <td>
-                  <a href="#" class="edit-btn" data-id="${member.employee_id}">Edit</a>
-                  &nbsp;|&nbsp;
-                  <a href="#" class="delete-btn" data-id="${member.employee_id}">Delete</a>
+                  <a href="#" class="delete-btn" data-id="${
+                    member.employee_id
+                  }">Delete</a>
                 </td>
             `;
-    tableBody.appendChild(row);
+
+    tableBodyActive.appendChild(row);
   });
 
-  const editButtons = document.querySelectorAll(".edit-btn");
+  /* 
+                    <a href="#" class="edit-btn-active" data-id="${
+                    member.employee_id
+                  }">Edit</a>
+  */
+
+  const editButtons = document.querySelectorAll(".edit-btn-active");
   const deleteButtons = document.querySelectorAll(".delete-btn");
   editButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -121,7 +142,163 @@ async function displayMembers(pageNumber) {
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-      const confirmation = confirm("Are you sure you want to delete this employee?");
+      const confirmation = confirm(
+        "Are you sure you want to delete this employee?"
+      );
+      if (confirmation) {
+        deleteUser(employeeId);
+      }
+    });
+  });
+}
+
+// FOR INACTIVE EMPLOYEES
+const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
+const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
+
+async function fetchAllInactiveEmployee() {
+  try {
+    console.log("Fetching inactive employees...");
+
+    const response = await fetch("/admin/employees/inactive");
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch employees: ${response.statusText}`);
+    }
+
+    const { employeesList } = await response.json();
+
+    inactiveEmployees = employeesList;
+
+    // Step 5: Log the data to verify
+    console.log("Fetched Inactive Employees:", inactiveEmployees);
+
+    displayInactiveMembers(currentPageForInactive); // Default to page 1
+    setupPaginationInactive();
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+  }
+}
+
+function setupPaginationInactive() {
+  const totalPages = Math.ceil(inactiveEmployees.length / itemsPerPage);
+  const paginationContainer = document.querySelector(
+    ".number-buttons-inactive"
+  );
+
+  paginationContainer.innerHTML = ""; // Clear existing pagination buttons
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("a");
+    pageButton.href = "#";
+    pageButton.textContent = i;
+    pageButton.classList.add("page-btn");
+
+    pageButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      currentPageForInactive = i;
+      displayInactiveMembers(i);
+      updatePaginationStateForInactive();
+      updateActivePageForInactive(i);
+    });
+
+    if (i === currentPageForInactive) {
+      pageButton.classList.add("active");
+    }
+
+    paginationContainer.appendChild(pageButton);
+  }
+
+  updatePaginationStateForInactive();
+}
+
+function updateActivePageForInactive(selectedPage) {
+  const pageButtons = document.querySelectorAll(".number-buttons-inactive a");
+
+  pageButtons.forEach((btn) => {
+    btn.classList.remove("active"); // Remove active class from all buttons
+  });
+
+  const selectedButton = document.querySelector(
+    `.number-buttons-inactive a:nth-child(${selectedPage})`
+  );
+  selectedButton.classList.add("active"); // Add active class to the clicked button
+}
+
+function updatePaginationStateForInactive() {
+  const totalResults = inactiveEmployees.length;
+  const startIndex = (currentPageForInactive - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(
+    currentPageForInactive * itemsPerPage,
+    totalResults
+  );
+
+  document.querySelector(
+    ".pagination-info-inactive span:nth-child(1)"
+  ).textContent = startIndex;
+  document.querySelector(
+    ".pagination-info-inactive span:nth-child(2)"
+  ).textContent = endIndex;
+  document.querySelector(
+    ".pagination-info-inactive span:nth-child(3)"
+  ).textContent = totalResults;
+}
+
+async function displayInactiveMembers(pageNumber) {
+  const startIndex = (pageNumber - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const membersToDisplay = inactiveEmployees.slice(startIndex, endIndex);
+
+  tableBodyInactive.innerHTML = ""; // Clear existing content
+  membersToDisplay.forEach((member, index) => {
+    const row = document.createElement("tr");
+    const name =
+      (member.honorifics || "") +
+      " " +
+      member.first_name +
+      " " +
+      (member.middle_name || "") +
+      " " +
+      member.last_name;
+    row.innerHTML = `
+                <td>${startIndex + index + 1}</td>
+                <td class="member-info">
+                    <div>
+                        <img src="${member.image_url}" alt="${name}">
+                        <div class="member-name">${name}</div>
+                        <div class="member-email">${member.email}</div>
+                    </div>
+                </td>
+                <td>${member.date_created}</td>
+                <td>
+                  <a href="#" class="edit-btn-inactive" data-id="${
+                    member.employee_id
+                  }">Accept</a>
+                  &nbsp;|&nbsp;
+                  <a href="#" class="delete-btn" data-id="${
+                    member.employee_id
+                  }">Deny</a>
+                </td>
+            `;
+    tableBodyInactive.appendChild(row);
+  });
+
+  const editButtons = document.querySelectorAll(".edit-btn-inactive");
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+  editButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const employeeId = event.target.getAttribute("data-id");
+
+      // CHANGE INACTIVE STATUS OF EMPLOYEE TO ACTIVE AND SEND AN EMAIL TO THEIR ACCOUNT
+      // USE EMPLOYEE ID AS A PARAMETER IN URL
+      // window.location.href = "/admin/employees/edit/" + employeeId;
+    });
+  });
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const employeeId = event.target.getAttribute("data-id");
+      const confirmation = confirm(
+        "Are you sure you want to delete this employee?"
+      );
       if (confirmation) {
         deleteUser(employeeId);
       }
@@ -135,7 +312,7 @@ async function deleteUser(employee_id) {
     const response = await fetch("/admin/employee/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify( {employee_id} ), // Wrap employee_id in an object
+      body: JSON.stringify({ employee_id }), // Wrap employee_id in an object
     });
 
     const result = await response.json();
@@ -144,11 +321,13 @@ async function deleteUser(employee_id) {
       alert("User deleted successfully!");
 
       // Remove the deleted employee from the employees array
-      employees = employees.filter(employee => employee.employee_id !== employee_id);
+      activeEmployees = activeEmployees.filter(
+        (employee) => employee.employee_id !== employee_id
+      );
 
       // Update the display and pagination
-      displayMembers(currentPage); // Use the current page or update as necessary
-      setupPagination();
+      displayActiveMembers(currentPageForActive); // Use the current page or update as necessary
+      setupPaginationActive();
     } else {
       alert(`Error: ${result.error}`);
     }
@@ -182,45 +361,47 @@ window.addEventListener("click", (event) => {
 });
 
 // Handle form submission
-document.getElementById("userForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
+document
+  .getElementById("userForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  const formData = new FormData(event.target);
-  const userData = Object.fromEntries(formData.entries());
-  
-  submitBtn.textContent = "Loading...";
-  submitBtn.disabled = true;
+    const formData = new FormData(event.target);
+    const userData = Object.fromEntries(formData.entries());
 
-  try {
-    const response = await fetch("/admin/employees", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
+    submitBtn.textContent = "Loading...";
+    submitBtn.disabled = true;
 
-    const result = await response.json();
+    try {
+      const response = await fetch("/admin/employees", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
 
-    if (response.ok) {
-      alert("User created successfully!");
-      submitBtn.textContent = "Save";
-      submitBtn.disabled = false;
-      modal.style.display = "none";
-      event.target.reset();
+      const result = await response.json();
 
-      const { employee } = result;
-      
-      employees.push(employee);
-      displayMembers(currentPage); // Default to page 1
-      setupPagination();
+      if (response.ok) {
+        alert("User created successfully!");
+        submitBtn.textContent = "Save";
+        submitBtn.disabled = false;
+        modal.style.display = "none";
+        event.target.reset();
 
-    } else {
-      alert(`Error: ${result.error}`);
+        const { employee } = result;
+
+        activeEmployees.push(employee);
+        displayActiveMembers(currentPageForActive); // Default to page 1
+        setupPaginationActive();
+      } else {
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("An error occurred while creating the user.");
     }
-  } catch (error) {
-    console.error("Error creating user:", error);
-    alert("An error occurred while creating the user.");
-  }
-});
+  });
 
 // Call the function to populate the table when the page loads
-fetchAllEmployee();
+fetchAllActiveEmployee();
+fetchAllInactiveEmployee();

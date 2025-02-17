@@ -7,6 +7,7 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 const ensureAdmin = (req, res, next) => {
+  console.log("CURRENT SESSION: ", req.session);
   if (req.session.admin) {
       return next(); // Proceed if authenticated
   } else {

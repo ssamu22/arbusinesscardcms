@@ -314,7 +314,7 @@ header {
     align-items: center;
     margin-bottom: 20px;
 }
-.add-member-btn {
+.add-member-btn, .approve-member-btn {
     background-color: #af8e01;
     color: #fff;
     border: none;
@@ -323,7 +323,7 @@ header {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-.add-member-btn:hover {
+.add-member-btn:hover, .approve-member-btn:hover {
     background-color: #af8e01;
 }
 .members-actions {
