@@ -214,7 +214,10 @@
 .edit-btn-active,
 .delete-btn,
 .edit-btn-dept,
-.delete-btn-dept {
+.edit-btn-ach,
+.delete-btn-dept,
+.delete-btn-ach,
+.edit-btn-faq {
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 14px;
@@ -227,6 +230,7 @@
 .edit-btn-inactive,
 .edit-btn-active,
 .edit-btn-dept {
+
   background-color: var(--secondary-color);
   color: #fff;
 }
@@ -234,22 +238,26 @@
 .edit-btn-inactive:hover,
 .edit-btn-active:hover,
 .edit-btn-dept:hover {
+
   background-color: #8f7501;
 }
 
 /* Styles specific to delete buttons */
 .delete-btn,
-.delete-btn-dept {
+.delete-btn-dept,
+.delete-btn-ach {
   background-color: var(--primary-color);
   color: #fff;
 }
 
 .delete-btn:hover,
-.delete-btn-dept:hover {
+.delete-btn-dept:hover,
+.delete-btn-ach {
   background-color: var(--primary-dark);
 }
 
-.delete-btn-dept:disabled {
+.delete-btn-dept:disabled,
+.delete-btn-ach:disabled {
   background-color: var(--primary-diabled);
 }
 
@@ -258,7 +266,10 @@
 .edit-btn-active::before,
 .delete-btn::before,
 .edit-btn-dept::before,
-.delete-btn-dept::before {
+.edit-btn-ach::before,
+.edit-btn-faq::before,
+.delete-btn-dept::before,
+.delete-btn-ach::before {
   font-family: "Font Awesome 5 Free";
   margin-right: 5px;
 }
@@ -271,11 +282,13 @@
 .edit-btn-inactive::before,
 .edit-btn-active.active::before,
 .edit-btn-dept.active::before {
+
   content: "\f00c"; /* Check icon */
 }
 
 .delete-btn::before,
-.delete-btn-dept::before {
+.delete-btn-dept::before,
+.delete-btn-ach::before {
   content: "\f2ed"; /* Trash icon */
 }
 
@@ -289,4 +302,47 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 16px;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 200px;
+}
+
+.dropdown-menu li {
+  padding: 8px;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

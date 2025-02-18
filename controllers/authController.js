@@ -236,3 +236,31 @@ exports.approveUser = async (req, res) => {
     data: user,
   });
 };
+
+
+exports.changePassword = async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const employee_id = req.session.user.employee_id;
+    try {
+        const employee = await Employee.findById(employee_id);
+
+        if (!employee) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const checkPassword = await employee.validatePassword(oldPassword);
+        if (!checkPassword) {
+            return res.status(401).json({ message: 'Current password is incorrect!' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await Employee.changePassword(employee_id, hashedPassword);
+
+        res.status(200).json({ message: 'Password changed successfully!' });
+
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: 'Failed to change password' });
+    }
+}

@@ -41,14 +41,8 @@ router.get("/logout", authController.logout);
 router.get("/home/:page", ensureAuthenticated, (req, res) => {
   const page = req.params.page;
   const isAdmin = req.session.admin || null;
-  const allowedPages = [
-    "overview",
-    "achievements",
-    "organizations",
-    "contacts",
-    "schedule",
-    "about-lpu-c",
-  ];
+
+  const allowedPages = ['overview', 'achievements', 'organizations', 'contacts', 'schedule', 'about-lpu-c', 'change-password'];
   if (allowedPages.includes(page)) {
     res.render(`pages/user/components/${page}`, {
       user: req.session.user,
@@ -103,5 +97,8 @@ router.get("/admin/home", ensureAuthenticated.ensureAdmin, (req, res) => {
   const adminPath = "resources/views/pages/admin";
   res.render(path.join(__dirname, "..", adminPath, "home.ejs"), { admin });
 });
+
+
+router.post("/change-password", authController.changePassword);
 
 module.exports = router;

@@ -24,7 +24,12 @@
     </div>
     <!-- FAQ section spans the full width at the bottom -->
     <div id="faq-section" class="management-card">
-      <h3>FAQs</h3>
+      <div class="section-header">
+        <h3>FAQs</h3>
+        <button class="edit-btn-faq" onclick="editFAQs(this)">
+          Edit
+        </button>
+      </div>
       <div class="faq-items">
         <div class="faq-item">
           <label for="faq-question-0">Question 1:</label>
@@ -32,12 +37,14 @@
             type="text"
             id="faq-question-0"
             placeholder="Enter the question"
+            disabled
           />
           <label for="faq-answer-0">Answer 1:</label>
           <textarea
             class="faq-answers"
             id="faq-answer-0"
             placeholder="Enter the answer"
+            disabled
           ></textarea>
         </div>
         <div class="faq-item">
@@ -46,12 +53,14 @@
             type="text"
             id="faq-question-1"
             placeholder="Enter the question"
+            disabled
           />
           <label for="faq-answer-1">Answer 2:</label>
           <textarea
             class="faq-answers"
             id="faq-answer-1"
             placeholder="Enter the answer"
+            disabled
           ></textarea>
         </div>
         <div class="faq-item">
@@ -60,12 +69,14 @@
             type="text"
             id="faq-question-2"
             placeholder="Enter the question"
+            disabled
           />
           <label for="faq-answer-2">Answer 3:</label>
           <textarea
             class="faq-answers"
             id="faq-answer-2"
             placeholder="Enter the answer"
+            disabled
           ></textarea>
         </div>
         <div class="faq-item">
@@ -74,12 +85,14 @@
             type="text"
             id="faq-question-3"
             placeholder="Enter the question"
+            disabled
           />
           <label for="faq-answer-3">Answer 4:</label>
           <textarea
             class="faq-answers"
             id="faq-answer-3"
             placeholder="Enter the answer"
+            disabled
           ></textarea>
         </div>
       </div>
@@ -96,6 +109,10 @@
       <h3 id="modal-title">Add New Item</h3>
       <form id="management-form" class="management-form">
         <input type="text" id="item-name" required placeholder="Enter name" />
+        <div id="icon-selection-container" style="display: none;">
+          <label for="icon-select">Select an Icon:</label>
+          <select id="icon-select"></select>
+        </div>
         <button type="submit" class="submit-btn">Save</button>
       </form>
     </div>

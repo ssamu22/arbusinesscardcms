@@ -171,6 +171,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // Functions for University management page
+const availableIcons = [
+  { class: "bi bi-award", label: "Award" },
+  { class: "bi bi-trophy", label: "Trophy" },
+  { class: "bi bi-star", label: "Star" },
+  { class: "bi bi-ribbon", label: "Ribbon" },
+  { class: "bi bi-gem", label: "Gem" },
+  { class: "bi bi-book", label: "Book" },
+  { class: "bi bi-mortarboard", label: "Mortarboard" },
+  { class: "bi bi-pencil", label: "Pencil" },
+  { class: "bi bi-journal-text", label: "Journal Text" },
+  { class: "bi bi-person-video3", label: "Person Video" },
+  { class: "bi bi-briefcase", label: "Briefcase" },
+  { class: "bi bi-diagram-3", label: "Hierarchy Diagram" },
+  { class: "bi bi-building", label: "Building" },
+  { class: "bi bi-person-badge", label: "Person Badge" },
+  { class: "bi bi-pie-chart", label: "Pie Chart" },
+  { class: "bi bi-tools", label: "Tools" },
+  { class: "bi bi-lightbulb", label: "Lightbulb" },
+  { class: "bi bi-gear", label: "Gear" },
+  { class: "bi bi-robot", label: "Robot" },
+  { class: "bi bi-puzzle", label: "Puzzle Piece" },
+  { class: "bi bi-people", label: "People" },
+  { class: "bi bi-hand-thumbs-up", label: "Thumbs Up" },
+  { class: "bi bi-heart", label: "Heart" },
+  { class: "bi bi-chat-dots", label: "Chat Dots" },
+  { class: "bi bi-flag", label: "Flag" },
+  { class: "bi bi-palette", label: "Palette" },
+  { class: "bi bi-music-note", label: "Music Note" },
+  { class: "bi bi-camera", label: "Camera" },
+  { class: "bi bi-film", label: "Film" },
+  { class: "bi bi-quill-pen", label: "Quill Pen" },
+  { class: "bi bi-globe", label: "Globe" },
+  { class: "bi bi-cloud", label: "Cloud" },
+  { class: "bi bi-shield-check", label: "Shield Check" },
+  { class: "bi bi-calendar-check", label: "Calendar Check" },
+  { class: "bi bi-three-dots", label: "Three Dots" }
+];
+
 
 async function fetchDepartments() {
   const response = await fetch("/api/departments");
@@ -252,7 +290,6 @@ async function fetchDepartments() {
       deleteBtn.disabled = true;
     }
   }
-  
 }
 
 async function saveDepartmentName(departmentId, newName) {
@@ -350,18 +387,18 @@ async function fetchAchievementTypes() {
 
     // Delete button
     const deleteBtn = document.createElement("button");
-    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    deleteBtn.className = "delete-btn";
+    deleteBtn.className = "delete-btn-ach";
     deleteBtn.onclick = function () {
-      deleteItem(type.achievement_id);
+      if(confirm("Are you sure you want to delete this achievement type?")) {
+        deleteAchievemenType(type.achievement_id);
+      }
     };
 
     // Edit button
     const editBtn = document.createElement("button");
-    editBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
-    editBtn.className = "edit-btn";
+    editBtn.className = "edit-btn-ach";
     editBtn.onclick = function () {
-      
+      toggleEditMode(type, iconElement, nameElement, editBtn, deleteBtn);
     };
 
     // Append buttons to the container
@@ -375,6 +412,128 @@ async function fetchAchievementTypes() {
     // Append the list item to the container
     container.appendChild(li);
   });
+
+  function toggleEditMode(type, iconElement, nameElement, editBtn, deleteBtn) {
+    const isEditing = nameElement.querySelector("input");
+
+    if (isEditing) {
+      // Save mode
+      const input = nameElement.querySelector("input");
+      const newName = input.value;
+
+      const select = iconElement.querySelector("select");
+      const newIconClass = select.value;
+
+      // Replace inputs with updated content
+      nameElement.textContent = newName;
+      iconElement.innerHTML = `<i class="${newIconClass}"></i>`;
+
+      // Revert button to Edit
+      editBtn.classList.remove("active");
+      deleteBtn.disabled = false;
+
+      updateAchievement(type.achievement_id, newName, iconElement.innerHTML);
+    } else {
+      // Edit mode
+      const currentName = nameElement.textContent;
+
+      // Replace name with input field
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.value = currentName;
+      nameInput.className = "edit-input";
+
+      nameElement.textContent = ""; // Clear current text
+      nameElement.appendChild(nameInput);
+
+      // Replace icon with a dropdown
+      const select = document.createElement("select");
+      select.className = "edit-input";
+      availableIcons.forEach((icon) => {
+        const option = document.createElement("option");
+        option.value = icon.class;
+        option.innerHTML = `<i class="${icon.class}"></i> ${icon.label}`;
+        if (icon.class === type.icon) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+
+      iconElement.textContent = ""; // Clear current icon
+      iconElement.appendChild(select);
+
+      // Change button to Save and disable delete
+      editBtn.classList.add("active");
+      deleteBtn.disabled = true;
+    }
+  }
+}
+
+async function updateAchievement(achievement_id, newName, newIconClass) {
+  try {
+    const response = await fetch(`/admin/achievement/${achievement_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        name: newName,
+        icon: newIconClass,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to save Achievement type");
+      throw new Error("Failed to save Achievement type.");
+    }
+
+    console.log("Achievement type updated successfully.");
+    alert("Achievement type updated successfully.");
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+async function createAchievementType(name, icon) {
+  try {
+    const response = await fetch("/admin/achievement", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        icon: icon,
+      }),
+    });
+    if (!response.ok) {
+      alert("Failed to save Achievement type");
+      throw new Error("Failed to save Achievement type.");
+    }
+
+    console.log("Achievement type created successfully.");
+    alert("Achievement type created successfully.");
+    fetchAchievementTypes();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteAchievemenType(achievement_id) {
+  try {
+    const response = await fetch(`/admin/achievement/${achievement_id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      alert("Failed to delete Achievement type");
+      throw new Error("Failed to delete Achievement type.");
+    }
+    alert("Achievement type deleted successfully.");
+    fetchAchievementTypes();
+  } catch (error) {
+    console.error("Failed to delete achievement type: ", error);
+  }
 }
 
 async function fetchFaqs() {
@@ -397,6 +556,72 @@ async function fetchFaqs() {
     }
   });
 }
+
+function editFAQs(button) {
+  const faqItems = document.querySelectorAll(".faq-item");
+
+  if (!button.classList.contains("active")) {
+    // Enter edit mode
+    button.classList.add("active");
+    button.textContent = "Save"; // Change button text to Save
+    faqItems.forEach((faq) => {
+      const questionInput = faq.querySelector("input");
+      const answerTextarea = faq.querySelector("textarea");
+      questionInput.disabled = false; // Enable inputs
+      answerTextarea.disabled = false;
+    });
+  } else {
+    // Save changes
+    button.classList.remove("active");
+    button.textContent = "Edit"; // Change button text back to Edit
+    faqItems.forEach((faq) => {
+      const questionInput = faq.querySelector("input");
+      const answerTextarea = faq.querySelector("textarea");
+      questionInput.disabled = true; // Disable inputs
+      answerTextarea.disabled = true;
+    });
+
+    // Optionally, save changes to a server or localStorage here
+    if (confirm("Do you want to save changes?")){
+      saveFAQs();
+    }
+    
+  }
+}
+
+async function saveFAQs() {
+  const faqItems = document.querySelectorAll(".faq-item");
+  const faqData = [];
+
+  faqItems.forEach((faq) => {
+    const question = faq.querySelector("input").value.trim();
+    const answer = faq.querySelector("textarea").value.trim();
+    const faq_id = Number(faq.querySelector("input").getAttribute("data-faq-id"));
+
+    faqData.push({ faq_id, question, answer });
+  });
+
+  try {
+    const response = await fetch("/admin/faq", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(faqData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save FAQs. Please try again.");
+    }
+
+    console.log("FAQs successfully saved:");
+    alert("FAQs updated successfully!");
+  } catch (error) {
+    console.error("Error saving FAQs:", error);
+    alert("An error occurred while saving FAQs.");
+  }
+}
+
 
 function populateList(listId, items) {
   const list = document.getElementById(listId);
@@ -436,8 +661,27 @@ function openModal(type) {
   const modal = document.getElementById("management-modal");
   const title = document.getElementById("modal-title");
   const form = document.getElementById("management-form");
+  const iconContainer = document.getElementById("icon-selection-container");
+  const iconSelect = document.getElementById("icon-select");
+
+  // Show the icon selection dropdown only for achievements
+  if (type === "achievement") {
+    iconContainer.style.display = "block";
+
+    // Populate the dropdown with available icons
+    iconSelect.innerHTML = "";
+    availableIcons.forEach((icon) => {
+      const option = document.createElement("option");
+      option.value = icon.class;
+      option.innerHTML = `<i class="${icon.class}"></i> ${icon.label}`;
+      iconSelect.appendChild(option);
+    });
+  } else {
+    iconContainer.style.display = "none";
+  }
 
   title.textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
   form.onsubmit = function (e) {
     e.preventDefault();
     const name = document.getElementById("item-name").value;
@@ -446,9 +690,9 @@ function openModal(type) {
         case "department":
           createDepartment(name);
           break;
-        case "office":
-          offices.push(name);
-          populateList("offices-list", offices);
+        case "achievement":
+          const icon = `<i class="${iconSelect.value}"></i>`;
+          createAchievementType(name, icon);
           break;
         case "consultation":
           consultationTypes.push(name);

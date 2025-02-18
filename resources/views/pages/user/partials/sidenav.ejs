@@ -60,13 +60,23 @@
         <!-- Other Links -->
         <div class="sidebar-section">
             <ul class="nav flex-column">
-                
-                <li class="nav-item" style = "display: none;">
-                    <a class="nav-link" href="#" data-section="about-lpu-c">
-                        <i class="bi bi-info-circle me-2"></i> 
+                <% if (isAdmin) { %>
+                    <li class="nav-item" style = "display: none;">
+                        <a class="nav-link" href="#" data-section="about-lpu-c">
+                            <i class="bi bi-info-circle me-2"></i> 
                         <span>LPU-C</span>
-                    </a>
-                </li>
+                        </a>
+                    </li>
+                <% } else {%>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="change-password">
+                            <i class="bi bi-key"></i>
+                            <span>Change Password</span>
+                        </a>
+                    </li>
+                <% } %>
+
+                
                 <li class="nav-item mt-2">
                     <% if (isAdmin) { %>
                         <a class="nav-link text-light logout" href="/admin/home">

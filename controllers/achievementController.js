@@ -144,3 +144,66 @@ exports.deleteAchievement = async (req, res) => {
         res.status(500).json({ error: 'Failed to delete achievement' });
     }
 }
+
+// update achievement type
+exports.updateAchievementType = async (req, res) => {
+    const { achievement_id } = req.params;
+    const { name, icon } = req.body;
+
+    try {
+        const achievement = await Achievement_type.getById(achievement_id);
+
+        if (!achievement) {
+            return res.status(404).json({ error: 'Achievement_type not found' });
+        }
+
+        achievement.name = name;
+        achievement.icon = icon;
+
+        const updatedAchievement = await achievement.save();
+
+        console.log(JSON.stringify(updatedAchievement));
+
+        res.status(200).json(updatedAchievement);
+    } catch (error) {
+        console.error('Error updating department:', error);
+        res.status(500).json({ error: 'Failed to update department' });
+    }
+};
+
+// create achievement type
+exports.createAchievementType = async (req, res) => {
+    const { name, icon } = req.body;
+
+    try {
+        const newAchievement = new Achievement_type(null, name, icon);
+        const createdAchievement = await newAchievement.save();
+
+        console.log(JSON.stringify(createdAchievement));
+
+        res.status(201).json(createdAchievement);
+    } catch (error) {
+        console.error('Error creating achievement type:', error);
+        res.status(500).json({ error: 'Failed to create achievement type' });
+    }
+};
+
+// delete achievement type
+exports.deleteAchievementType = async (req, res) => {
+    const { achievement_id } = req.params;
+
+    try {
+        const achievement = await Achievement_type.getById(achievement_id);
+
+        if (!achievement) {
+            return res.status(404).json({ error: 'Achievement_type not found' });
+        }
+
+        const deletedAchievement = await achievement.delete();
+
+        res.status(200).json(deletedAchievement);
+    } catch (error) {
+        console.error('Error deleting achievement type:', error);
+        res.status(500).json({ error: 'Failed to delete achievement type' });
+    }
+};
