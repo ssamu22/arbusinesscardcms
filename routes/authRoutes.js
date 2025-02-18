@@ -76,6 +76,8 @@ router.post(
   authController.updateProfile
 );
 
+router.post("/approve/:employeeId", authController.approveUser);
+
 // Route for admin login page
 router.get("/admin/login", (req, res) => {
   if (req.session.admin) {
@@ -93,7 +95,6 @@ router.get("/admin/logout", adminController.logout);
 
 // Protecting admin home route
 router.get("/admin/home", ensureAuthenticated.ensureAdmin, (req, res) => {
-
   console.log("THE CURRENT SESSION: ", req.session);
   const admin = req.session.admin; // Access logged-in user's information
   if (req.session.user) {

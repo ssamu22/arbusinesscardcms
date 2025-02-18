@@ -6,6 +6,7 @@ const path = require("path");
 const ensureAdmin = require("../middlewares/authMiddleware");
 const validator = require("validator"); // For email validation
 
+
 exports.fetchAllEmployee = async (req, res) => {
   try {
     // Step 1: Fetch all employees

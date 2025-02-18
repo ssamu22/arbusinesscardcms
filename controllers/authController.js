@@ -224,21 +224,15 @@ exports.updateProfile = async (req, res) => {
 };
 
 exports.approveUser = async (req, res) => {
-  // Find the user using the id
-  const emp = Employee.findById(req.params.employeeId);
-  // Check if the user exists
-  if (!emp) {
-    res.status(404).json({
-      status: "failed",
-      message: "User does not exist!",
-    });
-  }
   // Change the status of the user from inactive to active
+  const user = await Employee.update(req.params.employeeId, { isActive: true });
 
+  console.log(user);
   // Send an email to the user
 
   res.status(200).json({
     status: "success",
     message: "User successfully approved!",
+    data: user,
   });
 };
