@@ -21,49 +21,116 @@
         <th>Action</th>
       </tr>
     </thead>
-    <tbody id="membersTableBody">
+    <tbody id="activeMembersTableBody">
       <!-- Dummy data will be inserted here by JavaScript -->
     </tbody>
   </table>
   <div class="pagination">
-    <div class="pagination-info">
+    <div class="pagination-info-active">
       Showing <span></span> to <span></span> of <span></span> results
     </div>
     <div class="pagination-buttons">
       <a href="#" class="prev-page"><i class="fas fa-chevron-left"></i></a>
-      <div class="number-buttons"></div>
+      <div class="number-buttons-active"></div>
       <a href="#" class="next-page"><i class="fas fa-chevron-right"></i></a>
     </div>
   </div>
-</section>
 
-<!-- Modal -->
-<div id="userModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <h2>Create New User</h2>
-    <form id="userForm">
-      <div class="form-group">
-        <label for="fname">First Name</label>
-        <input type="text" id="fname" name="fname" placeholder="Enter first name" required />
+
+
+  <!-- INACTIVE MEMBERS SECTION -->
+  <section id="members-section" class="members-section">
+    <div class="members-header">
+      <h2>For Approval</h2>
+      <button class="approve-member-btn" id="openModal">
+        <i></i> Approve All
+      </button>
+    </div>
+
+    <table class="members-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Members</th>
+          <th>Joined</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="inactiveMembersTableBody">
+        <!-- Dummy data will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+    <div class="pagination">
+      <div class="pagination-info-inactive">
+        Showing <span></span> to <span></span> of <span></span> results
       </div>
-      <div class="form-group">
-        <label for="mname">Middle Name (Optional)</label>
-        <input type="text" id="mname" name="mname" placeholder="Enter middle name" />
+      <div class="pagination-buttons">
+        <a href="#" class="prev-page"><i class="fas fa-chevron-left"></i></a>
+        <div class="number-buttons-inactive"></div>
+        <a href="#" class="next-page"><i class="fas fa-chevron-right"></i></a>
       </div>
-      <div class="form-group">
-        <label for="lname">Last Name</label>
-        <input type="text" id="lname" name="lname" placeholder="Enter last name" required />
-      </div>
-      <div class="form-group">
-        <label for="honorifics">Honorifics</label>
-        <input type="text" id="honorifics" name="honorifics" placeholder="Enter honorifics" required />
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Enter email address" required />
-      </div>
-      <button type="submit" id="create-user-btn" class="btn btn-success">Save</button>
-    </form>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Create New User</h2>
+      <form id="userForm">
+        <div class="form-group">
+          <label for="fname">First Name</label>
+          <input
+            type="text"
+            id="fname"
+            name="fname"
+            placeholder="Enter first name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="mname">Middle Name (Optional)</label>
+          <input
+            type="text"
+            id="mname"
+            name="mname"
+            placeholder="Enter middle name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="lname">Last Name</label>
+          <input
+            type="text"
+            id="lname"
+            name="lname"
+            placeholder="Enter last name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="honorifics">Honorifics</label>
+          <input
+            type="text"
+            id="honorifics"
+            name="honorifics"
+            placeholder="Enter honorifics"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter email address"
+            required
+          />
+        </div>
+        <button type="submit" id="create-user-btn" class="btn btn-success">
+          Save
+        </button>
+      </form>
+    </div>
   </div>
-</div>
+</section>
