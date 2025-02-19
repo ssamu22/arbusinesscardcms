@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+    <title>ARCMS</title>
 
     <link rel="icon" href="/images/temporary.jpg" />
     <link
@@ -1976,17 +1976,17 @@
         }
 
         function initializeChangePassword() {
-          const formContainer = document.getElementById('changePasswordForm');
+          const formContainer = document.getElementById("changePasswordForm");
 
-          const currentPassword = document.getElementById('currentPassword');
-          const newPassword = document.getElementById('newPassword');
-          const confirmPassword = document.getElementById('confirmPassword');
+          const currentPassword = document.getElementById("currentPassword");
+          const newPassword = document.getElementById("newPassword");
+          const confirmPassword = document.getElementById("confirmPassword");
 
           window.resetChangePasswordForm = () => {
             formContainer.reset();
-          }
+          };
 
-          async function changePassword(){
+          async function changePassword() {
             const oldPassword = currentPassword.value.trim();
             const updatedPassword = newPassword.value.trim();
 
@@ -2005,11 +2005,13 @@
               });
 
               const responseData = await response.json();
-          
+
               if (!response.ok) {
-                throw new Error(responseData.message || "Failed to change password");
+                throw new Error(
+                  responseData.message || "Failed to change password"
+                );
               }
-          
+
               console.log("Password successfully saved");
               alert("Password updated successfully!");
               resetChangePasswordForm();
@@ -2019,8 +2021,8 @@
             }
           }
 
-          formContainer.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
+          formContainer.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
             if (newPassword.value.trim() !== confirmPassword.value.trim()) {
               alert("Confirm password does not match the new password!");
@@ -2030,8 +2032,6 @@
             if (confirm("Do you want to save changes?")) {
               await changePassword();
             }
-
-            
           });
         }
 

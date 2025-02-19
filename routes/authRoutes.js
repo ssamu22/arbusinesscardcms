@@ -42,7 +42,15 @@ router.get("/home/:page", ensureAuthenticated, (req, res) => {
   const page = req.params.page;
   const isAdmin = req.session.admin || null;
 
-  const allowedPages = ['overview', 'achievements', 'organizations', 'contacts', 'schedule', 'about-lpu-c', 'change-password'];
+  const allowedPages = [
+    "overview",
+    "achievements",
+    "organizations",
+    "contacts",
+    "schedule",
+    "about-lpu-c",
+    "change-password",
+  ];
   if (allowedPages.includes(page)) {
     res.render(`pages/user/components/${page}`, {
       user: req.session.user,
@@ -71,6 +79,7 @@ router.post(
 );
 
 router.post("/approve/:employeeId", authController.approveUser);
+router.post("/approveAll", authController.approveAll);
 
 // Route for admin login page
 router.get("/admin/login", (req, res) => {
@@ -97,7 +106,6 @@ router.get("/admin/home", ensureAuthenticated.ensureAdmin, (req, res) => {
   const adminPath = "resources/views/pages/admin";
   res.render(path.join(__dirname, "..", adminPath, "home.ejs"), { admin });
 });
-
 
 router.post("/change-password", authController.changePassword);
 

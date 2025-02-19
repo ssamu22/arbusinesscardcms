@@ -28,7 +28,7 @@
       }
 
       .login-container {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -163,12 +163,16 @@
   </head>
   <body>
     <div class="login-container">
-      <div class="left-section">
+      <div class="left-section d-flex flex-column mt-5">
         <div class="brand">ARCMS</div>
         <h1 class="welcome-text">Welcome!</h1>
         <p class="tagline">
           Empower your content management with our advanced CMS solution.
           Create, manage, and publish with ease.
+        </p>
+        <p class="text-white mt-3">
+          Already have an account?
+          <a class="text-white" href="/login">Sign in</a> here!
         </p>
       </div>
       <div class="right-section">

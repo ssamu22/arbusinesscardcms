@@ -3,28 +3,34 @@ const ensureAuthenticated = require("../middlewares/authMiddleware");
 const Employee = require("../models/Employee");
 const bcrypt = require("bcrypt"); // For password hashing
 const validator = require("validator"); // For email validation
+const axios = require("axios");
+const nodemailer = require("nodemailer");
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for port 465, false for other ports
+  auth: {
+    user: process.env.GOOGLE_APP_EMAIL,
+    pass: process.env.GOOGLE_APP_PASS,
+  },
+});
 
 exports.login = async (req, res) => {
   const { email, password } = req.body; // Get login details from the request body
 
   try {
-    // Step 1: Validate the email format
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
-
-    // Step 2: Retrieve employee by email
     const employee = await Employee.findByEmail(email); // Fetch employee from DB
 
-    if (!employee) {
+    // Check if employee does not exist or password is incorrect
+    if (!employee || !(await employee.validatePassword(password))) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    console.log("EXISTING EMPLOYEE:", employee);
 
-    // Step 3: Validate the password using the public method
-    const passwordMatch = await employee.validatePassword(password);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    // Check if employee is inactive
+    if (!employee.isActive) {
+      return res.status(401).json({
+        message: "Account is currently unavailable. Please try again.",
+      });
     }
 
     // Step 3: Store employee data in session (excluding private info)
@@ -229,6 +235,19 @@ exports.approveUser = async (req, res) => {
 
   console.log(user);
   // Send an email to the user
+  const nodemailer = require("nodemailer");
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+      to: "blueming972@gmail.com", //  receivers
+      subject: "✔ Registration Approved ✔",
+      text: "Registration Approved",
+      html: "<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>",
+    });
+  } catch (err) {
+    console.log(err);
+  }
 
   res.status(200).json({
     status: "success",
@@ -236,31 +255,58 @@ exports.approveUser = async (req, res) => {
     data: user,
   });
 };
+exports.approveAll = async (req, res) => {
+  // Change the status of the user from inactive to active
+  const employees = await Employee.activateEmployees();
 
+  console.log(employees);
+  // Send an email to the user
+
+  // const nodemailer = require("nodemailer");
+
+  // try {
+  //   const info = await transporter.sendMail({
+  //     from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+  //     to: "blueming972@gmail.com", //  receivers
+  //     subject: "✔ Registration Approved ✔",
+  //     text: "Registration Approved",
+  //     html: "<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>",
+  //   });
+  // } catch (err) {
+  //   console.log(err);
+  // }
+
+  res.status(200).json({
+    status: "success",
+    message: "User successfully approved!",
+    data: employees,
+  });
+};
 
 exports.changePassword = async (req, res) => {
-    const { oldPassword, newPassword } = req.body;
-    const employee_id = req.session.user.employee_id;
-    try {
-        const employee = await Employee.findById(employee_id);
+  const { oldPassword, newPassword } = req.body;
+  const employee_id = req.session.user.employee_id;
+  try {
+    const employee = await Employee.findById(employee_id);
 
-        if (!employee) {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
-
-        const checkPassword = await employee.validatePassword(oldPassword);
-        if (!checkPassword) {
-            return res.status(401).json({ message: 'Current password is incorrect!' });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        await Employee.changePassword(employee_id, hashedPassword);
-
-        res.status(200).json({ message: 'Password changed successfully!' });
-
-    } catch (error) {
-        console.error('Error changing password:', error);
-        res.status(500).json({ message: 'Failed to change password' });
+    if (!employee) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-}
+
+    const checkPassword = await employee.validatePassword(oldPassword);
+    if (!checkPassword) {
+      return res
+        .status(401)
+        .json({ message: "Current password is incorrect!" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await Employee.changePassword(employee_id, hashedPassword);
+
+    res.status(200).json({ message: "Password changed successfully!" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ message: "Failed to change password" });
+  }
+};

@@ -108,8 +108,8 @@ class Employee {
       throw err;
     }
   }
-  
-    // Delete an employee
+
+  // Delete an employee
   static async delete(employee_id) {
     if (!employee_id) {
       throw new Error("employee ID is required to delete");
@@ -128,64 +128,59 @@ class Employee {
     return data;
   }
 
-    static async changePassword(employee_id, newPassword) {
-        try {
-            const { data, error } = await supabase
-                .from('employee')
-                .update({ password: newPassword })
-                .eq('employee_id', employee_id);
+  static async changePassword(employee_id, newPassword) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({ password: newPassword })
+        .eq("employee_id", employee_id);
 
-            if (error) {
-                throw new Error(`Failed to retrieve employee: ${error.message}`);
-            }
+      if (error) {
+        throw new Error(`Failed to retrieve employee: ${error.message}`);
+      }
 
-            return data;
-
-        } catch (error) {
-            console.error(error.message);
-            throw error;
-
-        }
+      return data;
+    } catch (error) {
+      console.error(error.message);
+      throw error;
     }
+  }
 
-    // Create a new employee
-    static async create(employeeData) {
-        try {
-            const { data, error } = await supabase
-                .from('employee')
-                .insert([employeeData]);
+  // Create a new employee
+  static async create(employeeData) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .insert([employeeData]);
 
-            if (error) {
-                throw new Error(`Failed to create employee: ${error.message}`);
-            }
-            return new Employee(data[0]); // Return a new instance of Employee
-        } catch (err) {
-            console.error(err.message);
-            throw err;
-        }
+      if (error) {
+        throw new Error(`Failed to create employee: ${error.message}`);
+      }
+      return new Employee(data[0]); // Return a new instance of Employee
+    } catch (err) {
+      console.error(err.message);
+      throw err;
     }
+  }
 
-    // Read an employee by ID
-    static async findById(employee_id) {
-        try {
-            employee_id = Number(employee_id);
-            const { data, error } = await supabase
-                .from('employee')
-                .select('*')
-                .eq('employee_id', employee_id)
-                .single();
+  // Read an employee by ID
+  static async findById(employee_id) {
+    try {
+      employee_id = Number(employee_id);
+      const { data, error } = await supabase
+        .from("employee")
+        .select("*")
+        .eq("employee_id", employee_id)
+        .single();
 
-            if (error) {
-                throw new Error(`Failed to retrieve employee: ${error.message}`);
-            }
-            return new Employee(data); // Return an instance of Employee
-        } catch (err) {
-            console.error(err.message);
-            throw err;
-        }
+      if (error) {
+        throw new Error(`Failed to retrieve employee: ${error.message}`);
+      }
+      return new Employee(data); // Return an instance of Employee
+    } catch (err) {
+      console.error(err.message);
+      throw err;
     }
-
-    return data;
   }
 
   // List all employees (without private fields)
@@ -228,6 +223,29 @@ class Employee {
       throw err;
     }
   }
+
+  static async activateEmployees() {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({
+          isActive: true,
+        })
+        .eq("isActive", false);
+
+      if (error) {
+        console.error("Failed to activate inactive users.");
+      } else {
+        console.log("Inactive users activated!");
+      }
+
+      return data.map((empData) => new Employee(empData));
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  }
+
   static async getInactiveEmployees() {
     try {
       const { data, error } = await supabase

@@ -155,6 +155,11 @@ async function displayActiveMembers(pageNumber) {
 // FOR INACTIVE EMPLOYEES
 const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
 const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
+const approveAllBtn = document.querySelector(".approve-member-btn");
+
+approveAllBtn.addEventListener("click", (e) => {
+  approveAll();
+});
 
 async function fetchAllInactiveEmployee() {
   try {
@@ -287,10 +292,9 @@ async function displayInactiveMembers(pageNumber) {
   editButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-
-      // CHANGE INACTIVE STATUS OF EMPLOYEE TO ACTIVE AND SEND AN EMAIL TO THEIR ACCOUNT
-      // USE EMPLOYEE ID AS A PARAMETER IN URL
-      // window.location.href = "/admin/employees/edit/" + employeeId;
+      button.textContent = "processing...";
+      approveUser(employeeId);
+      button.parentElement.parentElement.style.display = "none";
     });
   });
   deleteButtons.forEach((button) => {
@@ -301,9 +305,38 @@ async function displayInactiveMembers(pageNumber) {
       );
       if (confirmation) {
         deleteUser(employeeId);
+        button.parentElement.parentElement.style.display = "none";
       }
     });
   });
+}
+
+async function approveUser(employeeId) {
+  try {
+    const response = await fetch(`/approve/${employeeId}`, {
+      method: "POST",
+    });
+
+    const result = await response.json();
+    console.log(`User ${employeeId} is approved!`);
+    console.log(result);
+  } catch (err) {
+    console.log(err);
+  }
+}
+async function approveAll() {
+  try {
+    const response = await fetch(`/approveAll`, {
+      method: "POST",
+    });
+
+    const result = await response.json();
+    tableBodyInactive.innerHTML = "";
+    console.log(`All inactive users are activated!`);
+    console.log(result);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function deleteUser(employee_id) {
