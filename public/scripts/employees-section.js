@@ -332,8 +332,10 @@ async function approveAll() {
 
     const result = await response.json();
     tableBodyInactive.innerHTML = "";
-    console.log(`All inactive users are activated!`);
-    console.log(result);
+    alert(`All inactive users are activated!`);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   } catch (err) {
     console.log(err);
   }

@@ -333,6 +333,15 @@ principleForms.forEach((frm, idx) => {
   frm.addEventListener("submit", (ev) => {
     ev.preventDefault();
 
+    if (idx === 0) {
+      visionText.disabled = true;
+    } else if (idx === 1) {
+      missionText.disabled = true;
+    } else if (idx === 2) {
+      valuesText.disabled = true;
+    } else if (idx === 3) {
+      philoText.disabled = true;
+    }
     const formTextArea = frm.querySelector(".lpu-principle");
 
     const requestBody = JSON.stringify({
@@ -361,6 +370,7 @@ principleForms.forEach((frm, idx) => {
                 : "Philosophy"
             } successfully updated!`
           );
+
           return response.json();
         } else {
           throw new Error("Error updating principle");
@@ -558,4 +568,3 @@ function removeCancelClass(cancelBtn, submitBtn) {
   cancelBtn.classList.remove("cancel-btn");
   cancelBtn.textContent = "Edit";
 }
-

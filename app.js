@@ -7,6 +7,7 @@ const apiRoutes = require("./routes/api"); // Import routes
 const uploadRoutes = require("./routes/uploadRoutes");
 const lpuRoutes = require("./routes/lpuRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 const app = express();
 const port = 3000;
 
@@ -42,7 +43,7 @@ app.use("/api", apiRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
 app.use("/admin", adminRoutes);
-
+app.use("/events", eventRoutes);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
