@@ -24,5 +24,39 @@ class Event {
       throw err;
     }
   }
+
+  static async addEvent(newData) {
+    const { data, error } = await supabase.from("event").insert([newData]);
+
+    if (error) {
+      console.error(`Error: ${error}`);
+    }
+
+    return { success: true, data };
+  }
+
+  static async updateEvent(event_id, newData) {
+    const { data, error } = await supabase
+      .from("event")
+      .update(newData)
+      .eq("event_id", event_id);
+
+    if (error) {
+      console.error(`Error:`, error);
+    }
+
+    return { success: true, data };
+  }
+
+  static async deleteEvent(event_id) {
+    const { data, error } = await supabase
+      .from("event")
+      .delete()
+      .eq("event_id", event_id);
+  }
+  if(error) {
+    console.error(`Error: ${error}`);
+  }
 }
+
 module.exports = Event;

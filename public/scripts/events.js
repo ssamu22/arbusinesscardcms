@@ -7,12 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventsGrid = document.querySelector(".events-grid");
   const eventSearch = document.querySelector(".event-search");
 
+  const eventTitleInput = document.getElementById("event-title");
+  const eventDescInput = document.getElementById("event-description");
+  const eventDateInput = document.getElementById("event-date");
+  const eventImageInput = document.getElementById("event-image-input");
   let events = []; // This will store our events data
   let editingEventId = null;
-
+  let deleteEventId = null;
   // Fetch events data (replace this with actual API call in production)
   const fetchEvents = async () => {
-    const response = await fetch("http://localhost:3000/events/");
+    const response = await fetch("/events/");
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -25,10 +29,92 @@ document.addEventListener("DOMContentLoaded", () => {
     renderEvents();
   };
 
+  eventImageInput.addEventListener("change", (e) => {
+    console.log(e.target.value);
+  });
+
+  async function addEvent() {
+    const formData = new FormData();
+    let newImageUrl = "";
+
+    formData.append("event_name", eventTitleInput.value);
+    formData.append("event_desc", eventDescInput.value);
+    formData.append("event_bucket", "assets/eventImages");
+    formData.append("event_date", eventDateInput.value);
+
+    if (eventImageInput.files.length) {
+      formData.append("event_image", eventImageInput.files[0]);
+      newImageUrl = URL.createObjectURL(eventImageInput.files[0]);
+    }
+
+    const response = await fetch("/events/", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    const newEvent = json.data;
+    newEvent.imageUrl = newImageUrl;
+
+    return newEvent;
+  }
+
+  async function updateEvent() {
+    const formData = new FormData();
+    let newImageUrl = "";
+
+    formData.append("event_name", eventTitleInput.value);
+    formData.append("event_desc", eventDescInput.value);
+    formData.append("event_bucket", "assets/eventImages");
+    formData.append("event_date", eventDateInput.value);
+
+    if (eventImageInput.files.length) {
+      formData.append("event_image", eventImageInput.files[0]);
+      newImageUrl = URL.createObjectURL(eventImageInput.files[0]);
+    }
+
+    const response = await fetch(`/events/${editingEventId}`, {
+      method: "PATCH",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    const newEvent = json.data;
+
+    if (eventImageInput.files.length) {
+      newEvent.imageUrl = newImageUrl;
+    }
+
+    return newEvent;
+  }
+  async function deleteEvent() {
+    const response = await fetch(`/events/${deleteEventId}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    deleteEventId = null;
+
+    console.log("EVENT SUCCESSFULLY DELETED,", response);
+  }
+
   // Render events in the grid
   const renderEvents = () => {
     eventsGrid.innerHTML = "";
     const filteredEvents = filterEvents(events);
+    const sortedEvents = filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     if (filteredEvents.length === 0) {
       eventsGrid.innerHTML = `
           <div class="no-events-message">
@@ -56,8 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
     eventElement.innerHTML = `
         <div class="event-image-container">
           <img src=${event.imageUrl} alt="${
-            event.event_name
-          }" class="event-image">
+      event.event_name
+    }" class="event-image">
         </div>
         <div class="event-details">
           <div class="event-meta">
@@ -103,6 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("event-description").value = event.event_desc;
       document.getElementById("event-date").value = event.date;
       editingEventId = event.event_id;
+
+      console.log("OPENED EVENT:", editingEventId);
     } else {
       editingEventId = null;
     }
@@ -113,8 +201,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Close modal
   const closeModalHandler = () => {
     eventModal.style.display = "none";
-    eventForm.reset();
     editingEventId = null;
+    eventForm.reset();
   };
 
   // Event listeners
@@ -122,40 +210,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   closeModal?.addEventListener("click", closeModalHandler);
 
-  eventForm?.addEventListener("submit", (e) => {
+  eventForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const newEvent = {
-      id: editingEventId || Date.now(),
-      title: document.getElementById("event-title").value,
-      description: document.getElementById("event-description").value,
-      date: document.getElementById("event-date").value,
-      image: editingEventId
-        ? events.find((e) => e.id === editingEventId).image
-        : dummyEvents[Math.floor(Math.random() * dummyEvents.length)].image,
-    };
 
     if (editingEventId) {
-      const index = events.findIndex((e) => e.id === editingEventId);
-      events[index] = newEvent;
+      const newEvent = await updateEvent();
+      events = events.map((event) =>
+        event.event_id === newEvent.event_id
+          ? { ...newEvent, imageUrl: newEvent.imageUrl || event.imageUrl }
+          : event
+      );
     } else {
+      const newEvent = await addEvent();
       events.push(newEvent);
     }
-
     renderEvents();
     closeModalHandler();
   });
 
   eventSearch?.addEventListener("input", renderEvents);
 
-  eventsGrid?.addEventListener("click", (e) => {
+  eventsGrid?.addEventListener("click", async (e) => {
     if (e.target.classList.contains("edit-event")) {
       const eventId = parseInt(e.target.dataset.id);
       const eventToEdit = events.find((event) => event.event_id === eventId);
       openModal(eventToEdit);
     } else if (e.target.classList.contains("delete-event")) {
       const eventId = parseInt(e.target.dataset.id);
+      deleteEventId = eventId;
       if (confirm("Are you sure you want to delete this event?")) {
         events = events.filter((event) => event.event_id !== eventId);
+        console.log("CONFIRMED TO DELETE:", editingEventId);
+        deleteEvent();
         renderEvents();
       }
     }
