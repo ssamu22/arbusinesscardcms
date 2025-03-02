@@ -2,12 +2,15 @@
 const userService = require("../models/userService");
 const ensureAuthenticated = require("../middlewares/authMiddleware");
 const Admin = require("../models/Admin");
+const Image = require("../models/Image");
 const bcrypt = require("bcrypt"); // For password hashing
 const validator = require("validator"); // For email validation
 
 exports.login = async (req, res) => {
   const { email, password } = req.body; // Get login details from the request body
 
+  console.log("THE BODY EMAIL:", email);
+  console.log("THE BODY PASSWORD:", password);
   try {
     // Step 1: Validate the email format
     if (!validator.isEmail(email)) {
@@ -51,5 +54,31 @@ exports.logout = (req, res) => {
       console.error("Error during logout:", err);
     }
     res.redirect("/admin/login");
+  });
+};
+
+exports.getMe = async (req, res) => {
+  // Find the admin by its email
+  const admin = await Admin.findByEmail(req.session.admin.email);
+
+  // Check if the admin does not exist
+  if (!admin) {
+    res.status(404).json({
+      status: "failed",
+      message: "user not found",
+    });
+  }
+
+  console.log("THE CURRENT ADMIN:", admin);
+
+  const image = await Image.getImageById(admin.image_id);
+  console.log("THE ADMIN IMAGE:", image);
+
+  console.log("THE ADMIN:", admin);
+  res.status(200).json({
+    status: "success",
+    message: "successfully retrieved current admin data",
+    data: req.session.admin,
+    imageUrl: image.image_url,
   });
 };

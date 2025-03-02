@@ -8,6 +8,11 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const lpuRoutes = require("./routes/lpuRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const eventRoutes = require("./routes/eventRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
+const departmentRoutes = require("./routes/departmentRoutes");
+const achievementRoutes = require("./routes/achievementRoutes");
+const faqRoutes = require("./routes/faqRoutes");
+const { AxiosHeaders } = require("axios");
 const app = express();
 const port = 3000;
 
@@ -44,6 +49,12 @@ app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
 app.use("/admin", adminRoutes);
 app.use("/events", eventRoutes);
+
+app.use("/arcms/api/v1/employees", employeeRoutes);
+app.use("/arcms/api/v1/departments", departmentRoutes);
+app.use("/arcms/api/v1/achievements", achievementRoutes);
+app.use("/arcms/api/v1/faqs", faqRoutes);
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
