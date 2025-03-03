@@ -356,7 +356,7 @@ async function deleteDepartment(departmentId) {
 
 async function fetchAchievementTypes() {
   const container = document.getElementById("achievement-list");
-  const response = await fetch("/api/achievement-types");
+  const response = await fetch("/arcms/api/v1/achievements/type");
   const data = await response.json();
 
   container.innerHTML = "";
@@ -474,7 +474,7 @@ async function fetchAchievementTypes() {
 async function updateAchievement(achievement_id, newName, newIconClass) {
   try {
     const response = await fetch(
-      `/arcms/api/v1/achievements/${achievement_id}`,
+      `/arcms/api/v1/achievements/type/${achievement_id}`,
       {
         method: "PATCH",
         headers: {
@@ -501,7 +501,7 @@ async function updateAchievement(achievement_id, newName, newIconClass) {
 
 async function createAchievementType(name, icon) {
   try {
-    const response = await fetch("/arcms/api/v1/achievements", {
+    const response = await fetch("/arcms/api/v1/achievements/type", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -527,7 +527,7 @@ async function createAchievementType(name, icon) {
 async function deleteAchievementType(achievement_id) {
   try {
     const response = await fetch(
-      `/arcms/api/v1/achievements/${achievement_id}`,
+      `/arcms/api/v1/achievements/type/${achievement_id}`,
       {
         method: "DELETE",
       }

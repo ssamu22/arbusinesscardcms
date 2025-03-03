@@ -156,12 +156,13 @@ exports.updateAchievement = async (req, res) => {
 };
 
 exports.deleteAchievement = async (req, res) => {
-  const { achievement_id } = req.body;
+  // const { achievement_id } = req.body;
 
+  console.log("DELETING THE ACHIEVEMENT:", req.params.id);
   try {
-    const achievement = await Achievement.getById(achievement_id); // Fetch the existing episode by ID
+    const achievement = await Achievement.getById(req.params.id); // Fetch the existing episode by ID
 
-    if (!achievement || achievement.achievement_id !== achievement_id) {
+    if (!achievement) {
       return res
         .status(404)
         .json({ error: "Achievement not found or unauthorized" });
