@@ -218,6 +218,7 @@
 .delete-btn-dept,
 .delete-btn-ach,
 .edit-btn-faq {
+  cursor: pointer;
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 14px;
@@ -229,16 +230,16 @@
 /* Styles specific to edit buttons */
 .edit-btn-inactive,
 .edit-btn-active,
+.edit-btn-ach,
 .edit-btn-dept {
-
   background-color: var(--secondary-color);
   color: #fff;
 }
 
 .edit-btn-inactive:hover,
 .edit-btn-active:hover,
+.edit-btn-ach:hover,
 .edit-btn-dept:hover {
-
   background-color: #8f7501;
 }
 
@@ -275,14 +276,15 @@
 }
 
 .edit-btn-active::before,
+.edit-btn-ach::before,
 .edit-btn-dept::before {
   content: "\f044"; /* Edit icon */
 }
 
 .edit-btn-inactive::before,
 .edit-btn-active.active::before,
+.edit-btn-ach.active::before,
 .edit-btn-dept.active::before {
-
   content: "\f00c"; /* Check icon */
 }
 
@@ -303,7 +305,6 @@
   border-radius: 6px;
   font-size: 16px;
 }
-
 
 .dropdown {
   position: relative;
