@@ -269,7 +269,7 @@
           // Fetch achievements from the server and render them
           async function fetchAchievements() {
             try {
-              const response = await fetch("/api/achievements");
+              const response = await fetch("/arcms/api/v1/achievements");
               const data = await response.json();
               console.log(data);
               achievements = data; // Store fetched entries
@@ -285,7 +285,7 @@
           async function fetchAchievementTypes(containerName) {
             const container = document.getElementById(containerName);
             try {
-              const response = await fetch("/api/achievement-types");
+              const response = await fetch("/arcms/api/v1/achievements/type");
               const data = await response.json();
 
               // Clear the container first in case of re-fetching
@@ -330,17 +330,12 @@
             );
             if (!isConfirmed) return;
 
-            const entryData = {
-              achievement_id: id,
-            };
-
             try {
-              const response = await fetch(`/api/achievement/delete`, {
-                method: "POST",
+              const response = await fetch(`/arcms/api/v1/achievements/${id}`, {
+                method: "DELETE",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(entryData), // Send the entry data to the backend
               });
 
               if (response.ok) {
@@ -514,7 +509,7 @@
             try {
               const method = isEditing ? "PUT" : "POST";
               console.log(method);
-              const url = "/api/achievements";
+              const url = "/arcms/api/v1/achievements";
 
               // Send the data to the backend
               const response = await fetch(url, {
@@ -743,7 +738,7 @@
 
           async function fetchOrganizations() {
             try {
-              const response = await fetch("/api/organizations");
+              const response = await fetch("/arcms/api/v1/organizations");
               const data = await response.json();
               organizations = data;
               if (organizations.length > 0) {
@@ -833,10 +828,13 @@
             console.log("Uploading image: ", formData);
 
             try {
-              const response = await fetch("/api/organizations/image", {
-                method: "POST",
-                body: formData,
-              });
+              const response = await fetch(
+                "/arcms/api/v1/organizations/image",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
 
               if (response.ok) {
                 return await response.json(); // Returns { bucket, fileName, url }
@@ -876,7 +874,7 @@
               }
 
               // Send the organization data to the backend
-              const response = await fetch("/api/organizations", {
+              const response = await fetch("/arcms/api/v1/organizations", {
                 method: isEditing ? "PUT" : "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(organizationData),
@@ -1051,13 +1049,15 @@
                 };
 
                 try {
-                  const response = await fetch(`/api/organization/delete`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(entryData), // Send the entry data to the backend
-                  });
+                  const response = await fetch(
+                    `/arcms/api/v1/organizations/${orgId}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
 
                   if (response.ok) {
                     alert("Organization deleted successfully!");
@@ -1128,7 +1128,7 @@
           async function fetchContacts() {
             console.log("Fetching details");
             try {
-              const response = await fetch("/api/contacts");
+              const response = await fetch("/arcms/api/v1/contacts");
               const data = await response.json();
               console.log(data);
 
@@ -1286,8 +1286,8 @@
 
             try {
               // Send the updated data to the backend
-              const contactResponse = await fetch("/api/contacts", {
-                method: "PUT",
+              const contactResponse = await fetch("/arcms/api/v1/contacts", {
+                method: "PATCH",
                 headers: {
                   "Content-Type": "application/json",
                 },
@@ -1391,7 +1391,7 @@
           async function fetchSchedule() {
             renderDefaultConsultationHours();
             try {
-              const response = await fetch("/api/schedule");
+              const response = await fetch("/arcms/api/v1/schedule");
               const data = await response.json();
 
               const { consultationHours, consultationTypes } = data;
@@ -1727,8 +1727,8 @@
             console.log(updatedSchedule);
 
             // Send the updated data to the backend
-            const scheduleResponse = await fetch("/api/schedule/hours", {
-              method: "POST",
+            const scheduleResponse = await fetch("/arcms/api/v1/schedule", {
+              method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
               },
@@ -1764,8 +1764,8 @@
             console.log(updatedTypes);
 
             // Send the updated data to the backend
-            const typeResponse = await fetch("/api/schedule/types", {
-              method: "POST",
+            const typeResponse = await fetch("/arcms/api/v1/schedule/types", {
+              method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
               },

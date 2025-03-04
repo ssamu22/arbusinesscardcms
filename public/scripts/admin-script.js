@@ -169,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-
 // Functions for University management page
 const availableIcons = [
   { class: "bi bi-award", label: "Award" },
@@ -206,9 +205,8 @@ const availableIcons = [
   { class: "bi bi-cloud", label: "Cloud" },
   { class: "bi bi-shield-check", label: "Shield Check" },
   { class: "bi bi-calendar-check", label: "Calendar Check" },
-  { class: "bi bi-three-dots", label: "Three Dots" }
+  { class: "bi bi-three-dots", label: "Three Dots" },
 ];
-
 
 async function fetchDepartments() {
   const response = await fetch("/api/departments");
@@ -227,12 +225,12 @@ async function fetchDepartments() {
 
     const buttonsContainer = document.createElement("div");
     buttonsContainer.className = "buttons";
-    
+
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn-dept";
     deleteBtn.onclick = function (e) {
       e.preventDefault();
-      if (confirm("Are you sure you want to delete this department?")){
+      if (confirm("Are you sure you want to delete this department?")) {
         deleteDepartment(department.department_id);
       }
     };
@@ -241,7 +239,12 @@ async function fetchDepartments() {
     editBtn.className = "edit-btn-dept";
     editBtn.onclick = function (e) {
       e.preventDefault();
-      toggleEditMode(department.department_id, nameContainer, editBtn, deleteBtn);
+      toggleEditMode(
+        department.department_id,
+        nameContainer,
+        editBtn,
+        deleteBtn
+      );
     };
 
     buttonsContainer.appendChild(editBtn);
@@ -254,27 +257,26 @@ async function fetchDepartments() {
 
   function toggleEditMode(departmentId, nameContainer, editBtn, deleteBtn) {
     const isEditing = nameContainer.querySelector("input");
-  
+
     if (isEditing) {
       // Save mode
       const input = nameContainer.querySelector("input");
       const newName = input.value;
-  
+
       // Replace input with text content
       nameContainer.textContent = newName;
-  
+
       // Revert button to Edit
       editBtn.className = "edit-btn-dept";
-  
+
       // Re-enable delete button
       deleteBtn.disabled = false;
-      
-      saveDepartmentName(departmentId, newName);
 
+      saveDepartmentName(departmentId, newName);
     } else {
       // Edit mode
       const currentName = nameContainer.textContent;
-  
+
       // Replace text content with an input field
       const input = document.createElement("input");
       input.type = "text";
@@ -282,10 +284,10 @@ async function fetchDepartments() {
       input.className = "edit-input";
 
       editBtn.classList.add("active");
-  
+
       nameContainer.textContent = ""; // Clear current text
       nameContainer.appendChild(input);
-  
+
       // Disable delete button
       deleteBtn.disabled = true;
     }
@@ -294,8 +296,8 @@ async function fetchDepartments() {
 
 async function saveDepartmentName(departmentId, newName) {
   try {
-    const response = await fetch(`/admin/department/${departmentId}`, {
-      method: "PUT",
+    const response = await fetch(`/arcms/api/v1/departments/${departmentId}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -316,7 +318,7 @@ async function saveDepartmentName(departmentId, newName) {
 
 async function createDepartment(name) {
   try {
-    const response = await fetch("/admin/department", {
+    const response = await fetch("/arcms/api/v1/departments", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -338,7 +340,7 @@ async function createDepartment(name) {
 
 async function deleteDepartment(departmentId) {
   try {
-    const response = await fetch(`/admin/department/${departmentId}`, {
+    const response = await fetch(`/arcms/api/v1/departments/${departmentId}`, {
       method: "DELETE",
     });
     if (!response.ok) {
@@ -354,7 +356,7 @@ async function deleteDepartment(departmentId) {
 
 async function fetchAchievementTypes() {
   const container = document.getElementById("achievement-list");
-  const response = await fetch("/api/achievement-types");
+  const response = await fetch("/arcms/api/v1/achievements/type");
   const data = await response.json();
 
   container.innerHTML = "";
@@ -389,8 +391,8 @@ async function fetchAchievementTypes() {
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn-ach";
     deleteBtn.onclick = function () {
-      if(confirm("Are you sure you want to delete this achievement type?")) {
-        deleteAchievemenType(type.achievement_id);
+      if (confirm("Are you sure you want to delete this achievement type?")) {
+        deleteAchievementType(type.achievement_id);
       }
     };
 
@@ -471,16 +473,19 @@ async function fetchAchievementTypes() {
 
 async function updateAchievement(achievement_id, newName, newIconClass) {
   try {
-    const response = await fetch(`/admin/achievement/${achievement_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ 
-        name: newName,
-        icon: newIconClass,
-      }),
-    });
+    const response = await fetch(
+      `/arcms/api/v1/achievements/type/${achievement_id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newName,
+          icon: newIconClass,
+        }),
+      }
+    );
 
     if (!response.ok) {
       alert("Failed to save Achievement type");
@@ -492,12 +497,11 @@ async function updateAchievement(achievement_id, newName, newIconClass) {
   } catch (error) {
     console.error(error);
   }
-
 }
 
 async function createAchievementType(name, icon) {
   try {
-    const response = await fetch("/admin/achievement", {
+    const response = await fetch("/arcms/api/v1/achievements/type", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -520,11 +524,14 @@ async function createAchievementType(name, icon) {
   }
 }
 
-async function deleteAchievemenType(achievement_id) {
+async function deleteAchievementType(achievement_id) {
   try {
-    const response = await fetch(`/admin/achievement/${achievement_id}`, {
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `/arcms/api/v1/achievements/type/${achievement_id}`,
+      {
+        method: "DELETE",
+      }
+    );
     if (!response.ok) {
       alert("Failed to delete Achievement type");
       throw new Error("Failed to delete Achievement type.");
@@ -538,7 +545,7 @@ async function deleteAchievemenType(achievement_id) {
 
 async function fetchFaqs() {
   const container = document.getElementById("faq-items");
-  const response = await fetch("/admin/faq");
+  const response = await fetch("/arcms/api/v1/faqs");
   const data = await response.json();
 
   data.forEach((faq, index) => {
@@ -551,8 +558,8 @@ async function fetchFaqs() {
       answerTextarea.value = faq.answer;
 
       // Also set the FAQ ID in the data-faq-id attribute
-      questionInput.setAttribute('data-faq-id', faq.faq_id);
-      answerTextarea.setAttribute('data-faq-id', faq.faq_id);
+      questionInput.setAttribute("data-faq-id", faq.faq_id);
+      answerTextarea.setAttribute("data-faq-id", faq.faq_id);
     }
   });
 }
@@ -582,10 +589,9 @@ function editFAQs(button) {
     });
 
     // Optionally, save changes to a server or localStorage here
-    if (confirm("Do you want to save changes?")){
+    if (confirm("Do you want to save changes?")) {
       saveFAQs();
     }
-    
   }
 }
 
@@ -596,14 +602,16 @@ async function saveFAQs() {
   faqItems.forEach((faq) => {
     const question = faq.querySelector("input").value.trim();
     const answer = faq.querySelector("textarea").value.trim();
-    const faq_id = Number(faq.querySelector("input").getAttribute("data-faq-id"));
+    const faq_id = Number(
+      faq.querySelector("input").getAttribute("data-faq-id")
+    );
 
     faqData.push({ faq_id, question, answer });
   });
 
   try {
-    const response = await fetch("/admin/faq", {
-      method: "PUT",
+    const response = await fetch(`/arcms/api/v1/faqs/updateAll`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -621,7 +629,6 @@ async function saveFAQs() {
     alert("An error occurred while saving FAQs.");
   }
 }
-
 
 function populateList(listId, items) {
   const list = document.getElementById(listId);
@@ -829,7 +836,6 @@ function handleFileSelect(event) {
   reader.readAsDataURL(file);
 }
 
-
 function dataURLToBlob(dataURL) {
   const [header, base64] = dataURL.split(",");
   const binary = atob(base64);
@@ -899,9 +905,10 @@ function histogramEqualization(imageData, blendRatio = 1) {
   // Apply equalization
   for (let i = 0; i < data.length; i += 4) {
     const intensity = data[i];
-    equalizedData[i] = equalizedData[i + 1] = equalizedData[i + 2] = Math.round(
-      blendRatio * cdf[intensity] + (1 - blendRatio) * intensity
-    );
+    equalizedData[i] =
+      equalizedData[i + 1] =
+      equalizedData[i + 2] =
+        Math.round(blendRatio * cdf[intensity] + (1 - blendRatio) * intensity);
     equalizedData[i + 3] = data[i + 3]; // Alpha channel
   }
 

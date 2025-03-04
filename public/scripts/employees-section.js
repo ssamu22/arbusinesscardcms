@@ -12,7 +12,7 @@ async function fetchAllActiveEmployee() {
   try {
     console.log("Fetching active employees...");
 
-    const response = await fetch("/admin/employees/active");
+    const response = await fetch("/arcms/api/v1/employees/active");
 
     if (!response.ok) {
       throw new Error(`Failed to fetch employees: ${response.statusText}`);
@@ -136,7 +136,7 @@ async function displayActiveMembers(pageNumber) {
   editButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-      window.location.href = "/admin/employees/edit/" + employeeId;
+      window.location.href = `/arcms/api/v1/employees/${employeeId}`;
     });
   });
   deleteButtons.forEach((button) => {
@@ -165,7 +165,7 @@ async function fetchAllInactiveEmployee() {
   try {
     console.log("Fetching inactive employees...");
 
-    const response = await fetch("/admin/employees/inactive");
+    const response = await fetch("/arcms/api/v1/employees/inactive");
 
     if (!response.ok) {
       throw new Error(`Failed to fetch employees: ${response.statusText}`);
@@ -344,10 +344,9 @@ async function approveAll() {
 async function deleteUser(employee_id) {
   employee_id = Number(employee_id);
   try {
-    const response = await fetch("/admin/employee/delete", {
-      method: "POST",
+    const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ employee_id }), // Wrap employee_id in an object
     });
 
     const result = await response.json();
@@ -408,7 +407,7 @@ document
     submitBtn.disabled = true;
 
     try {
-      const response = await fetch("/admin/employees", {
+      const response = await fetch("/arcms/api/v1/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),

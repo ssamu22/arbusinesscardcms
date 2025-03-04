@@ -448,9 +448,9 @@ function generateAwards(awards, awardImages) {
     awardItem.classList.add("award-item");
     awardItem.innerHTML = `
       
-<div class="award-image-div" id = "award-div-${award.award_id}" style="background-image: url('${awardImages[idx]}')">
-    <button type = "button" id = "edit-img-${award.award_id}" class = "edit-award-img">Upload</button>
-</div>
+    <div class="award-image-div" id = "award-div-${award.award_id}" style="background-image: url('${awardImages[idx]}')">
+        <button type = "button" id = "edit-img-${award.award_id}" class = "edit-award-img">Upload</button>
+    </div>
 
       <div class="award-texts">
         <label for="award-desc-${award.award_id}">Category</label>
@@ -458,10 +458,11 @@ function generateAwards(awards, awardImages) {
         
         <label for="award-title-${award.award_id}">Title</label>
         <input type="text" id="award-title-${award.award_id}" class="award-tit" value="${award.award_title}" disabled/>
+        <button type="button" id="ach-edit-${award.award_id}" class="ach-edit-btn">Edit</button>
+        <button type="button" id="ach-submit-${award.award_id}" class="ach-submit-btn" style="display: none;">Submit</button>
       </div>
 
-      <button type="button" id="ach-edit-${award.award_id}" class="ach-edit-btn">Edit</button>
-      <button type="button" id="ach-submit-${award.award_id}" class="ach-submit-btn" style="display: none;">Submit</button>
+
     `;
 
     awardContainer.appendChild(awardItem);

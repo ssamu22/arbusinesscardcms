@@ -6,8 +6,8 @@ const path = require("path");
 const ensureAdmin = require("../middlewares/authMiddleware");
 const validator = require("validator"); // For email validation
 
-
 exports.fetchAllEmployee = async (req, res) => {
+  console.log("THE CURRENT SESSION:", req.session);
   try {
     // Step 1: Fetch all employees
     const employees = await Employee.listAll();
@@ -182,10 +182,8 @@ exports.createEmployee = async (req, res) => {
 exports.editEmployee = async (req, res) => {
   const admin = req.session.admin;
   if (admin) {
-    const { employee_id } = req.params; // Get the employee_id from the URL
-
     // Fetch the employee data from DB (you can customize this to your needs)
-    Employee.findById(employee_id)
+    Employee.findById(req.params.id)
       .then((employee) => {
         req.session.user = {
           employee_id: employee.employee_id,
@@ -213,18 +211,19 @@ exports.editEmployee = async (req, res) => {
 };
 
 exports.deleteEmployee = async (req, res) => {
-  const { employee_id } = req.body;
-
   try {
-    const employee = await Employee.findById(employee_id); // Fetch the existing employee by ID
+    console.log("THE PARAMETER ID:", req.params.id);
+    const employee = await Employee.findById(req.params.id); // Fetch the existing employee by ID
 
-    if (!employee || employee.employee_id !== employee_id) {
+    console.log("THE EMPLOYEE:", employee);
+
+    if (!employee) {
       return res
         .status(404)
         .json({ error: "Employee not found or unauthorized" });
     }
 
-    const deletedEmployee = await Employee.delete(employee_id); // delete the employee
+    const deletedEmployee = await Employee.delete(req.params.id); // delete the employee
 
     res.status(200).json(deletedEmployee); // Return the delete employee
   } catch (error) {

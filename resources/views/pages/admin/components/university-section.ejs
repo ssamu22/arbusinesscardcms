@@ -53,43 +53,109 @@
       <div class="principles-grid">
         <div class="principle-column">
           <!-- VISION FORM -->
-          <form action="/lpu/1/vision" id="vision-form" class="principle-form" method="POST">
+          <form
+            action="/lpu/1/vision"
+            id="vision-form"
+            class="principle-form"
+            method="POST"
+          >
             <label for="lpu-vision">Vision</label>
-            <textarea id="lpu-vision" rows="2" class="lpu-principle" name="newText" disabled>University Vision</textarea>
+            <textarea
+              id="lpu-vision"
+              rows="2"
+              class="lpu-principle"
+              name="newText"
+              disabled
+            >
+University Vision</textarea
+            >
             <div class="button-group">
-              <button type="button" id="edit-vision" class="uni-edit-btn">Edit</button>
-              <button type="submit" id="submit-vision" class="uni-submit-btn">Submit</button>
+              <button type="button" id="edit-vision" class="uni-edit-btn">
+                Edit
+              </button>
+              <button type="submit" id="submit-vision" class="uni-submit-btn">
+                Submit
+              </button>
             </div>
           </form>
 
           <!-- MISSION FORM -->
-          <form action="/lpu/1/mission" id="mission-form" class="principle-form" method="POST">
+          <form
+            action="/lpu/1/mission"
+            id="mission-form"
+            class="principle-form"
+            method="POST"
+          >
             <label for="lpu-mission">Mission</label>
-            <textarea id="lpu-mission" rows="2" class="lpu-principle" name="newText" disabled>University Mission</textarea>
+            <textarea
+              id="lpu-mission"
+              rows="2"
+              class="lpu-principle"
+              name="newText"
+              disabled
+            >
+University Mission</textarea
+            >
             <div class="button-group">
-              <button type="button" id="edit-mission" class="uni-edit-btn">Edit</button>
-              <button type="submit" id="submit-mission" class="uni-submit-btn">Submit</button>
+              <button type="button" id="edit-mission" class="uni-edit-btn">
+                Edit
+              </button>
+              <button type="submit" id="submit-mission" class="uni-submit-btn">
+                Submit
+              </button>
             </div>
           </form>
         </div>
 
         <div class="principle-column">
           <!-- CORE VALUES FORM -->
-          <form action="/lpu/1/core_values" id="values-form" class="principle-form" method="POST">
+          <form
+            action="/lpu/1/core_values"
+            id="values-form"
+            class="principle-form"
+            method="POST"
+          >
             <label for="lpu-values">Core Values</label>
-            <textarea id="lpu-values" rows="2" class="lpu-principle" name="newText" disabled>University Core Values</textarea>
+            <textarea
+              id="lpu-values"
+              rows="2"
+              class="lpu-principle"
+              name="newText"
+              disabled
+            >
+University Core Values</textarea
+            >
             <div class="button-group">
-              <button type="button" id="edit-values" class="uni-edit-btn">Edit</button>
-              <button type="submit" id="submit-values" class="uni-submit-btn">Submit</button>
+              <button type="button" id="edit-values" class="uni-edit-btn">
+                Edit
+              </button>
+              <button type="submit" id="submit-values" class="uni-submit-btn">
+                Submit
+              </button>
             </div>
           </form>
 
           <!-- PHILOSOPHY FORM -->
-          <form action="/lpu/1/philosophy" id="philo-form" class="principle-form" method="POST">
+          <form
+            action="/lpu/1/philosophy"
+            id="philo-form"
+            class="principle-form"
+            method="POST"
+          >
             <label for="lpu-philo">Philosophy</label>
-            <textarea id="lpu-philo" rows="2" class="lpu-principle" name="newText" disabled>University Philosophy</textarea>
+            <textarea
+              id="lpu-philo"
+              rows="2"
+              class="lpu-principle"
+              name="newText"
+              disabled
+            >
+University Philosophy</textarea
+            >
             <div class="button-group">
-              <button type="button" id="edit-philo" class="uni-edit-btn">Edit</button>
+              <button type="button" id="edit-philo" class="uni-edit-btn">
+                Edit
+              </button>
               <button type="submit" class="uni-submit-btn">Submit</button>
             </div>
           </form>
@@ -109,9 +175,8 @@
         <div class="award-item-container"></div>
       </div>
     </div>
-    <button id = "add-award-btn">Add Award</button>
+    <button id="add-award-btn">Add Award</button>
   </div>
-
 
   <div id="events-tab" class="university-tab-content">
     <!-- Events List Section -->
@@ -122,18 +187,22 @@
           <i class="fas fa-plus"></i> Add New Event
         </button>
       </div>
-  
+
       <div class="events-filters">
         <div class="filter-group">
-          <input type="text" placeholder="Search events..." class="event-search">
+          <input
+            type="text"
+            placeholder="Search events..."
+            class="event-search"
+          />
         </div>
       </div>
-  
+
       <div class="events-grid">
         <!-- Events will be populated here dynamically -->
       </div>
     </div>
-  
+
     <!-- Add/Edit Event Modal -->
     <div id="event-modal" class="modal">
       <div class="modal-content">
@@ -142,7 +211,7 @@
         <form id="event-form" class="event-form">
           <div class="form-group">
             <label for="event-title">Event Title</label>
-            <input type="text" id="event-title" required>
+            <input type="text" id="event-title" required />
           </div>
           <div class="form-group">
             <label for="event-description">Description</label>
@@ -150,21 +219,17 @@
           </div>
           <div class="form-group">
             <label for="event-date">Date</label>
-            <input type="datetime-local" id="event-date" required>
+            <input type="date" id="event-date" required />
           </div>
           <div class="form-group">
             <label for="event-image">Event Image</label>
-            <input type="file" id="event-image" accept="image/*">
+            <input type="file" id="event-image-input" accept="image/*" />
           </div>
           <button type="submit" class="submit-btn">Save Event</button>
         </form>
       </div>
     </div>
   </div>
-  
-  
-  
-  
 </section>
 
 <!-- <form id="achievements-form">
