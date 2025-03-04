@@ -1,0 +1,16 @@
+#canvas-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#bcard-canvas {
+  background: url("/images/sample-bcard-template.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border: 2px solid black;
+  min-width: 700px;
+  min-height: 400px;
+}

@@ -7,18 +7,22 @@ document.addEventListener("DOMContentLoaded", function () {
     "university-management-link"
   );
   const markersLink = document.getElementById("markers-link");
+  const bCardsLink = document.getElementById("bcards-link");
   const membersSection = document.getElementById("members-section");
   const universitySection = document.getElementById("university-section");
   const universityManagementSection = document.getElementById(
     "university-management-section"
   );
   const markersSection = document.getElementById("markers-section");
+  const bCardsSection = document.getElementById("bcards-section");
 
+  console.log("bcards section:", bCardsSection);
   function showSection(section) {
     membersSection.style.display = "none";
     universitySection.style.display = "none";
     universityManagementSection.style.display = "none";
     markersSection.style.display = "none";
+    bCardsSection.style.display = "none";
     section.style.display = "block";
 
     // Update sidebar active state
@@ -27,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       universityLink,
       universityManagementLink,
       markersLink,
+      bCardsLink,
     ].forEach((link) => {
       link.classList.remove("sidebar-active");
     });
@@ -36,23 +41,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (section === universityManagementSection)
       universityManagementLink.classList.add("sidebar-active");
     if (section === markersSection) markersLink.classList.add("sidebar-active");
+    if (section === bCardsSection) bCardsLink.classList.add("sidebar-active");
   }
 
-  // dashboardLink.addEventListener('click', function(e) {
-  //     e.preventDefault();
-  //     console.log('Dashboard clicked');
-  // });
   showSection(membersSection);
 
   membersLink.addEventListener("click", function (e) {
     e.preventDefault();
     showSection(membersSection);
   });
-
-  // analyticsLink.addEventListener('click', function(e) {
-  //     e.preventDefault();
-  //     console.log('Analytics clicked');
-  // });
 
   universityLink.addEventListener("click", function (e) {
     e.preventDefault();
@@ -67,6 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
   markersLink.addEventListener("click", function (e) {
     e.preventDefault();
     showSection(markersSection);
+  });
+
+  bCardsLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSection(bCardsSection);
   });
 
   // University Contents Tabs
