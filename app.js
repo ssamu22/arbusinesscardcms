@@ -15,6 +15,7 @@ const faqRoutes = require("./routes/faqRoutes");
 const organizationRoutes = require("./routes/organizationRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
+const bcardRoutes = require("./routes/bcardContentRoutes");
 const { AxiosHeaders } = require("axios");
 const app = express();
 const port = 3000;
@@ -60,6 +61,7 @@ app.use("/arcms/api/v1/faqs", faqRoutes);
 app.use("/arcms/api/v1/organizations", organizationRoutes);
 app.use("/arcms/api/v1/contacts", contactRoutes);
 app.use("/arcms/api/v1/schedule", scheduleRoutes);
+app.use("/arcms/api/v1/bcardContents", bcardRoutes);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

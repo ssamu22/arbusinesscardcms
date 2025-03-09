@@ -1,16 +1,73 @@
-#canvas-div {
+.bcards-section {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-#bcard-canvas {
-  background: url("/images/sample-bcard-template.jpg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  border: 2px solid black;
-  min-width: 700px;
-  min-height: 400px;
+.bcard-section-content {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+#canvas {
+  margin: auto;
+  border: 1px solid red;
+}
+#theText {
+  width: 10em;
+}
+
+.text-options {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+}
+
+.text-options {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.text-options label {
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: bold;
+  color: #333;
+}
+
+.text-options input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.text-options input[type="color"] {
+  height: 40px;
+  width: 100%;
+  padding: 3px;
+  border: none;
+  cursor: pointer;
+}
+
+.text-options button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  background: #9b3838;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.text-options button:hover {
+  background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
 }
