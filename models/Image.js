@@ -102,7 +102,7 @@ class Image {
           { onConflict: ["image_id"] }
         ); // On conflict, update based on image_filename
 
-        console.log("THE IMAGE DATA:", imageData);
+      console.log("THE IMAGE DATA:", imageData);
       if (insertError) {
         throw new Error(
           `Error inserting/updating image record in database: ${insertError.message}`

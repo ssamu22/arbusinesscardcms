@@ -1,12 +1,16 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const background_url = await getBackground();
   const contents = await getAllContents();
+  setBackgroundFromURL(background_url);
   let bcardCanvas = document.getElementById("canvas");
   let bcardCtx = bcardCanvas.getContext("2d");
+  const contextMenu = document.getElementById("contextMenu");
   const applyBtn = document.getElementById("apply-btn");
   const textOptionsDiv = document.getElementById("text-options");
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
-  let uploadedImage = null;
+  const deleteBtn = document.getElementById("delete-text-btn");
+  let backgroundImage = null;
   let $canvas = $("#canvas");
   let startX, startY;
   /* 
@@ -37,19 +41,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   // EVENT LISTENERS
   downloadBcardBtn.addEventListener("click", downloadCanvas);
 
-  fileInput.addEventListener("change", function (event) {
+  fileInput.addEventListener("change", async function (event) {
     const file = event.target.files[0];
+
     if (file) {
       const reader = new FileReader();
 
-      reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target.result;
+      reader.onload = async function (e) {
+        try {
+          // Send file to API and get the new image URL
+          const imageUrl = await updateBackground(file);
+          if (!imageUrl) return;
 
-        img.onload = function () {
-          uploadedImage = img; // Store the image
-          draw(); // Redraw the canvas with the new image
-        };
+          // Load and set the background from the new image URL
+          setBackgroundFromURL(imageUrl);
+        } catch (err) {
+          console.error("Error updating background:", err);
+        }
       };
 
       reader.readAsDataURL(file);
@@ -61,6 +69,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     draw();
   });
 
+  deleteBtn.addEventListener("click", async (e) => {
+    if (textToEdit !== -1) {
+      deleteContent(texts[textToEdit].content_id);
+      texts.splice(textToEdit, 1);
+      textToEdit = -1;
+      selectedText = -1;
+      draw();
+      contextMenu.style.display = "none";
+    }
+  });
+
   // Add event listeners
   $canvas.on("mousedown", handleMouseDown);
   $canvas.on("mousemove", handleMouseMove);
@@ -68,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   $canvas.on("mouseout", handleMouseOut);
 
   // Add text when clicking submit
-  $("#submit").click(function () {
+  $("#submit").click(async function () {
     let y = texts.length * 20 + 20;
     let textValue = $("#theText").val();
 
@@ -77,22 +96,59 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("THE WIDTH OF THE NEW TEXT:", textWidth);
     let textHeight = 16;
 
-    texts.push({
+    const newContent = await addContent({
       text: textValue,
-      x: 20,
+      x: 50,
       y: y,
-      width: textWidth,
-      height: textHeight,
       scale_factor: 1,
       type: "text",
-      font_family: "Verdana",
+      font_family: "Arial",
       font_size: 16,
       font_weight: 23,
-      color: "#45a049",
+      color: "#000000",
     });
+
+    console.log("NEW CONTENT:", newContent);
+
+    texts.push(newContent);
 
     draw();
   });
+
+  function setBackgroundFromURL(url) {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // Prevent CORS issues if the image is hosted externally
+    img.src = url;
+
+    img.onload = function () {
+      backgroundImage = img; // Store the image
+      draw(); // Redraw the canvas with the new background
+      setFileInputFromURL(url);
+    };
+
+    img.onerror = function () {
+      console.error("Failed to load the image from URL:", url);
+    };
+  }
+
+  async function setFileInputFromURL(url) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const file = new File([blob], "downloaded-image.jpg", {
+        type: blob.type,
+      });
+
+      // Create a DataTransfer object to set the file input value
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      document.getElementById("bcard-bg").files = dataTransfer.files;
+
+      console.log("File input updated with image from URL.");
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  }
 
   // Recalculate offsets dynamically
   function updateCanvasOffsets() {
@@ -105,11 +161,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   function draw() {
     bcardCtx.clearRect(0, 0, bcardCanvas.width, bcardCanvas.height);
     console.log("CANVAS CLEARED!");
-    if (uploadedImage) {
-      console.log("UPLOADED IMAGE CONTENT:", uploadedImage);
+    if (backgroundImage) {
+      console.log("UPLOADED IMAGE CONTENT:", backgroundImage);
       // Draw the image as the background
       bcardCtx.drawImage(
-        uploadedImage,
+        backgroundImage,
         0,
         0,
         bcardCanvas.width,
@@ -135,13 +191,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
       }
 
-      bcardCtx.font = `${texts[i].font_weight} ${
-        texts[i].font_size * texts[i].scale_factor
-      }px ${texts[i].font_family}`;
+      bcardCtx.font = `${texts[i].font_weight} ${texts[i].font_size}px ${texts[i].font_family}`;
 
       texts[i].width = bcardCtx.measureText(texts[i].text).width;
       texts[i].height = texts[i].font_size * texts[i].scale_factor;
-      // texts[i].height = texts[i].fontSize;
       bcardCtx.fillStyle = texts[i].color;
 
       bcardCtx.fillText(texts[i].text, texts[i].x, texts[i].y);
@@ -175,7 +228,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     scaleInput.value = "1";
     fontSizeInput.value = 16;
     fontWeightInput.value = 100;
-    colorInput.value = "";
+    colorInput.value = "#000000";
   }
 
   function updateTextOptions(idx) {
@@ -242,12 +295,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         selectedText = i;
         break;
       } else {
+        contextMenu.style.display = "none";
         resetTextOptions();
       }
     }
 
     draw();
   }
+
+  bcardCanvas.addEventListener("contextmenu", function (event) {
+    event.preventDefault(); // Prevent default right-click menu
+
+    if (textToEdit !== -1) {
+      // Show the custom menu at cursor position
+      console.log("DELETE THIS BITCH?");
+      contextMenu.style.left = `${event.pageX}px`;
+      contextMenu.style.top = `${event.pageY}px`;
+      contextMenu.style.display = "block";
+    } else {
+      contextMenu.style.display = "none";
+    }
+  });
 
   // handle mousemove events (drag text)
   function handleMouseMove(e) {
@@ -307,15 +375,59 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  async function getBackground() {
+    try {
+      const response = await fetch("/arcms/api/v1/bcardBg/1");
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      console.log("BG URL RETRIEVED!", responseData.data.image_url);
+      return responseData.data.image_url;
+    } catch (err) {
+      console.log("Failed to retrieve business card background:", err);
+      return null;
+    }
+  }
+  async function updateBackground(file) {
+    try {
+      const formData = new FormData();
+      formData.append("bcard_image", file);
+
+      const response = await fetch("/arcms/api/v1/bcardBg/1", {
+        method: "PATCH",
+        body: formData,
+      });
+
+      console.log("ZE UPDATE REPONSE:", response);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      console.log("BG URL RETRIEVED!", responseData.data.image_url);
+      return responseData.data.image_url;
+    } catch (err) {
+      console.log("Failed to retrieve business card background:", err);
+      return null;
+    }
+  }
+
   async function deleteContent(idx) {
     try {
-      const response = await fetch(`/arcms/api/v1/bcardContents/${idx}`, {
+      response = await fetch(`/arcms/api/v1/bcardContents/${idx}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      console.log("CONTENT DELETED!");
     } catch (err) {
       console.log("Failed to delete content!", err);
       return null;
@@ -324,7 +436,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function addContent(newContent) {
     try {
-      const response = await fetch("/arcms/api/vs/bcardContents", {
+      const response = await fetch("/arcms/api/v1/bcardContents", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -332,10 +444,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify(newContent),
       });
 
-      console.log("ZE RESPONSE:", response);
+      console.log("THE RESPONSE:", response);
 
       const responseData = await response.json();
-      console.log("SUCCESSFULLY ADDED DATA:", responseData.data);
+      return responseData.data[0];
     } catch (err) {
       console.log("Failed to add new content:", err);
       return null;
@@ -360,7 +472,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const responseData = await response.json();
-      console.log("SUCCESSFULLY UPDATED DATA:", responseData.data);
+      console.log("NEW DATA ADDED:", responseData.data[0]);
+      return responseData.data[0];
     } catch (err) {
       console.log("Failed to delete content!", err);
       return null;

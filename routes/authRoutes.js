@@ -31,8 +31,16 @@ router.get("/login", (req, res) => {
 
 router.get("/register", viewController.getRegisterPage);
 router.get("/success", viewController.getSuccessPage);
-router.post("/signup", authController.signup);
-
+router.get("/forgot-password", viewController.getForgotPasswordPage);
+router.get("/reset-password/:token", viewController.getResetPasswordPage);
+router.get(
+  "/admin/forgot-admin-password",
+  viewController.getForgotAdminPasswordPage
+);
+router.get(
+  "/admin/reset-password/:token",
+  viewController.getResetAdminPasswordPage
+);
 // Handle login form submission
 router.post("/login", authController.login);
 router.get("/logout", authController.logout);

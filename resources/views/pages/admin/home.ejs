@@ -74,6 +74,11 @@
                 ><i class="fas fa-id-card"></i>Business Cards</a
               >
             </li>
+            <li>
+              <a href="#" id="admin-account-link"
+                ><i class="fas fa-gear"></i>My Account</a
+              >
+            </li>
           </ul>
           <!-- <h3>Settings</h3>
                 <ul>
@@ -108,7 +113,7 @@
       const adminImage = document.getElementById("admin-image");
       async function getCurrentAdmin() {
         try {
-          const response = await fetch("/admin/getMe");
+          const response = await fetch("/arcms/api/v1/admin/getMe");
 
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

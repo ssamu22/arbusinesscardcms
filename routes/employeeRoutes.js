@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/adminEmployeesController");
-
+const authController = require("../controllers/authController");
 router
   .route("/")
   .get(controller.fetchAllEmployee)
@@ -15,10 +15,10 @@ router
 router.get("/active", controller.fetchAllActiveEmployee);
 router.get("/inactive", controller.fetchAllInactiveEmployee);
 
-// router.get("/employees/edit/:employee_id", employeeController.editEmployee);
-// router.post("/employee/delete", employeeController.deleteEmployee);
-
-// router.get("/employees/edit/:employee_id", employeeController.editEmployee);
-// router.post("/employee/delete", employeeController.deleteEmployee);
+router.post("/signup", authController.signup);
+router.post("/login", authController.login);
+router.get("/logout", authController.logout);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password/:id", authController.resetPassword);
 
 module.exports = router;

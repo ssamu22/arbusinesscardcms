@@ -4,8 +4,14 @@
   <div class="bcard-section-content">
     <div class="bcard-section-canvas">
       <input id="theText" type="text" />
-      <button id="submit">Draw text on canvas</button><br />
+      <button id="submit" class="draw-text-btn">Draw text on canvas</button>
+      <button type="button" id="download-bcard">Download Business Card</button>
+
+      <br />
       <canvas id="canvas" width="800" height="450"></canvas>
+      <div id="contextMenu" class="context-menu">
+        <button id="delete-text-btn">Delete</button>
+      </div>
     </div>
 
     <div class="text-options" id="text-options">
@@ -58,9 +64,10 @@
     </div>
   </div>
 
-  <label for="bcard-bg">Upload Background</label>
-  <input type="file" accept="image/*" id="bcard-bg" />
-  <button type="button" id="download-bcard">Download Business Card</button>
+  <div class = "bcard-bg-btn">
+    <label class="bcard-bg-label" for="bcard-bg">Upload Background</label>
+    <input type="file" accept="image/*" id="bcard-bg" />
+  </div>
 
   <!-- <div id="canvas-div">
     <button id = "add-text-btn">Add Text</button>

@@ -16,6 +16,7 @@ const organizationRoutes = require("./routes/organizationRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 const bcardRoutes = require("./routes/bcardContentRoutes");
+const bcardBgRoutes = require("./routes/bcardBgRoutes");
 const { AxiosHeaders } = require("axios");
 const app = express();
 const port = 3000;
@@ -51,9 +52,10 @@ app.use("/api", apiRoutes);
 
 app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
-app.use("/admin", adminRoutes);
 app.use("/events", eventRoutes);
 
+app.use("/arcms/api/v1/admin", adminRoutes);
+app.use("/arcms/api/v1/auth", authRoutes);
 app.use("/arcms/api/v1/employees", employeeRoutes);
 app.use("/arcms/api/v1/departments", departmentRoutes);
 app.use("/arcms/api/v1/achievements", achievementRoutes);
@@ -62,6 +64,7 @@ app.use("/arcms/api/v1/organizations", organizationRoutes);
 app.use("/arcms/api/v1/contacts", contactRoutes);
 app.use("/arcms/api/v1/schedule", scheduleRoutes);
 app.use("/arcms/api/v1/bcardContents", bcardRoutes);
+app.use("/arcms/api/v1/bcardBg", bcardBgRoutes);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
