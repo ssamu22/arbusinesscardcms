@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const universityManagementLink = document.getElementById(
     "university-management-link"
   );
+
+  const adminAccountLink = document.getElementById("admin-account-link");
   const markersLink = document.getElementById("markers-link");
   const bCardsLink = document.getElementById("bcards-link");
   const membersSection = document.getElementById("members-section");
@@ -15,14 +17,15 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   const markersSection = document.getElementById("markers-section");
   const bCardsSection = document.getElementById("bcards-section");
+  const adminAccountSection = document.getElementById("admin-account-section");
 
-  console.log("bcards section:", bCardsSection);
   function showSection(section) {
     membersSection.style.display = "none";
     universitySection.style.display = "none";
     universityManagementSection.style.display = "none";
     markersSection.style.display = "none";
     bCardsSection.style.display = "none";
+    adminAccountSection.style.display = "none";
     section.style.display = "block";
 
     // Update sidebar active state
@@ -32,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
       universityManagementLink,
       markersLink,
       bCardsLink,
+      adminAccountLink,
     ].forEach((link) => {
       link.classList.remove("sidebar-active");
     });
@@ -42,6 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
       universityManagementLink.classList.add("sidebar-active");
     if (section === markersSection) markersLink.classList.add("sidebar-active");
     if (section === bCardsSection) bCardsLink.classList.add("sidebar-active");
+    if (section === adminAccountSection)
+      adminAccountLink.classList.add("sidebar-active");
   }
 
   showSection(membersSection);
@@ -69,6 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
   bCardsLink.addEventListener("click", (e) => {
     e.preventDefault();
     showSection(bCardsSection);
+  });
+
+  adminAccountLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSection(adminAccountSection);
   });
 
   // University Contents Tabs
@@ -916,3 +927,27 @@ function histogramEqualization(imageData, blendRatio = 1) {
 
   return new ImageData(equalizedData, width, height);
 }
+
+const messageDiv = document.querySelector(".message-div");
+const alertMessage = document.querySelector(".alert-message");
+const closeMessageBtn = document.querySelector(".close-message-btn");
+
+function showSuccessMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("error-message");
+  messageDiv.classList.add("success-message");
+  alertMessage.textContent = message;
+}
+function showErrorMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.add("error-message");
+  alertMessage.textContent = message;
+}
+
+closeMessageBtn.addEventListener("click", () => {
+  messageDiv.style.display = "none";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.remove("error-message");
+  alertMessage.textContent = "";
+});

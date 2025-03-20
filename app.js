@@ -17,6 +17,8 @@ const contactRoutes = require("./routes/contactRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
+const vuforiaRouter = require("./routes/vuforiaRoutes");
+
 const { AxiosHeaders } = require("axios");
 const app = express();
 const port = 3000;
@@ -54,6 +56,7 @@ app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
 app.use("/events", eventRoutes);
 
+app.use("/arcms/api/v1/vuforia", vuforiaRouter);
 app.use("/arcms/api/v1/admin", adminRoutes);
 app.use("/arcms/api/v1/auth", authRoutes);
 app.use("/arcms/api/v1/employees", employeeRoutes);

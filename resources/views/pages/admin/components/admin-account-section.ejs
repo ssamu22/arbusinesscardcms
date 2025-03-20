@@ -1,0 +1,141 @@
+<section id="admin-account-section" class="admin-account-section">
+  <div class="admin-image-overlay">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="30px"
+      viewBox="0 -960 960 960"
+      width="30px"
+      fill="#e3e3e3"
+      class="close-upload-admin"
+    >
+      <path
+        d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+      />
+    </svg>
+
+    <div class="admin-upload-div">
+      <div class="upload-admin-container">
+        <div class="admin-canvas-container">
+          <canvas class="upload-admin-canvas"></canvas>
+        </div>
+
+        <div class="image-input-div">
+          <div class="upload-admin-img-container">
+            <input
+              type="file"
+              id="file-admin-upload"
+              class="upload-admin-btn"
+              accept="image/*"
+            />
+            <label for="file-admin-upload" class="upload-admin-label">
+              <i class="fas fa-upload"></i> Upload Image
+            </label>
+          </div>
+
+          <!-- <input
+            type="file"
+            id="file-admin-upload"
+            class="upload-btn"
+            accept="image/*"
+          /> -->
+          <button
+            type="button"
+            id="submit-admin-img"
+            class="submit-btn"
+            disabled
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-flex-container">
+    <div class="admin-account-container">
+      <h1>My Account</h1>
+
+      <div class="edit-img-div-container">
+        <div class="edit-img-div">
+          <img
+            src="/images/avatar.png"
+            alt="User Avatar"
+            class="avatar"
+            id="edit-account-avatar"
+          />
+
+          <button class="change-admin-img hidden">Edit</button>
+        </div>
+      </div>
+      <div class="edit-admin-div">
+        <label for="admin-name" class="admin-label">Username</label>
+        <input
+          type="text"
+          class="edit-admin-input admin-name"
+          id="admin-name-input"
+          name="admin_name"
+          disabled
+        />
+        <button type="button" id="edit-admin-name" class="edit-admin-btn">
+          Edit
+        </button>
+
+        <label for="admin-email" class="admin-label">Email</label>
+        <input
+          type="email"
+          class="edit-admin-input admin-email"
+          id="admin-email-input"
+          name="email"
+          disabled
+        />
+
+        <!-- <label for="admin-name">Username</label>
+        <input type="text" class="admin-name" id="admin-name" name="admin_name" /> -->
+      </div>
+
+      <button class="change-psword-btn" id="change-admin-psword">
+        Change Password
+      </button>
+
+      <div class="admin-psword-container hidden" id="admin-psword-container">
+        <h2>Change Your Password</h2>
+        <form class="edit-admin-psword">
+          <label for="admin-current-psword" class="admin-label"
+            >Current Password</label
+          >
+          <input
+            type="password"
+            class="admin-psword"
+            id="admin-current-psword"
+            name="current_password"
+            placeholder="Current Password"
+          />
+
+          <label for="admin-new-psword" class="admin-label">New Password</label>
+          <input
+            type="password"
+            class="admin-psword"
+            id="admin-new-psword"
+            name="new_password"
+            placeholder="New Password"
+          />
+
+          <label for="admin-confirm-psword" class="admin-label"
+            >Confirm Password</label
+          >
+          <input
+            type="password"
+            class="admin-psword"
+            id="admin-confirm-psword"
+            name="confirm_password"
+            placeholder="Confirm Password"
+          />
+
+          <button class="admin-psword-submit" id="submit-admin-pass">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

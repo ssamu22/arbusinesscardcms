@@ -32,11 +32,13 @@ exports.login = async (req, res) => {
 
     // Step 2: Retrieve admin by email
     const admin = await Admin.findByEmail(email); // Fetch admin from DB
+    console.log("THE ADMIN:", admin);
     if (!admin) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
     // Step 3: Validate the password using the public method
     const passwordMatch = await admin.validatePassword(password);
+    console.log("DOES THE PASSWORD MATCH?", passwordMatch);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -91,8 +93,34 @@ exports.getMe = async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "successfully retrieved current admin data",
-    data: req.session.admin,
+    data: { ...admin, email: admin.getEmail() },
     imageUrl: image.image_url,
+  });
+};
+
+exports.updateMe = async (req, res) => {
+  // Find the admin by its email
+  console.log("UPDATE REQUEST BODY:", req.body);
+  console.log("SESSION EMAIL", req.session.admin.email);
+  const { data, error } = await supabase
+    .from("admin")
+    .update(req.body)
+    .eq("email", req.session.admin.email)
+    .single();
+
+  console.log("UPDATED ADMIN DATA:", data);
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Error updating admin data!",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Admin data successfully updated!",
+    data,
   });
 };
 
@@ -123,9 +151,9 @@ exports.forgotPassword = async (req, res) => {
 
   // 3. Send the reset link to the email of the admin
   try {
-    const reqUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/admin/reset-password/${resetData.resetToken}`;
+    const reqUrl = `${req.protocol}://${req.get("host")}/admin/reset-password/${
+      resetData.resetToken
+    }`;
 
     const info = await transporter.sendMail({
       from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
@@ -152,6 +180,8 @@ exports.resetPassword = async (req, res) => {
   // Check if a required value are missing.
   console.log("RESETTING ADMIN PASSWORD!");
   const { password, passwordConfirm } = req.body;
+
+  console.log("THE BODY PASSWORD:", password);
 
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
@@ -191,14 +221,145 @@ exports.resetPassword = async (req, res) => {
   // Update password in database
   const { data, error } = await supabase
     .from("admin")
-    .update({ password: hashedPassword })
+    .update({
+      password: hashedPassword,
+      password_reset_token: null,
+      token_expiration_date: null,
+    })
     .eq("admin_id", req.params.id);
 
+  console.log(req.params.id);
+
+  console.log(data);
   // Return response
   res.status(200).json({
     status: "success",
     message: "Passsword successfully reset!",
     data,
+  });
+};
+
+exports.changeAdminPassword = async (req, res) => {
+  // Check if the body contains the current password, new password, and confirm password
+
+  const { newPassword, currentPassword, passwordConfirm } = req.body;
+  if (!currentPassword || !newPassword || !passwordConfirm) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Please fill out all the required inputs!",
+    });
+  }
+
+  // Get the current admin
+  const admin = await Admin.findByEmail(req.session.admin.email);
+  const passwordMatch = await admin.validatePassword(req.body.currentPassword);
+  // Check if the current password is correct
+  if (!passwordMatch) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Your current password is incorrect!",
+    });
+  }
+  // Validate the password and password confirm
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
+
+  // Check the length of the new password
+  if (newPassword.length < 8 || newPassword.length > 64) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Password must be between 8 to 64 characters long!",
+    });
+  }
+
+  // Check the format of the new password
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
+    });
+  }
+
+  // Check if password and password confirm are the same
+  if (!(newPassword === passwordConfirm)) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Passwords must match!",
+    });
+  }
+
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update the admin password into the new one
+  const { data, error } = await supabase
+    .from("admin")
+    .update({
+      password: hashedPassword,
+    })
+    .eq("email", req.session.admin.email);
+
+  // Send response
+  res.status(200).json({
+    status: "success",
+    message: "Password successfully updated!",
+    data,
+  });
+};
+
+exports.changeAdminImage = async (req, res) => {
+  const { bucket } = req.body;
+
+  // Check if the image file, bucket, and file name exists
+  if (!req.file || !bucket) {
+    return res.status(400).json({
+      error: "Missing required parameters (file, bucket).",
+    });
+  }
+
+  // Upload the image to the database and storage
+  const uploadedImage = await Image.uploadImage(
+    req.file,
+    bucket,
+    req.file.originalname
+  );
+
+  if (!uploadedImage) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Error uploading the image to the database!",
+    });
+  }
+
+  // Get the image by its id
+  const theImage = await Image.getImageById(uploadedImage.image_id);
+
+  if (!theImage) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Image cannot be found!",
+    });
+  }
+
+  // Change the image id of the admin
+
+  const { adminData, error } = await supabase
+    .from("admin")
+    .update({ image_id: uploadedImage.image_id })
+    .eq("email", "blueming972@gmail.com");
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Error updating admin avatar!",
+    });
+  }
+
+  // Return the response containg the image url
+  res.status(200).json({
+    status: "success",
+    awardId: req.params.awardid,
+    theImage,
   });
 };
 

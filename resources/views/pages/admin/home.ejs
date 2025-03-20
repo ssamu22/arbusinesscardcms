@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
     <link rel="stylesheet" href="/styles/admin/bcards-section.css" />
+    <link rel="stylesheet" href="/styles/admin/admin-account-section.css" />
 
     <link
       rel="stylesheet"
@@ -28,13 +29,13 @@
             <img src="/images/temporary.jpg" alt="Logo" />
             <span class="sidebar-title">ARCMS</span>
           </div>
-          <button class="sidebar-toggle" id="sidebarToggle">
+          <!-- <button class="sidebar-toggle" id="sidebarToggle">
             <i class="bi bi-chevron-left"></i>
-          </button>
+          </button> -->
         </div>
         <div class="user-info">
           <img
-            src="/images/tyrone.jpg"
+            src="/images/avatar.png"
             alt="User Avatar"
             class="avatar"
             id="admin-image"
@@ -88,22 +89,40 @@
                 </ul> -->
         </nav>
         <div class="logout">
-          <a class="btn btn-primary" href="/admin/logout"
-            ><i class="fas fa-sign-out-alt"></i
-            ><span class="logout-side"> Log out</span></a
+          <a
+            class="btn btn-primary"
+            href="/admin/logout"
+            style="text-decoration: none"
+            ><span class="logout-side text-white" style="color: white">
+              <i class="fas fa-sign-out-alt"></i>Log out</span
+            ></a
           >
         </div>
       </aside>
       <main>
+        <div class="message-div success-message">
+          <p class="alert-message">Placeholder</p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="30px"
+            viewBox="0 -960 960 960"
+            width="30px"
+            fill="#e3e3e3"
+            class="close-message-btn"
+          >
+            <path
+              d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+            />
+          </svg>
+        </div>
         <header></header>
-
-        <%- include('./components/employees-section.ejs')%>
-
         <!-- UNIVERSITY CONTENTS SECTION -->
-        <%- include('./components/university-section.ejs')%> <%-
+        <%- include('./components/employees-section.ejs')%> <%-
+        include('./components/university-section.ejs')%> <%-
         include('./components/university-content-section.ejs')%> <%-
         include('./components/markers-section.ejs')%> <%-
-        include('./components/bcard-section.ejs')%>
+        include('./components/bcard-section.ejs')%> <%-
+        include('./components/admin-account-section.ejs') %>
       </main>
     </div>
 
@@ -111,6 +130,8 @@
       const adminName = document.getElementById("admin-name");
       const adminRole = document.getElementById("admin-email");
       const adminImage = document.getElementById("admin-image");
+      window.adminImageElement = adminImage;
+
       async function getCurrentAdmin() {
         try {
           const response = await fetch("/arcms/api/v1/admin/getMe");
@@ -134,8 +155,10 @@
         adminName.textContent = currentAdmin.data.admin_name;
         adminRole.textContent = currentAdmin.data.email;
         adminImage.src = currentAdmin.imageUrl;
+        window.currentAvatar = currentAdmin.imageUrl;
       });
     </script>
+    <script src="/scripts/admin-account-section.js"></script>
     <script src="/scripts/employees-section.js"></script>
     <script src="/scripts/university-section.js"></script>
     <script src="/scripts/admin-script.js"></script>

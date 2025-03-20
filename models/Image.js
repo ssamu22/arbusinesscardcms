@@ -29,6 +29,8 @@ class Image {
         .from(data.image_bucket)
         .getPublicUrl(data.image_filename);
 
+        console.log("ZE PUBIC URL:", publicURL);
+
       if (urlError) {
         throw new Error(`Failed to generate image URL: ${urlError.message}`);
       }

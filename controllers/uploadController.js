@@ -31,62 +31,6 @@ var client = vuforia.client({
 // util for base64 encoding and decoding
 var util = vuforia.util();
 
-const applyHistogramEqualization = async (filePath, blendRatio = 0.8) => {
-  try {
-    const image = await Jimp.read(filePath);
-
-    // Access the raw pixel data
-    const { data: pixels, width, height } = image.bitmap;
-    const histogram = new Array(256).fill(0);
-    const cdf = new Array(256).fill(0);
-
-    // Step 1: Compute Histogram
-    for (let i = 0; i < pixels.length; i += 4) {
-      const intensity = pixels[i]; // Grayscale (assuming already converted to grayscale)
-      histogram[intensity]++;
-    }
-
-    // Step 2: Compute Cumulative Distribution Function (CDF)
-    cdf[0] = histogram[0];
-    for (let i = 1; i < 256; i++) {
-      cdf[i] = cdf[i - 1] + histogram[i];
-    }
-
-    // Normalize CDF (stretch to full range 0-255)
-    const minCDF = cdf[0];
-    const maxCDF = cdf[255];
-    for (let i = 0; i < cdf.length; i++) {
-      cdf[i] = Math.round(((cdf[i] - minCDF) * 255) / (maxCDF - minCDF));
-    }
-
-    // Step 3: Apply Equalization with Blending
-    for (let i = 0; i < pixels.length; i += 4) {
-      const intensity = pixels[i];
-      const equalizedValue = Math.round(
-        blendRatio * cdf[intensity] + (1 - blendRatio) * intensity
-      );
-      pixels[i] = pixels[i + 1] = pixels[i + 2] = equalizedValue; // RGB channels
-    }
-
-    // Save the modified image
-    const dir = path.dirname(filePath);
-    const ext = path.extname(filePath);
-    const baseName = path.basename(filePath, ext);
-
-    // Ensure no duplicate "_equalized" in the file name
-    const outputPath = path.join(
-      dir,
-      `${baseName.replace(/_equalized$/, "")}_equalized${ext}`
-    );
-    await image.write(outputPath);
-
-    return path.basename(outputPath); // Return file name only
-  } catch (error) {
-    console.error("Error during histogram equalization:", error);
-    throw error;
-  }
-};
-
 // GET ALL CARDS
 exports.getAllCards = (req, res) => {
   // This will retrieve all the target id's from the Vuforia cloud database
@@ -127,7 +71,7 @@ exports.uploadCard = async (req, res) => {
   try {
     const target = {
       name: req.body.name,
-      width: 6,
+      width: parseInt(req.body.width),
       image: util.encodeFileBase64(
         `${__dirname}/../uploads/markers/${req.file.originalname}`
       ),
