@@ -1,7 +1,7 @@
 export const register = async ({ ...userInput }) => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/signup",
+      "http://localhost:3000/arcms/api/v1/employees/signup",
       userInput
     );
     console.log("THE RESPONSE DATA:", response.data);

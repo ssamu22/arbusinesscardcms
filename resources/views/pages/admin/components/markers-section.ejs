@@ -1,16 +1,144 @@
 <section id="markers-section" class="markers-section">
-  <h2>About LPU-C</h2>
-  <div class="markers-list">
-    <h3>List of registered Business Cards</h3>
-    <div class="no-data-found">
-      <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-      <p>No Data Found!</p>
+  <div class="marker-overlay">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="30px"
+      viewBox="0 -960 960 960"
+      width="30px"
+      fill="#e3e3e3"
+      class="close-marker-overlay"
+    >
+      <path
+        d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+      />
+    </svg>
+    <div class="marker-info-container">
+      <div class="selected-marker-div">
+        <img class="selected-marker-img" src="/images/background.png" />
+        <div class="selected-marker-info">
+          <!-- Name -->
+          <div class="target-input-label">
+            <label for="target-name">Name</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="text"
+              id="target-name"
+              class="target-input"
+              name="target-name"
+              placeholder="Name"
+            />
+          </div>
+
+          <!-- width -->
+          <div class="target-input-label">
+            <label for="target-width">Width</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="number"
+              id="target-width"
+              class="target-input"
+              name="target-width"
+            />
+          </div>
+
+          <!-- active flag -->
+          <div class="target-input-label">
+            <label for="target-active">Active</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="checkbox"
+              id="target-active"
+              class="target-input"
+              name="target-active"
+            />
+          </div>
+          <!-- Date Modified -->
+          <div class="target-input-label">
+            <label for="target-date-modified">Date Modified</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="date"
+              id="target-date-modified"
+              class="target-input"
+              name="target-date-modified"
+            />
+          </div>
+
+          <!-- Rating -->
+          <div class="target-input-label">
+            <label for="target-rating">Rating</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="number"
+              id="target-rating"
+              class="target-input"
+              name="target-rating"
+              min="1"
+              max="5"
+            />
+          </div>
+
+          <!-- Recognition -->
+          <div class="target-input-label">
+            <label for="target-recognition">Recognition</label>
+          </div>
+          <div class="target-input-div">
+            <input
+              type="number"
+              id="target-recognition"
+              class="target-input"
+              name="target-recognition"
+            />
+          </div>
+
+          <!-- metadata -->
+          <div class="target-input-label">
+            <p>Metadata</p>
+          </div>
+          <div class="target-input-div">
+            <select
+              id="target-metadata"
+              class="target-input"
+              name="target-metadata"
+            >
+              <!-- The value will be the id of the users -->
+              <option value="1">John Carlo</option>
+              <option value="2">John Doe</option>
+              <option value="3">John Louis</option>
+            </select>
+          </div>
+
+          <button class="edit-target-info">Edit</button>
+        </div>
+      </div>
+      <label for="upload" class="file-upload-label target-change-label">
+        <i class="fas fa-cloud-upload-alt"></i> Choose a file
+      </label>
     </div>
   </div>
+  <h2>Business Card Markers</h2>
+  <div class="markers-list">
+    <h3>List of registered Business Cards</h3>
+
+    <div class="image-target-div"></div>
+    <!-- <div class="no-data-found">
+      <img
+        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+        alt="No data illustration"
+      />
+      <p>No Data Found!</p>
+    </div> -->
+  </div>
   <label for="upload" class="file-upload-label">
-    <i class="fas fa-cloud-upload-alt"></i> Choose a file
+    <i class="fas fa-cloud-upload-alt"></i> Add a Business Card
   </label>
   <input type="file" id="upload" accept="image/*" />
+  <!--
 
   <div class="canvasDiv">
     <canvas id="histoEqCanvas"></canvas>
@@ -27,5 +155,5 @@
     <label for="marker-id">Employee ID</label>
     <input type="number" id="marker-id" />
     <button id="submitBCard" type="submit" disabled>Submit</button>
-  </form>
+  </form> -->
 </section>

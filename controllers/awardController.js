@@ -123,7 +123,7 @@ exports.uploadAwardImage = async (req, res) => {
       data: theImage,
     });
   } catch (error) {
-    console.error("Error in uploadImage:", error.message);
+    console.error("Error in upload Image:", error.message);
     res.status(500).json({ error: "Server error" });
   }
 };

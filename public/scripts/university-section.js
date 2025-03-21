@@ -97,17 +97,17 @@ submitNewAwardbtn.addEventListener("click", () => {
   console.log("DUD");
   // Check if any of the inputs are empty or null
   if (!title) {
-    alert("Please enter a title for the award.");
+    showErrorMessage("Please enter a title for the award.");
     return;
   }
 
   if (!category) {
-    alert("Please select a category for the award.");
+    showErrorMessage("Please select a category for the award.");
     return;
   }
 
   if (!file) {
-    alert("Please upload an image file.");
+    showErrorMessage("Please upload an image file.");
     return;
   }
 
@@ -131,7 +131,7 @@ async function addNewAward(formData) {
     if (response.ok) {
       const result = await response.json(); // Assuming the response is JSON
       console.log("Success:", result);
-      alert("New award successfully registered!");
+      showSuccessMessage("New award successfully registered!");
       console.log(result);
       createNewAward(
         result.award_data.data[0].award_id,
@@ -230,7 +230,7 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
         awardSubmitBtn.style.display = "none";
         awardEditBtn.textContent = "Edit";
         awardEditBtn.classList.remove("cancel-btn");
-        alert("SUCCESSFULLY UPDATED AWARD");
+        showSuccessMessage("Award successfully updated!");
       })
       .catch((error) => {
         console.error("Update failed:", error);
@@ -248,7 +248,7 @@ async function uploadNewAwardImg(formData, formAwardId) {
     if (response.ok) {
       const result = await response.json(); // Assuming the response is JSON
       console.log("Success:", result);
-      alert("Successfully updated award logo!");
+      showSuccessMessage("Award logo successfully updated!");
       document.querySelector(
         `#award-div-${formAwardId}`
       ).style.backgroundImage = `url('${result.data.image_url}')`;
@@ -359,7 +359,7 @@ principleForms.forEach((frm, idx) => {
       .then((response) => {
         if (response.ok) {
           console.log("Successfully updated form!");
-          alert(
+          showSuccessMessage(
             `${
               idx === 0
                 ? "Vision"
@@ -529,7 +529,7 @@ function generateAwards(awards, awardImages) {
           awardSubmitBtn.style.display = "none";
           awardEditBtn.textContent = "Edit";
           awardEditBtn.classList.remove("cancel-btn");
-          alert("SUCCESSFULLY UPDATED AWARD");
+          showSuccessMessage("Award successfully updated!");
         })
         .catch((error) => {
           console.error("Update failed:", error);

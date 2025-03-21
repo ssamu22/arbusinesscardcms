@@ -40,10 +40,7 @@ body {
 }
 .sidebar {
   background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
-  height: calc(100vh - 20px);
-  margin: 10px;
-  border-radius: 12px;
-  padding: 12px 0;
+  height: 100vh;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
   width: 250px;
@@ -284,9 +281,10 @@ nav a i {
 }
 main {
   flex-grow: 1;
-  padding: 20px;
   background-color: #fff;
   overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
 }
 header {
   display: flex;
@@ -1033,4 +1031,43 @@ header {
 
 .faq-answers {
   resize: none;
+}
+
+.message-div {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  padding: 5px;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.success-message {
+  background: #28a745;
+  border: 1px solid #1e7e34;
+}
+
+.error-message {
+  background: #dc3545;
+  border: 1px solid #a71d2a;
+}
+
+.alert-message {
+  flex: 1;
+}
+
+.close-message-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
 }

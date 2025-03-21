@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt"); // For password hashing
 const validator = require("validator"); // For email validation
 const axios = require("axios");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const supabase = require("../utils/supabaseClient");
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -233,17 +236,17 @@ exports.approveUser = async (req, res) => {
   // Change the status of the user from inactive to active
   const user = await Employee.update(req.params.employeeId, { isActive: true });
 
-  console.log(user);
+  console.log("USER APPROVED:", user.getEmail());
   // Send an email to the user
   const nodemailer = require("nodemailer");
 
   try {
     const info = await transporter.sendMail({
       from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-      to: "blueming972@gmail.com", //  receivers
+      to: user.getEmail(), //  receivers
       subject: "✔ Registration Approved ✔",
-      text: "Registration Approved",
-      html: "<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>",
+      text: `Registration Approved`,
+      html: `<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>`,
     });
   } catch (err) {
     console.log(err);
@@ -309,4 +312,128 @@ exports.changePassword = async (req, res) => {
     console.error("Error changing password:", error);
     res.status(500).json({ message: "Failed to change password" });
   }
+};
+
+exports.forgotPassword = async (req, res) => {
+  // 1. Get the user based on email
+  const { data, error } = await supabase
+    .from("employee")
+    .select("*")
+    .eq("email", req.body.email);
+
+  if (data.length === 0) {
+    return res.status(404).json({
+      status: "failed",
+      message: "There is no existing user associated with this email address!",
+    });
+  }
+
+  // 2. Generate the random reset token
+  const resetData = createPasswordResetToken();
+
+  await supabase
+    .from("employee")
+    .update({
+      password_reset_token: resetData.passwordResetToken,
+      token_expiration_date: resetData.tokenExpirationDate,
+    })
+    .eq("employee_id", data[0].employee_id);
+
+  // 3. Send the reset link to the email of the user
+  try {
+    const reqUrl = `${req.protocol}://${req.get("host")}/reset-password/${
+      resetData.resetToken
+    }`;
+
+    const info = await transporter.sendMail({
+      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+      to: req.body.email, //  receivers
+      subject: "Password Reset Link",
+      text: `Password Reset Link`,
+      html: `<body>
+    <p>We received a request to reset your password.</p>
+    <p>If you made this request, please click the link below to reset your password:</p>
+    <p><a href="${reqUrl}" style="color: #007bff; text-decoration: none;">${reqUrl}</a></p>
+    <p>This link will expire in 10 minutes. If you did not request a password reset, please ignore this email.</p>`,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.status(200).json({
+    status: "success",
+    data,
+  });
+};
+
+exports.resetPassword = async (req, res) => {
+  // Check if a required value are missing.
+  const { password, passwordConfirm } = req.body;
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
+
+  // Validate password
+  if (!password || !passwordConfirm) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Fill out all required inputs!",
+    });
+  }
+
+  if (password.length < 8 || password.length > 64) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Password must be between 8 to 64 characters long!",
+    });
+  }
+
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
+    });
+  }
+
+  if (!(password === passwordConfirm)) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Passwords must match!",
+    });
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Update password in database
+  const { data, error } = await supabase
+    .from("employee")
+    .update({ password: hashedPassword })
+    .eq("employee_id", req.params.id);
+
+  // Return response
+  res.status(200).json({
+    status: "success",
+    message: "Passsword successfully reset!",
+    data,
+  });
+};
+
+const createPasswordResetToken = () => {
+  const resetToken = crypto.randomBytes(64).toString("hex");
+
+  const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  const tokenExpirationDate = new Date(
+    Date.now() + 10 * 60 * 1000
+  ).toISOString();
+
+  return {
+    resetToken,
+    passwordResetToken,
+    tokenExpirationDate,
+  };
 };

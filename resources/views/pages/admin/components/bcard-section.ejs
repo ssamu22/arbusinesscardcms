@@ -1,0 +1,78 @@
+<section id="bcards-section" class="bcards-section">
+  <h2>Business Card Design</h2>
+
+  <div class="bcard-section-content">
+    <div class="bcard-section-canvas">
+      <input id="theText" type="text" />
+      <button id="submit" class="draw-text-btn">Draw text on canvas</button>
+      <button type="button" id="download-bcard">Download Business Card</button>
+
+      <br />
+      <canvas id="canvas" width="800" height="450"></canvas>
+      <div id="contextMenu" class="context-menu">
+        <button id="delete-text-btn">Delete</button>
+      </div>
+    </div>
+
+    <div class="text-options" id="text-options">
+      <label for="text-content">Text:</label>
+      <input type="text" id="text-content" name="text-content" />
+      <label for="text-font">Font Family:</label>
+      <input list="fonts" id="text-font" name="text-font" />
+      <datalist id="fonts">
+        <option value="Arial"></option>
+        <option value="Verdana"></option>
+        <option value="Times New Roman"></option>
+        <option value="Georgia"></option>
+        <option value="Courier New"></option>
+        <option value="Tahoma"></option>
+        <option value="Trebuchet MS"></option>
+        <option value="Impact"></option>
+        <option value="Comic Sans MS"></option>
+        <option value="Lucida Console"></option>
+        <option value="Garamond"></option>
+        <option value="Palatino Linotype"></option>
+      </datalist>
+
+      <label for="scaleFactor">Scale Factor:</label>
+      <input
+        type="number"
+        id="scaleFactor"
+        name="scaleFactor"
+        value="1"
+        step="0.1"
+      /><br />
+
+      <label for="fontSize">Font Size:</label>
+      <input type="number" id="fontSize" name="fontSize" value="16" /><br />
+
+      <label for="fontWeight">Font Weight:</label>
+      <input
+        type="number"
+        id="fontWeight"
+        name="fontWeight"
+        value="100"
+        min="100"
+        max="900"
+        step="100"
+      /><br />
+
+      <label for="color">Color:</label>
+      <input type="color" id="color" name="color" value="#008000" /><br />
+
+      <button type="button" id="apply-btn">Apply</button>
+    </div>
+  </div>
+
+  <div class = "bcard-bg-btn">
+    <label class="bcard-bg-label" for="bcard-bg">Upload Background</label>
+    <input type="file" accept="image/*" id="bcard-bg" />
+  </div>
+
+  <!-- <div id="canvas-div">
+    <button id = "add-text-btn">Add Text</button>
+    <canvas id="bcard-canvas"> </canvas>
+  </div> -->
+
+  <!--  -->
+</section>
