@@ -20,10 +20,11 @@ router
   .get(controller.getAllCards)
   .post(uploadMarker.single("image"), controller.addCard);
 
+// The id will be the image_target id instead of the supabase primary key
 router
   .route("/:id")
   .get(controller.getCard)
-  .patch(controller.updateCard)
+  .patch(uploadMarker.single("image"), controller.updateCard)
   .delete(controller.deleteCard);
 
 module.exports = router;

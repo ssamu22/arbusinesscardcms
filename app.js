@@ -19,6 +19,13 @@ const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
 const vuforiaRouter = require("./routes/vuforiaRoutes");
 
+// Catches synchronous errors
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! Shutting down application...");
+  console.log(err);
+  process.exit(1);
+});
+
 const { AxiosHeaders } = require("axios");
 const app = express();
 const port = 3000;
@@ -68,6 +75,15 @@ app.use("/arcms/api/v1/contacts", contactRoutes);
 app.use("/arcms/api/v1/schedule", scheduleRoutes);
 app.use("/arcms/api/v1/bcardContents", bcardRoutes);
 app.use("/arcms/api/v1/bcardBg", bcardBgRoutes);
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+});
+
+// SAFETY NET
+process.on("unhandledRejection", (err) => {
+  console.log("UNHANDLED REJECTION! Shutting down application...");
+  console.log(err);
+  server.close(() => {
+    process.exit(1);
+  });
 });

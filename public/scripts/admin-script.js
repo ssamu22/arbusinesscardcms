@@ -747,207 +747,207 @@ window.onclick = function (event) {
 };
 
 // MARKERS SECTION FUNCTIONALITY
-const uploadInput = document.getElementById("upload");
-const canvas = document.getElementById("histoEqCanvas");
-const ctx = canvas.getContext("2d");
-const submitCard = document.getElementById("submitBCard");
-const form = document.getElementById("uploadForm");
-const markerName = document.getElementById("marker-name");
-const markerId = document.getElementById("marker-id");
-uploadInput.addEventListener("change", (event) => {
-  checkFields();
-  handleFileSelect(event);
-});
+// const uploadInput = document.getElementById("upload");
+// const canvas = document.getElementById("histoEqCanvas");
+// const ctx = canvas.getContext("2d");
+// const submitCard = document.getElementById("submitBCard");
+// const form = document.getElementById("uploadForm");
+// const markerName = document.getElementById("marker-name");
+// const markerId = document.getElementById("marker-id");
+// uploadInput.addEventListener("change", (event) => {
+//   checkFields();
+//   handleFileSelect(event);
+// });
 
-markerName.addEventListener("input", checkFields);
-markerId.addEventListener("input", checkFields);
+// markerName.addEventListener("input", checkFields);
+// markerId.addEventListener("input", checkFields);
 
-function checkFields() {
-  nameIsFilled = markerName.value.trim() !== "";
-  markerUploaded = uploadInput.files.length > 0;
-  idIsFilled = markerId.value.trim() !== "" && !isNaN(markerId.value);
+// function checkFields() {
+//   nameIsFilled = markerName.value.trim() !== "";
+//   markerUploaded = uploadInput.files.length > 0;
+//   idIsFilled = markerId.value.trim() !== "" && !isNaN(markerId.value);
 
-  submitCard.disabled = !(nameIsFilled && markerUploaded && idIsFilled);
-}
+//   submitCard.disabled = !(nameIsFilled && markerUploaded && idIsFilled);
+// }
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault(); // Prevent the default form submission
+// form.addEventListener("submit", (event) => {
+//   event.preventDefault(); // Prevent the default form submission
 
-  // Convert canvas to JPEG data URL
-  const dataURL = canvas.toDataURL("image/jpeg"); // 'image/jpeg' format
+//   // Convert canvas to JPEG data URL
+//   const dataURL = canvas.toDataURL("image/jpeg"); // 'image/jpeg' format
 
-  // Convert Data URL to Blob
-  const [header, base64] = dataURL.split(",");
-  const binary = atob(base64);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) {
-    array.push(binary.charCodeAt(i));
-  }
-  const blob = new Blob([new Uint8Array(array)], {
-    type: "image/jpeg",
-  });
+//   // Convert Data URL to Blob
+//   const [header, base64] = dataURL.split(",");
+//   const binary = atob(base64);
+//   const array = [];
+//   for (let i = 0; i < binary.length; i++) {
+//     array.push(binary.charCodeAt(i));
+//   }
+//   const blob = new Blob([new Uint8Array(array)], {
+//     type: "image/jpeg",
+//   });
 
-  // Append the Blob to a FormData object
-  const formData = new FormData();
-  formData.append("name", markerName.value);
-  formData.append("width", 6);
-  formData.append("active_flag", true);
-  formData.append(
-    "application_metadata",
-    JSON.stringify({
-      Id: markerId.value,
-    })
-  );
-  formData.append("image", blob, "canvas-image.jpg"); // Ensure the key is 'image'
+//   // Append the Blob to a FormData object
+//   const formData = new FormData();
+//   formData.append("name", markerName.value);
+//   formData.append("width", 6);
+//   formData.append("active_flag", true);
+//   formData.append(
+//     "application_metadata",
+//     JSON.stringify({
+//       Id: markerId.value,
+//     })
+//   );
+//   formData.append("image", blob, "canvas-image.jpg"); // Ensure the key is 'image'
 
-  // Submit the form data using Fetch
-  fetch(form.action, {
-    method: form.method,
-    body: formData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Marker successfully uploaded!");
-        return response.json();
-      } else {
-        throw new Error("Failed to upload image");
-      }
-    })
-    .then((data) => console.log("Image uploaded successfully:", data))
-    .catch((error) => {
-      alert("Marker already exists! Please upload another one.");
-      console.error("Error uploading image:", error);
-    });
-});
+//   // Submit the form data using Fetch
+//   fetch(form.action, {
+//     method: form.method,
+//     body: formData,
+//   })
+//     .then((response) => {
+//       if (response.ok) {
+//         alert("Marker successfully uploaded!");
+//         return response.json();
+//       } else {
+//         throw new Error("Failed to upload image");
+//       }
+//     })
+//     .then((data) => console.log("Image uploaded successfully:", data))
+//     .catch((error) => {
+//       alert("Marker already exists! Please upload another one.");
+//       console.error("Error uploading image:", error);
+//     });
+// });
 
-function handleFileSelect(event) {
-  canvas.style.display = "block";
-  const file = event.target.files[0];
-  const reader = new FileReader();
+// function handleFileSelect(event) {
+//   canvas.style.display = "block";
+//   const file = event.target.files[0];
+//   const reader = new FileReader();
 
-  reader.onload = function (e) {
-    const img = new Image();
-    img.onload = function () {
-      const originalData = getImageData(img);
-      const histoEqData = histogramEqualization(originalData);
+//   reader.onload = function (e) {
+//     const img = new Image();
+//     img.onload = function () {
+//       const originalData = getImageData(img);
+//       const histoEqData = histogramEqualization(originalData);
 
-      drawEnhancedImage(histoEqData, "histoEqCanvas");
+//       drawEnhancedImage(histoEqData, "histoEqCanvas");
 
-      // addDownloadButton(
-      //   "histoEqCanvas",
-      //   "Download Histogram Equalized Image",
-      //   "histo-equalized.jpg"
-      // );
-    };
-    img.src = e.target.result;
-  };
+//       // addDownloadButton(
+//       //   "histoEqCanvas",
+//       //   "Download Histogram Equalized Image",
+//       //   "histo-equalized.jpg"
+//       // );
+//     };
+//     img.src = e.target.result;
+//   };
 
-  const dataURL = canvas.toDataURL("image/jpeg"); // Get base64 data
+//   const dataURL = canvas.toDataURL("image/jpeg"); // Get base64 data
 
-  const blob = dataURLToBlob(dataURL); // Convert to Blob
-  console.log(blob);
-  reader.readAsDataURL(file);
-}
+//   const blob = dataURLToBlob(dataURL); // Convert to Blob
+//   console.log(blob);
+//   reader.readAsDataURL(file);
+// }
 
-function dataURLToBlob(dataURL) {
-  const [header, base64] = dataURL.split(",");
-  const binary = atob(base64);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) {
-    array.push(binary.charCodeAt(i));
-  }
-  return new Blob([new Uint8Array(array)], {
-    type: header.split(":")[1].split(";")[0],
-  });
-}
-function getImageData(img) {
-  const canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-  return ctx.getImageData(0, 0, canvas.width, canvas.height);
-}
-function drawEnhancedImage(imageData, canvasId) {
-  const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext("2d");
-  canvas.width = imageData.width;
-  canvas.height = imageData.height;
-  ctx.putImageData(imageData, 0, 0);
-}
+// function dataURLToBlob(dataURL) {
+//   const [header, base64] = dataURL.split(",");
+//   const binary = atob(base64);
+//   const array = [];
+//   for (let i = 0; i < binary.length; i++) {
+//     array.push(binary.charCodeAt(i));
+//   }
+//   return new Blob([new Uint8Array(array)], {
+//     type: header.split(":")[1].split(";")[0],
+//   });
+// }
+// function getImageData(img) {
+//   const canvas = document.createElement("canvas");
+//   canvas.width = img.width;
+//   canvas.height = img.height;
+//   const ctx = canvas.getContext("2d");
+//   ctx.drawImage(img, 0, 0);
+//   return ctx.getImageData(0, 0, canvas.width, canvas.height);
+// }
+// function drawEnhancedImage(imageData, canvasId) {
+//   const canvas = document.getElementById(canvasId);
+//   const ctx = canvas.getContext("2d");
+//   canvas.width = imageData.width;
+//   canvas.height = imageData.height;
+//   ctx.putImageData(imageData, 0, 0);
+// }
 
-function addDownloadButton(canvasId, buttonText, fileName) {
-  const canvas = document.getElementById(canvasId);
-  const button = document.createElement("button");
-  button.textContent = buttonText;
-  button.addEventListener("click", () => downloadImage(canvas, fileName));
-  document.querySelector(".canvasDiv").appendChild(button);
-}
+// function addDownloadButton(canvasId, buttonText, fileName) {
+//   const canvas = document.getElementById(canvasId);
+//   const button = document.createElement("button");
+//   button.textContent = buttonText;
+//   button.addEventListener("click", () => downloadImage(canvas, fileName));
+//   document.querySelector(".canvasDiv").appendChild(button);
+// }
 
-function downloadImage(canvas, fileName) {
-  const link = document.createElement("a");
-  link.download = fileName;
-  link.href = canvas.toDataURL("image/jpeg");
-  link.click();
-}
+// function downloadImage(canvas, fileName) {
+//   const link = document.createElement("a");
+//   link.download = fileName;
+//   link.href = canvas.toDataURL("image/jpeg");
+//   link.click();
+// }
 
-function histogramEqualization(imageData, blendRatio = 1) {
-  const { data, width, height } = imageData;
-  const histogram = new Array(256).fill(0);
-  const cdf = new Array(256).fill(0);
-  const equalizedData = new Uint8ClampedArray(data.length);
+// function histogramEqualization(imageData, blendRatio = 1) {
+//   const { data, width, height } = imageData;
+//   const histogram = new Array(256).fill(0);
+//   const cdf = new Array(256).fill(0);
+//   const equalizedData = new Uint8ClampedArray(data.length);
 
-  // Calculate histogram
-  for (let i = 0; i < data.length; i += 4) {
-    const intensity = data[i]; // Grayscale
-    histogram[intensity]++;
-  }
+//   // Calculate histogram
+//   for (let i = 0; i < data.length; i += 4) {
+//     const intensity = data[i]; // Grayscale
+//     histogram[intensity]++;
+//   }
 
-  // Calculate cumulative distribution function (CDF)
-  cdf[0] = histogram[0];
-  for (let i = 1; i < 256; i++) {
-    cdf[i] = cdf[i - 1] + histogram[i];
-  }
+//   // Calculate cumulative distribution function (CDF)
+//   cdf[0] = histogram[0];
+//   for (let i = 1; i < 256; i++) {
+//     cdf[i] = cdf[i - 1] + histogram[i];
+//   }
 
-  // Normalize CDF
-  const minCDF = cdf[0];
-  for (let i = 0; i < cdf.length; i++) {
-    cdf[i] = Math.round(((cdf[i] - minCDF) * 255) / (width * height - minCDF));
-  }
+//   // Normalize CDF
+//   const minCDF = cdf[0];
+//   for (let i = 0; i < cdf.length; i++) {
+//     cdf[i] = Math.round(((cdf[i] - minCDF) * 255) / (width * height - minCDF));
+//   }
 
-  // Apply equalization
-  for (let i = 0; i < data.length; i += 4) {
-    const intensity = data[i];
-    equalizedData[i] =
-      equalizedData[i + 1] =
-      equalizedData[i + 2] =
-        Math.round(blendRatio * cdf[intensity] + (1 - blendRatio) * intensity);
-    equalizedData[i + 3] = data[i + 3]; // Alpha channel
-  }
+//   // Apply equalization
+//   for (let i = 0; i < data.length; i += 4) {
+//     const intensity = data[i];
+//     equalizedData[i] =
+//       equalizedData[i + 1] =
+//       equalizedData[i + 2] =
+//         Math.round(blendRatio * cdf[intensity] + (1 - blendRatio) * intensity);
+//     equalizedData[i + 3] = data[i + 3]; // Alpha channel
+//   }
 
-  return new ImageData(equalizedData, width, height);
-}
+//   return new ImageData(equalizedData, width, height);
+// }
 
-const messageDiv = document.querySelector(".message-div");
-const alertMessage = document.querySelector(".alert-message");
-const closeMessageBtn = document.querySelector(".close-message-btn");
+// const messageDiv = document.querySelector(".message-div");
+// const alertMessage = document.querySelector(".alert-message");
+// const closeMessageBtn = document.querySelector(".close-message-btn");
 
-function showSuccessMessage(message) {
-  messageDiv.style.display = "flex";
-  messageDiv.classList.remove("error-message");
-  messageDiv.classList.add("success-message");
-  alertMessage.textContent = message;
-}
-function showErrorMessage(message) {
-  messageDiv.style.display = "flex";
-  messageDiv.classList.remove("success-message");
-  messageDiv.classList.add("error-message");
-  alertMessage.textContent = message;
-}
+// function showSuccessMessage(message) {
+//   messageDiv.style.display = "flex";
+//   messageDiv.classList.remove("error-message");
+//   messageDiv.classList.add("success-message");
+//   alertMessage.textContent = message;
+// }
+// function showErrorMessage(message) {
+//   messageDiv.style.display = "flex";
+//   messageDiv.classList.remove("success-message");
+//   messageDiv.classList.add("error-message");
+//   alertMessage.textContent = message;
+// }
 
-closeMessageBtn.addEventListener("click", () => {
-  messageDiv.style.display = "none";
-  messageDiv.classList.remove("success-message");
-  messageDiv.classList.remove("error-message");
-  alertMessage.textContent = "";
-});
+// closeMessageBtn.addEventListener("click", () => {
+//   messageDiv.style.display = "none";
+//   messageDiv.classList.remove("success-message");
+//   messageDiv.classList.remove("error-message");
+//   alertMessage.textContent = "";
+// });

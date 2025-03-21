@@ -274,14 +274,6 @@
   margin-bottom: 15px;
 }
 
-.markers-list {
-  background-color: #fff;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
 .no-data-found {
   text-align: center;
   color: var(--tertiary-color);
