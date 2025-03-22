@@ -13,6 +13,16 @@
       />
     </svg>
     <div class="marker-info-container">
+      <div class="marker-info-overlay">
+        <div class="delete-warning-div">
+          <p>Are you sure you want to delete this business card?</p>
+          <div class="delete-bcard-options">
+            <button id="yes-delete-btn" class="delete-warning-btn">Yes</button>
+            <button id="no-delete-btn" class="delete-warning-btn">No</button>
+          </div>
+        </div>
+      </div>
+
       <div class="selected-marker-div">
         <img class="selected-marker-img" src="/images/background.png" />
         <div class="selected-marker-info">
@@ -27,6 +37,7 @@
               class="target-input"
               name="target-name"
               placeholder="Name"
+              disabled
             />
           </div>
 
@@ -40,6 +51,7 @@
               id="target-width"
               class="target-input"
               name="target-width"
+              disabled
             />
           </div>
 
@@ -53,19 +65,23 @@
               id="target-active"
               class="target-input"
               name="target-active"
+              disabled
             />
+          </div>
+
+          <!-- Date Created -->
+          <div class="target-input-label">
+            <label for="target-date-created">Date Created</label>
+          </div>
+          <div class="target-input-div">
+            <p id="target-date-created" class="target-rating-display">0</p>
           </div>
           <!-- Date Modified -->
           <div class="target-input-label">
             <label for="target-date-modified">Date Modified</label>
           </div>
           <div class="target-input-div">
-            <input
-              type="date"
-              id="target-date-modified"
-              class="target-input"
-              name="target-date-modified"
-            />
+            <p id="target-date-modified" class="target-rating-display">0</p>
           </div>
 
           <!-- Rating -->
@@ -73,14 +89,7 @@
             <label for="target-rating">Rating</label>
           </div>
           <div class="target-input-div">
-            <input
-              type="number"
-              id="target-rating"
-              class="target-input"
-              name="target-rating"
-              min="1"
-              max="5"
-            />
+            <p id="target-rating" class="target-rating-display">0</p>
           </div>
 
           <!-- Recognition -->
@@ -88,12 +97,7 @@
             <label for="target-recognition">Recognition</label>
           </div>
           <div class="target-input-div">
-            <input
-              type="number"
-              id="target-recognition"
-              class="target-input"
-              name="target-recognition"
-            />
+            <p id="target-recognition" class="target-rating-display">0</p>
           </div>
 
           <!-- metadata -->
@@ -105,26 +109,24 @@
               id="target-metadata"
               class="target-input"
               name="target-metadata"
+              disabled
             >
               <!-- The value will be the id of the users -->
-              <option value="1">John Carlo</option>
-              <option value="2">John Doe</option>
-              <option value="3">John Louis</option>
             </select>
           </div>
-
+          <input type="file" id="new-target-upload" accept="image/*" disabled />
+          <label for="new-target-upload" class="target-change-label">
+            <i class="fas fa-cloud-upload-alt"></i> Change Target Image
+          </label>
           <button class="edit-target-info">Edit</button>
+          <button class="delete-image-target">Delete</button>
         </div>
       </div>
-      <label for="upload" class="file-upload-label target-change-label">
-        <i class="fas fa-cloud-upload-alt"></i> Choose a file
-      </label>
     </div>
   </div>
   <h2>Business Card Markers</h2>
   <div class="markers-list">
     <h3>List of registered Business Cards</h3>
-
     <div class="image-target-div"></div>
     <!-- <div class="no-data-found">
       <img
@@ -134,10 +136,14 @@
       <p>No Data Found!</p>
     </div> -->
   </div>
-  <label for="upload" class="file-upload-label">
+  <input type="file" id="add-target-upload" accept="image/*" />
+  <label for="add-target-upload" class="target-add-label">
+    <i class="fas fa-cloud-upload-alt"></i> Add Business Card
+  </label>
+  <!-- <label for="upload" class="file-upload-label">
     <i class="fas fa-cloud-upload-alt"></i> Add a Business Card
   </label>
-  <input type="file" id="upload" accept="image/*" />
+  <input type="file" id="upload" accept="image/*" /> -->
   <!--
 
   <div class="canvasDiv">
