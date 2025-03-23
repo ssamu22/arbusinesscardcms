@@ -928,26 +928,26 @@ window.onclick = function (event) {
 //   return new ImageData(equalizedData, width, height);
 // }
 
-// const messageDiv = document.querySelector(".message-div");
-// const alertMessage = document.querySelector(".alert-message");
-// const closeMessageBtn = document.querySelector(".close-message-btn");
+const messageDiv = document.querySelector(".message-div");
+const alertMessage = document.querySelector(".alert-message");
+const closeMessageBtn = document.querySelector(".close-message-btn");
 
-// function showSuccessMessage(message) {
-//   messageDiv.style.display = "flex";
-//   messageDiv.classList.remove("error-message");
-//   messageDiv.classList.add("success-message");
-//   alertMessage.textContent = message;
-// }
-// function showErrorMessage(message) {
-//   messageDiv.style.display = "flex";
-//   messageDiv.classList.remove("success-message");
-//   messageDiv.classList.add("error-message");
-//   alertMessage.textContent = message;
-// }
+function showSuccessMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("error-message");
+  messageDiv.classList.add("success-message");
+  alertMessage.textContent = message;
+}
+function showErrorMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.add("error-message");
+  alertMessage.textContent = message;
+}
 
-// closeMessageBtn.addEventListener("click", () => {
-//   messageDiv.style.display = "none";
-//   messageDiv.classList.remove("success-message");
-//   messageDiv.classList.remove("error-message");
-//   alertMessage.textContent = "";
-// });
+closeMessageBtn.addEventListener("click", () => {
+  messageDiv.style.display = "none";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.remove("error-message");
+  alertMessage.textContent = "";
+});

@@ -17,11 +17,46 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const deleteBcardbtn = document.querySelector(".delete-image-target");
   const deleteNoBtn = document.getElementById("no-delete-btn");
   const deleteYesBtn = document.getElementById("yes-delete-btn");
+
+  // Create business Card Overlay components
+  const createMarkerOverlay = document.querySelector(".create-marker-overlay");
+  const closeCreateOverlay = document.querySelector(".close-create-marker");
+  const createMarkerBtn = document.querySelector(".add-target-btn");
+  // Create business card inputs
+
+  const displayedCreateImage = document.querySelector(".create-marker-img");
+  const createTargetUpload = document.getElementById("create-target-upload");
+  const createNameInput = document.getElementById("create-name");
+  const createWidthInput = document.getElementById("create-width");
+  const createActiveInput = document.getElementById("create-active");
+  const createMetadata = document.getElementById("create-metadata");
+  const saveCreateBtn = document.querySelector(".save-create-target");
   let editing = false;
 
   let targetIdToEdit = null;
 
   // EVENT LISTENERS
+
+  saveCreateBtn.addEventListener("click", async (e) => {
+    await addBusinessCard();
+  });
+
+  createTargetUpload.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      displayedCreateImage.src = imageUrl;
+    }
+  });
+
+  closeCreateOverlay.addEventListener("click", (e) => {
+    createMarkerOverlay.style.display = "none";
+  });
+
+  createMarkerBtn.addEventListener("click", (e) => {
+    createMarkerOverlay.style.display = "flex";
+  });
 
   deleteBcardbtn.addEventListener("click", (e) => {
     deleteBcardOverlay.style.display = "flex";
@@ -42,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // This will handle the new image target for the business card
   function showOverlayHandler(el, targetData, targetId, theTarget) {
     el.addEventListener("click", (e) => {
+      console.log("THE ASSOCIATED EMPLOYEE:", targetData);
       targetMetadata.value = theTarget.associated_employee;
       displayedTargetImage.src = theTarget.image_url;
       targetIdToEdit = targetId;
@@ -94,6 +130,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
     // Append the new option to the select element
     targetMetadata.appendChild(newOption);
+
+    const clonedOption = newOption.cloneNode(true);
+    createMetadata.appendChild(clonedOption);
   }
 
   function createImageTarget(name, imgUrl, target_id) {
@@ -206,6 +245,68 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       document.getElementById(targetIdToEdit).remove();
     } catch (err) {
       console.log("Error deleting business card:", err);
+    }
+  }
+
+  async function addBusinessCard() {
+    try {
+      console.log("CREATING BUSINESS CARD....");
+
+      if (!createTargetUpload.files[0])
+        return showErrorMessage("Please upload a business card image!");
+
+      if (!createNameInput.value)
+        return alert("Please provide the name of the business card target!");
+
+      if (!createWidthInput.value)
+        return alert("Please specify the width of the business card target!");
+
+      // Finds the associated employee using the targetMetadata
+      const associatedEmployee = employees.find(
+        (employee) => employee.employee_id === parseInt(createMetadata.value)
+      );
+
+      console.log("META DATA VALUE OF THE CREATE:", createMetadata.value);
+      console.log(
+        "THE EMPLOYEE OF THE CREATED BUSINESS CARD:",
+        associatedEmployee
+      );
+
+      const formData = new FormData();
+
+      // console.log("Associated Employee:", associatedEmployee);
+
+      const metadata = {
+        Id: associatedEmployee.employee_id,
+        FirstName: associatedEmployee.first_name,
+        LastName: associatedEmployee.last_name,
+      };
+
+      formData.append("name", createNameInput.value);
+      formData.append("width", createWidthInput.value);
+      formData.append("active_flag", createActiveInput.checked);
+      formData.append("bucket", "assets/targetImages");
+      formData.append("application_metadata", JSON.stringify(metadata));
+      formData.append("image", createTargetUpload.files[0]);
+
+      const response = await fetch("/arcms/api/v1/vuforia", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      createMarkerOverlay.style.display = "none";
+      createNameInput.value = "";
+      createWidthInput.value = 0;
+      createActiveInput.checked = true;
+      showSuccessMessage("Successfully added a new business card target!");
+    } catch (err) {
+      console.log("Error creating business card", err);
     }
   }
 

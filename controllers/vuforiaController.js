@@ -76,6 +76,8 @@ exports.addCard = async (req, res) => {
     application_metadata: util.encodeBase64(req.body.application_metadata),
   };
 
+  const metadata = JSON.parse(req.body.application_metadata);
+
   await client.addTarget(target, async function (error, result) {
     if (error) {
       return res.status(400).json({
@@ -112,6 +114,7 @@ exports.addCard = async (req, res) => {
       image_target: result.target_id,
       image_id: uploadedImage.image_id,
       name: req.body.name,
+      associated_employee: metadata.Id,
     });
 
     if (dbError) {

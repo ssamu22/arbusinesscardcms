@@ -1,4 +1,90 @@
 <section id="markers-section" class="markers-section">
+  <!-- Overlay for creating/adding business card targets -->
+
+  <div class="create-marker-overlay">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="30px"
+      viewBox="0 -960 960 960"
+      width="30px"
+      fill="#e3e3e3"
+      class="close-create-marker"
+    >
+      <path
+        d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+      />
+    </svg>
+
+    <div class="create-marker-container">
+      <div class="create-marker-div">
+        <img class="create-marker-img" src="/images/background.png" />
+        <div class="create-marker-info">
+          <!-- Name -->
+          <div class="create-input-label">
+            <label for="create-name">Name</label>
+          </div>
+          <div class="create-input-div">
+            <input
+              type="text"
+              id="create-name"
+              class="create-input"
+              name="create-name"
+              placeholder="Name"
+            />
+          </div>
+
+          <!-- width -->
+          <div class="create-input-label">
+            <label for="create-width">Width</label>
+          </div>
+          <div class="create-input-div">
+            <input
+              type="number"
+              id="create-width"
+              class="create-input"
+              name="create-width"
+            />
+          </div>
+
+          <!-- active flag -->
+          <div class="create-input-label">
+            <label for="create-active">Active</label>
+          </div>
+          <div class="create-input-div">
+            <input
+              type="checkbox"
+              id="create-active"
+              class="create-input"
+              name="create-active"
+              checked="true"
+            />
+          </div>
+
+          <!-- metadata -->
+          <div class="create-input-label">
+            <p>Metadata</p>
+          </div>
+          <div class="create-input-div">
+            <select
+              id="create-metadata"
+              class="create-input"
+              name="create-metadata"
+            >
+              <!-- The value will be the id of the users -->
+            </select>
+          </div>
+
+          <input type="file" id="create-target-upload" accept="image/*" />
+          <label for="create-target-upload" class="create-target-label">
+            <i class="fas fa-cloud-upload-alt"></i> Add Image
+          </label>
+          <button class="save-create-target">Add Target</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay for editing business card targets -->
   <div class="marker-overlay">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -136,10 +222,9 @@
       <p>No Data Found!</p>
     </div> -->
   </div>
-  <input type="file" id="add-target-upload" accept="image/*" />
-  <label for="add-target-upload" class="target-add-label">
+  <button class="add-target-btn">
     <i class="fas fa-cloud-upload-alt"></i> Add Business Card
-  </label>
+  </button>
   <!-- <label for="upload" class="file-upload-label">
     <i class="fas fa-cloud-upload-alt"></i> Add a Business Card
   </label>
