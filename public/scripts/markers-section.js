@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     targetWidthInput.disabled = true;
     targetActiveInput.disabled = true;
     targetMetadata.disabled = true;
+    newTargetUpload.disabled = true;
     editing = false;
   }
 
@@ -121,6 +122,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       targetWidthInput.disabled = false;
       targetActiveInput.disabled = false;
       targetMetadata.disabled = false;
+      newTargetUpload.disabled = false;
       editing = true;
     } else {
       // This will trigger after the user saves the updated data
@@ -225,6 +227,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         console.log(`Error: ${response.status} - ${response.statusText}`);
       }
 
+      if (response.status === 200) {
+        showSuccessMessage("Business card successfully updated!");
+      }
       const data = await response.json();
 
       console.log("UPDATE RESPONSE:", data);
@@ -247,6 +252,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
       console.log("BUSINESS CARD DELETED!", data);
 
+      showErrorMessage("Business card deleted!");
       // Delete the business card from the html
 
       document.getElementById(targetIdToEdit).remove();
@@ -258,25 +264,23 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   async function addBusinessCard() {
     try {
       console.log("CREATING BUSINESS CARD....");
-
+      saveCreateBtn.textContent = "Adding Target...";
       if (!createTargetUpload.files[0])
         return showErrorMessage("Please upload a business card image!");
 
       if (!createNameInput.value)
-        return alert("Please provide the name of the business card target!");
+        return showErrorMessage(
+          "Please provide the name of the business card target!"
+        );
 
       if (!createWidthInput.value)
-        return alert("Please specify the width of the business card target!");
+        return showErrorMessage(
+          "Please specify the width of the business card target!"
+        );
 
       // Finds the associated employee using the targetMetadata
       const associatedEmployee = employees.find(
         (employee) => employee.employee_id === parseInt(createMetadata.value)
-      );
-
-      console.log("META DATA VALUE OF THE CREATE:", createMetadata.value);
-      console.log(
-        "THE EMPLOYEE OF THE CREATED BUSINESS CARD:",
-        associatedEmployee
       );
 
       const formData = new FormData();
@@ -355,6 +359,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       createNameInput.value = "";
       createWidthInput.value = 0;
       createActiveInput.checked = true;
+      saveCreateBtn.textContent = "Add Target";
       showSuccessMessage("Successfully added a new business card target!");
     } catch (err) {
       console.log("Error creating business card", err);

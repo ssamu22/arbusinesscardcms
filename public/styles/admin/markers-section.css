@@ -153,10 +153,6 @@
   background: #9b3838;
 }
 
-.target-change-label {
-  margin-top: 10px;
-}
-
 .target-input-label,
 .create-input-label,
 .create-input-div,
@@ -205,6 +201,10 @@
   transition: background-color 0.3s;
   grid-column: 1 / -1;
   text-align: center;
+  margin-top: 10px;
+}
+.target-change-label:hover {
+  background-color: #8f7501;
 }
 
 .create-target-label {
@@ -276,10 +276,6 @@
   background: white;
 }
 
-.target-change-label:hover {
-  background-color: #8f7501;
-}
-
 .delete-image-target {
   background: rgb(228, 143, 143);
   border-radius: 5px;
@@ -288,6 +284,10 @@
   cursor: pointer;
   grid-column: 1 / -1;
 }
+
+#save-bg-btn {
+}
+
 @media (orientation: portrait) {
   .image-target-div {
     grid-template-columns: auto;

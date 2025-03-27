@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async () => {
   // const dashboardLink = document.getElementById('dashboard-link');
   const membersLink = document.getElementById("members-link");
   // const analyticsLink = document.getElementById('analytics-link');
