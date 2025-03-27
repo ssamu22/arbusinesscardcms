@@ -7,6 +7,9 @@
   --text-color: #333;
   --border-color: #ddd;
 }
+* {
+  font-family: Arial, sans-serif;
+}
 
 @keyframes fadeIn {
   from {

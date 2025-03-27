@@ -7,6 +7,7 @@ const Image = require("../models/Image");
 const supabase = require("../utils/supabaseClient");
 
 var vuforia = require("vuforia-api");
+const upload = require("../middlewares/upload");
 
 var client = vuforia.client({
   serverAccessKey: process.env.VUFORIA_SERVER_ACCESS_KEY,
@@ -75,6 +76,8 @@ exports.addCard = async (req, res) => {
     application_metadata: util.encodeBase64(req.body.application_metadata),
   };
 
+  const metadata = JSON.parse(req.body.application_metadata);
+
   await client.addTarget(target, async function (error, result) {
     if (error) {
       return res.status(400).json({
@@ -107,11 +110,14 @@ exports.addCard = async (req, res) => {
       });
     }
 
-    const { error: dbError } = await supabase.from("image_target").insert({
-      image_target: result.target_id,
-      image_id: uploadedImage.image_id,
-      name: req.body.name,
-    });
+    const { data, error: dbError } = await supabase
+      .from("image_target")
+      .insert({
+        image_target: result.target_id,
+        image_id: uploadedImage.image_id,
+        name: req.body.name,
+        associated_employee: metadata.Id,
+      });
 
     if (dbError) {
       return res.status(400).json({
@@ -123,6 +129,10 @@ exports.addCard = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "New business card target successfully added!",
+      data: {
+        ...data[0],
+        image_url: theImage.image_url,
+      },
       result,
       theImage,
     });
@@ -170,21 +180,29 @@ Accepted values for updating:
 4. active_flag
 5. application_metadata 
 */
+
+  // Create an update object to use for updating Vuforia data
   var update = {
     ...req.body,
   };
 
-  // Removes the bucket from the update object
+  // Convert the metadata into an object (This will be used to update the associated employee)
+  const metadata = JSON.parse(req.body.application_metadata);
+
+  // Removes the unnecessary data for Vuforia
   delete update.bucket;
+  delete update.associated_employee;
 
   // Converts the width into integer
   if (req.body.width) {
     update.width = parseInt(req.body.width);
   }
 
+  // Converts the string into boolean
   if (req.body.active_flag) {
     update.active_flag = req.body.active_flag === "true";
   }
+
   // Check if the user will update the image of the target
   if (req.file) {
     update.image = util.encodeFileBase64(
@@ -201,8 +219,7 @@ Accepted values for updating:
 
   // This will update the metadata of a business card
   client.updateTarget(req.params.id, update, async function (error, result) {
-    console.log(update);
-    console.log(req.params.id);
+    // Check if an error occurs during the update of Vuforia data
     if (error) {
       return res.status(400).json({
         status: "failed",
@@ -212,9 +229,14 @@ Accepted values for updating:
       });
     }
 
+    // This will get the image url of the image target
     let theImage = null;
+
+    // This will be used to get the image_id of the target
+    let uploadedImage = null;
+
     if (req.file) {
-      const uploadedImage = await Image.uploadImage(
+      uploadedImage = await Image.uploadImage(
         req.file,
         req.body.bucket,
         req.file.originalname
@@ -229,7 +251,6 @@ Accepted values for updating:
 
       // Get the image by its id
       theImage = await Image.getImageById(uploadedImage.image_id);
-      console.log("THE IMAGE:", theImage);
 
       if (!theImage) {
         return res.status(400).json({
@@ -237,39 +258,29 @@ Accepted values for updating:
           message: "Image cannot be found!",
         });
       }
-
-      const { data, error: dbError } = await supabase
-        .from("image_target")
-        .update({
-          image_id: uploadedImage.image_id,
-        })
-        .eq("image_target", req.params.id);
-
-      if (dbError) {
-        return res.status(400).json({
-          status: "failed",
-          message:
-            "Failed to update the business card target! Please try again.",
-        });
-      }
     }
 
-    if (req.body.name) {
-      const { data, error: dbError } = await supabase
-        .from("image_target")
-        .update({
-          name: req.body.name,
-        })
-        .eq("image_target", req.params.id);
+    // Updates the image target data in Supabase database
+    const { data, error: dbError } = await supabase
+      .from("image_target")
+      .update({
+        ...(req.body.name && { name: req.body.name }),
+        ...(uploadedImage && { image_id: uploadedImage.image_id }),
+        ...(req.body.application_metadata && {
+          associated_employee: metadata.Id,
+        }),
+        date_modified: new Date().toISOString().split("T")[0],
+      })
+      .eq("image_target", req.params.id);
 
-      if (dbError) {
-        return res.status(400).json({
-          status: "failed",
-          message:
-            "Failed to update the business card target! Please try again.",
-        });
-      }
+    if (dbError) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Failed to update the database! Please try again.",
+      });
     }
+
+    // Return updated response
     res.status(200).json({
       status: "success",
       message: "Marker successfully updated",

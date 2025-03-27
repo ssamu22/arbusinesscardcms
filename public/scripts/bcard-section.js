@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const contextMenu = document.getElementById("contextMenu");
   const applyBtn = document.getElementById("apply-btn");
   const textOptionsDiv = document.getElementById("text-options");
+  const saveBgBtn = document.getElementById("save-bg-btn");
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
   const deleteBtn = document.getElementById("delete-text-btn");
+  let fileToSave = null;
   let backgroundImage = null;
   let $canvas = $("#canvas");
   let startX, startY;
@@ -42,26 +44,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   downloadBcardBtn.addEventListener("click", downloadCanvas);
 
   fileInput.addEventListener("change", async function (event) {
-    const file = event.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = async function (e) {
-        try {
-          // Send file to API and get the new image URL
-          const imageUrl = await updateBackground(file);
-          if (!imageUrl) return;
-
-          // Load and set the background from the new image URL
-          setBackgroundFromURL(imageUrl);
-        } catch (err) {
-          console.error("Error updating background:", err);
-        }
-      };
-
-      reader.readAsDataURL(file);
+    if (fileInput.files.length === 0) {
+      saveBgBtn.style.display = "none";
+      return;
     }
+
+    saveBgBtn.style.display = "inline-block";
+    fileToSave = fileInput.files[0];
+
+    if (fileToSave) {
+      const imageUrl = URL.createObjectURL(fileToSave);
+      setBackgroundFromURL(imageUrl);
+    }
+  });
+
+  saveBgBtn.addEventListener("click", async function (event) {
+    console.log("FILE TO SAVE:", fileToSave);
+
+    try {
+      // Send file to API and get the new image URL
+      const imageUrl = await updateBackground(fileToSave);
+      if (!imageUrl) return;
+    } catch (err) {
+      console.error("Error updating background:", err);
+    }
+
+    saveBgBtn.style.display = "none";
   });
 
   applyBtn.addEventListener("click", (e) => {
@@ -87,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   $canvas.on("mouseout", handleMouseOut);
 
   // Add text when clicking submit
-  $("#submit").click(async function () {
+  $("#submit-new-text").click(async function () {
     let y = texts.length * 20 + 20;
     let textValue = $("#theText").val();
 
@@ -256,6 +264,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fontWeightInput = document.getElementById("fontWeight");
     const colorInput = document.getElementById("color");
 
+    // Show an error message
+
+    if (idx === -1) {
+      showErrorMessage("Please select a text to edit!");
+      return;
+    }
+
+    // Show an error message if any values are missing
+    if (
+      !textInput.value ||
+      !fontInput.value ||
+      !fontSizeInput.value ||
+      !fontWeightInput.value ||
+      !colorInput.value
+    ) {
+      showErrorMessage("Please fill up all the necessary fields!");
+      return;
+    }
+
     texts[idx].text = textInput.value;
     texts[idx].font_family = fontInput.value;
     texts[idx].scale_factor = scaleInput.value;
@@ -308,10 +335,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (textToEdit !== -1) {
       // Show the custom menu at cursor position
-      console.log("DELETE THIS BITCH?");
+      contextMenu.style.display = "block";
       contextMenu.style.left = `${event.pageX}px`;
       contextMenu.style.top = `${event.pageY}px`;
-      contextMenu.style.display = "block";
     } else {
       contextMenu.style.display = "none";
     }
@@ -393,7 +419,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
   async function updateBackground(file) {
+    console.log("UPDATING BACKGROUND!");
     try {
+      saveBgBtn.textContent = "Saving...";
       const formData = new FormData();
       formData.append("bcard_image", file);
 
@@ -410,6 +438,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const responseData = await response.json();
 
       console.log("BG URL RETRIEVED!", responseData.data.image_url);
+
+      showSuccessMessage("Business card background updated successfully!");
+      saveBgBtn.textContent = "Save Background";
       return responseData.data.image_url;
     } catch (err) {
       console.log("Failed to retrieve business card background:", err);
@@ -447,6 +478,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("THE RESPONSE:", response);
 
       const responseData = await response.json();
+
+      if (response.status === 200) {
+        showSuccessMessage("Added a new text!");
+      } else {
+        showErrorMessage("Failed to add a new text! Please try again.");
+      }
       return responseData.data[0];
     } catch (err) {
       console.log("Failed to add new content:", err);
@@ -473,13 +510,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("NEW DATA ADDED:", responseData.data[0]);
+
+      showSuccessMessage("Business card design successfully updated!");
       return responseData.data[0];
     } catch (err) {
       console.log("Failed to delete content!", err);
       return null;
     }
   }
-
   draw();
 });
 

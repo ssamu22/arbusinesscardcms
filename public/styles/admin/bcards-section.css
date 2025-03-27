@@ -115,15 +115,7 @@
 }
 
 #bcard-bg {
-  margin: 10px auto;
-  padding: 10px;
-  border: 2px solid #2b142e;
-  border-radius: 8px;
-  background-color: #ddaeed;
-  color: #2b142e; /* Text color */
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  display: none;
 }
 
 #bcard-bg:hover {
@@ -139,4 +131,45 @@
 .bcard-bg-label {
   display: block;
   margin-bottom: 5px;
+}
+
+.bcard-bg-label {
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 10px;
+}
+.bcard-bg-label:hover {
+  background-color: #8f7501;
+}
+
+#delete-text-btn {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #9b3838;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+#save-bg-btn {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #bb5a5a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  display: none;
 }

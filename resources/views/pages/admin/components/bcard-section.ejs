@@ -4,11 +4,18 @@
   <div class="bcard-section-content">
     <div class="bcard-section-canvas">
       <input id="theText" type="text" />
-      <button id="submit" class="draw-text-btn">Draw text on canvas</button>
+      <button id="submit-new-text" class="draw-text-btn">Draw text on canvas</button>
       <button type="button" id="download-bcard">Download Business Card</button>
 
       <br />
-      <canvas id="canvas" width="800" height="450"></canvas>
+      <div>
+        <canvas id="canvas" width="800" height="450"></canvas>
+        <div class="bcard-bg-btn">
+          <input type="file" accept="image/*" id="bcard-bg" />
+          <label class="bcard-bg-label" for="bcard-bg">Upload Background</label>
+          <button id="save-bg-btn">Save Background</button>
+        </div>
+      </div>
       <div id="contextMenu" class="context-menu">
         <button id="delete-text-btn">Delete</button>
       </div>
@@ -62,11 +69,6 @@
 
       <button type="button" id="apply-btn">Apply</button>
     </div>
-  </div>
-
-  <div class = "bcard-bg-btn">
-    <label class="bcard-bg-label" for="bcard-bg">Upload Background</label>
-    <input type="file" accept="image/*" id="bcard-bg" />
   </div>
 
   <!-- <div id="canvas-div">
