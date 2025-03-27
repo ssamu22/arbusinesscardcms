@@ -249,6 +249,7 @@ async function uploadNewAwardImg(formData, formAwardId) {
       const result = await response.json(); // Assuming the response is JSON
       console.log("Success:", result);
       showSuccessMessage("Award logo successfully updated!");
+      editImageOverlay.style.display = "none";
       document.querySelector(
         `#award-div-${formAwardId}`
       ).style.backgroundImage = `url('${result.data.image_url}')`;
@@ -275,10 +276,6 @@ uploadAwardImg.addEventListener("change", (event) => {
   awardFile = event.target.files[0]; // Get the uploaded file
   awardFilename = `award_${Date.now()}_${awardFile.name}`;
 
-  console.log(editImageAwardId);
-  console.log(awardFile);
-  console.log(awardBucket);
-  console.log(awardFilename);
   if (awardFile) {
     submitAwardImgBtn.disabled = false;
     const reader = new FileReader();

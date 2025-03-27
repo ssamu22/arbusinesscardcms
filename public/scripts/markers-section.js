@@ -65,19 +65,30 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     deleteBcardOverlay.style.display = "none";
   });
   deleteYesBtn.addEventListener("click", async (e) => {
-    await deleteBusinessCard();
+    deleteBusinessCard();
+    resetEditTargetInputs();
     markerOverlay.style.display = "none";
     deleteBcardOverlay.style.display = "none";
   });
 
   closeMarkerOverlay.addEventListener("click", (e) => {
     markerOverlay.style.display = "none";
+    resetEditTargetInputs();
   });
+
+  function resetEditTargetInputs() {
+    editTargetBtn.textContent = "Edit";
+    targetNameInput.disabled = true;
+    targetWidthInput.disabled = true;
+    targetActiveInput.disabled = true;
+    targetMetadata.disabled = true;
+    editing = false;
+  }
 
   // This will handle the new image target for the business card
   function showOverlayHandler(el, targetData, targetId, theTarget) {
     el.addEventListener("click", (e) => {
-      console.log("THE ASSOCIATED EMPLOYEE:", targetData);
+      console.log("GETTING CLICKED!");
       targetMetadata.value = theTarget.associated_employee;
       displayedTargetImage.src = theTarget.image_url;
       targetIdToEdit = targetId;
@@ -92,6 +103,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       markerOverlay.style.display = "flex";
     });
   }
+
   newTargetUpload.addEventListener("change", (e) => {
     const file = e.target.files[0];
 
@@ -113,12 +125,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     } else {
       // This will trigger after the user saves the updated data
       await updateBusinessCardData();
-      e.target.textContent = "Edit";
-      targetNameInput.disabled = true;
-      targetWidthInput.disabled = true;
-      targetActiveInput.disabled = true;
-      targetMetadata.disabled = true;
-      editing = false;
+      resetEditTargetInputs();
     }
   });
 
@@ -181,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
       return data.result.target_record;
     } catch (err) {
-      console.log("Error getting all business cards:", err);
+      console.log("Error getting business card:", err);
     }
   }
 
@@ -295,10 +302,54 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       });
 
       if (!response.ok) {
-        console.log(`Error: ${response.status} - ${response.statusText}`);
+        showErrorMessage(`Error: ${response.status} - ${response.statusText}`);
       }
 
+      console.log("ADD DATA RESPONSE:", response);
+
       const data = await response.json();
+
+      console.log("ADD BCARD DATA:", data);
+
+      if (response.status === 400) {
+        return showErrorMessage(
+          "Failed to add a new target! Please use another image or try again later."
+        );
+      }
+
+      imgTargetDiv.insertAdjacentHTML(
+        "beforeend",
+        createImageTarget(
+          data.data.name,
+          data.theImage.image_url,
+          data.data.image_target
+        )
+      );
+
+      // Get the data of the newly created target from Vuforia
+      const newVuforiaData = await getBusinessCardData(
+        data.data.image_target,
+        data.data.date_created,
+        data.data.date_modified
+      );
+
+      // This will find the created image target element using the function above
+      const newImageTarget = document.getElementById(data.data.image_target);
+
+      // This will add the overlay click handler for the new image target component
+
+      console.log("THE NEW VUFORIA DATA:", newVuforiaData);
+
+      // Add an event listener to the new image target
+
+      showOverlayHandler(
+        newImageTarget,
+        newVuforiaData,
+        data.data.image_target,
+        data.data
+      );
+
+      // showOverlayHandler(el, imageTargetData, el.id, theTarget);
 
       createMarkerOverlay.style.display = "none";
       createNameInput.value = "";

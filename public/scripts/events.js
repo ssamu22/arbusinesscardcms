@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const newEvent = json.data;
     newEvent.imageUrl = newImageUrl;
-
+    showSuccessMessage("Successfully added a new event!");
     return newEvent;
   }
 
@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       newEvent.imageUrl = newImageUrl;
     }
 
+    showSuccessMessage("Event successfully updated");
     return newEvent;
   }
   async function deleteEvent() {
@@ -106,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       throw new Error(`Response status: ${response.status}`);
     }
     deleteEventId = null;
-
+    showErrorMessage("Event deleted!");
     console.log("EVENT SUCCESSFULLY DELETED,", response);
   }
 
@@ -114,7 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderEvents = () => {
     eventsGrid.innerHTML = "";
     const filteredEvents = filterEvents(events);
-    const sortedEvents = filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sortedEvents = filteredEvents.sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    );
     if (filteredEvents.length === 0) {
       eventsGrid.innerHTML = `
           <div class="no-events-message">

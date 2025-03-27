@@ -110,12 +110,14 @@ exports.addCard = async (req, res) => {
       });
     }
 
-    const { error: dbError } = await supabase.from("image_target").insert({
-      image_target: result.target_id,
-      image_id: uploadedImage.image_id,
-      name: req.body.name,
-      associated_employee: metadata.Id,
-    });
+    const { data, error: dbError } = await supabase
+      .from("image_target")
+      .insert({
+        image_target: result.target_id,
+        image_id: uploadedImage.image_id,
+        name: req.body.name,
+        associated_employee: metadata.Id,
+      });
 
     if (dbError) {
       return res.status(400).json({
@@ -127,6 +129,10 @@ exports.addCard = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "New business card target successfully added!",
+      data: {
+        ...data[0],
+        image_url: theImage.image_url,
+      },
       result,
       theImage,
     });

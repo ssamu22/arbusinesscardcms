@@ -19,6 +19,8 @@ const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
 const vuforiaRouter = require("./routes/vuforiaRoutes");
 
+// TRY TO IMPLEMENT REDIS
+
 // Catches synchronous errors
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! Shutting down application...");

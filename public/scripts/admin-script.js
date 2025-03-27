@@ -636,7 +636,7 @@ async function saveFAQs() {
     }
 
     console.log("FAQs successfully saved:");
-    alert("FAQs updated successfully!");
+    showSuccessMessage("FAQs updated successfully!");
   } catch (error) {
     console.error("Error saving FAQs:", error);
     alert("An error occurred while saving FAQs.");
