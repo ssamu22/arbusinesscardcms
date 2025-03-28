@@ -110,8 +110,11 @@ class Image {
       }
 
       // Clean up temporary file
-      fs.unlinkSync(filePath);
-
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      } else {
+        console.warn(`File not found, skipping deletion: ${filePath}`);
+      }
       // Return the inserted/updated image details
       return {
         image_id: imageData[0].image_id, // Return the inserted/updated image ID from DB

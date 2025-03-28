@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const background_url = await getBackground();
   const contents = await getAllContents();
-  setBackgroundFromURL(background_url);
   let bcardCanvas = document.getElementById("canvas");
   let bcardCtx = bcardCanvas.getContext("2d");
   const contextMenu = document.getElementById("contextMenu");
@@ -11,24 +10,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
   const deleteBtn = document.getElementById("delete-text-btn");
+  const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
+  const allBusinessCards = await getAllBusinessCards();
+
+  /* 
+  TOGGLE BUTTONS TO ADD FOR THE CONTENT OF THE BUSINESS CARD:
+  1. NAME
+  2. EMAIL
+  3. PHONE NO.
+  4. 
+  */
+
+  console.log("ALL ACTIVE IMAGE TARGETS:", allBusinessCards);
   let fileToSave = null;
   let backgroundImage = null;
   let $canvas = $("#canvas");
   let startX, startY;
   /* 
-      {
-       text: "SAMPLE TEXT",
-       x: 20,
-       y: 30,
-       scale_factor: 1,
-       type: "text",
-       font_family: "Verdana",
-       font_size: 16,
-       font_weight: 100,
-       color: "#45a049",
-       rotation: 0,
-     },
-  */
+  {
+    text: "SAMPLE TEXT",
+    x: 20,
+    y: 30,
+    scale_factor: 1,
+    type: "text",
+    font_family: "Verdana",
+    font_size: 16,
+    font_weight: 100,
+    color: "#45a049",
+    rotation: 0,
+    },
+    */
   let texts = []; // Store added texts
 
   contents.forEach((content) => {
@@ -40,7 +51,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   let selectedText = -1; // Index of the selected text
   let textToEdit = -1;
 
+  setBackgroundFromURL(background_url);
   // EVENT LISTENERS
+
+  genAndReplaceBtn.addEventListener("click", async (e) => {
+    genAndReplaceBtn.textContent = "Replacing Cards...";
+    await generateAndReplaceTargets();
+
+    genAndReplaceBtn.textContent = "Replacing Cards...";
+  });
+
   downloadBcardBtn.addEventListener("click", downloadCanvas);
 
   fileInput.addEventListener("change", async function (event) {
@@ -518,6 +538,211 @@ document.addEventListener("DOMContentLoaded", async () => {
       return null;
     }
   }
+
+  async function getAllBusinessCards() {
+    try {
+      console.log("GETTING ALL BUSINESS CARDS....");
+      const response = await fetch("/arcms/api/v1/vuforia");
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const targets = data.targets;
+
+      console.log("ALL TARGETS:", targets);
+
+      return targets;
+    } catch (err) {
+      console.log("Error getting all business cards:", err);
+    }
+  }
+
+  async function getAllEmployees() {
+    try {
+      console.log("Fetching active employees...");
+
+      const response = await fetch("/arcms/api/v1/employees/active");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      }
+
+      const { employeesList } = await response.json();
+
+      activeEmployees = employeesList;
+
+      console.log("ALL ACTIVE EMPLOYEES IN THE SYSTEM:", activeEmployees);
+
+      return activeEmployees;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }
+
+  async function getAllBcardTargets() {
+    try {
+      console.log("GETTING ALL BUSINESS CARDS....");
+      const response = await fetch("/arcms/api/v1/vuforia");
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const targets = data.targets;
+
+      console.log("ALL TARGETS IN THE SYSTEM:", targets);
+
+      return targets;
+    } catch (err) {
+      console.log("Error getting all business cards:", err);
+    }
+  }
+
+  async function replaceImageTarget(employee, imageTarget, imageBlob) {
+    try {
+      const formData = new FormData();
+      formData.append("bucket", "assets/targetImages");
+      formData.append(
+        "image",
+        imageBlob,
+        `canvas_image-${employee.employee_id}-${Date.now()}.png`
+      );
+
+      console.log("THE IMAGE TARGET:", imageTarget);
+      const response = await fetch(
+        `/arcms/api/v1/vuforia/updateTarget/${imageTarget.image_target}`,
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      if (response.status === 200) {
+        showSuccessMessage("Business card successfully updated!");
+      }
+      const data = await response.json();
+
+      if (data.error?.result_code === "TargetStatusNotSuccess") {
+        showErrorMessage(
+          "The business card is still processing! Please try again later."
+        );
+      }
+
+      console.log("UPDATE RESPONSE:", data);
+    } catch (err) {
+      console.log("FAIELD TO UPDATE BUSINESS CARD DATA:", err);
+    }
+  }
+
+  async function createImageTarget(theEmployee) {
+    try {
+      console.log("CREATING BUSINESS CARD....");
+
+      // Finds the associated employee using the targetMetadata
+      const formData = new FormData();
+
+      // console.log("Associated Employee:", associatedEmployee);
+
+      const metadata = {
+        Id: theEmployee.employee_id,
+        FirstName: theEmployee.first_name,
+        LastName: theEmployee.last_name,
+      };
+
+      formData.append("name", theEmployee.name);
+      formData.append("width", 6);
+      formData.append("active_flag", true);
+      formData.append("bucket", "assets/targetImages");
+      formData.append("application_metadata", JSON.stringify(metadata));
+      formData.append("image", ""); // ADD THE IMAGE HERE
+
+      const response = await fetch("/arcms/api/v1/vuforia", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        showErrorMessage(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      console.log("ADD DATA RESPONSE:", response);
+
+      const data = await response.json();
+
+      console.log("NEW TARGET DATA OF EMPLOYEE:", data);
+
+      if (response.status === 400) {
+        return showErrorMessage(
+          "Failed to add a new target! Please use another image or try again later."
+        );
+      }
+
+      showSuccessMessage("Successfully added a new business card target!");
+    } catch (err) {
+      console.log("Error creating business card", err);
+    }
+  }
+
+  async function generateAndReplaceTargets() {
+    // 1. Get all employees
+
+    const allEmployees = await getAllEmployees();
+
+    // 2. Get all image targets
+
+    const allTargets = await getAllBcardTargets();
+
+    // 3. Iterate through all employees
+
+    allEmployees.forEach((employee) => {
+      if (
+        allTargets.find(
+          (target) => target.associated_employee == employee.employee_id
+        )
+      ) {
+        // 4. If employees already has a business card target, replace it
+        console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
+        console.log("THE TEXTS:", texts);
+        // texts = texts.map((textObj) =>
+        //   textObj.text === "name"
+        //     ? { ...textObj, text: employee.name }
+        //     : textObj
+        // );
+
+        // drawText();
+
+        bcardCanvas.toBlob(async (blob) => {
+          if (blob) {
+            console.log("THE BLOB:", blob);
+
+            await replaceImageTarget(
+              employee,
+              allTargets.find(
+                (target) => target.associated_employee == employee.employee_id
+              ),
+              blob
+            ); // Pass the blob as the image
+          } else {
+            console.error("Failed to convert canvas to Blob.");
+          }
+        }, "image/jpeg");
+        // replaceImageTarget(employee);
+      } else {
+        // 5. If the employee doesn't, create one
+        // createImageTarget();
+      }
+    });
+  }
+
   draw();
 });
 
@@ -547,3 +772,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 //     };
 //     return;
 //   }
+
+// STEPS FOR GENERATING/REPLACING BUSINESS CARDS
+// NOTE: THE CONTENT TYPE(name, email, etc...)  SHOULD ALREADY BE FIXED
+// CHANGE THE INPUT TO BUTTONS THAT YOU CAN TOGGLE TO HIDE OR SHOW THE PLACE HOLDER TEXTS

@@ -27,4 +27,8 @@ router
   .patch(uploadMarker.single("image"), controller.updateCard)
   .delete(controller.deleteCard);
 
+router
+  .route("/updateTarget/:id")
+  .patch(uploadMarker.single("image"), controller.updateImageTarget);
+
 module.exports = router;
