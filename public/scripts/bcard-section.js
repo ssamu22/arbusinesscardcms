@@ -13,13 +13,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
   const allBusinessCards = await getAllBusinessCards();
 
-  /* 
-  TOGGLE BUTTONS TO ADD FOR THE CONTENT OF THE BUSINESS CARD:
-  1. NAME
-  2. EMAIL
-  3. PHONE NO.
-  4. 
-  */
+  const toggleEmailBtn = document.getElementById("toggle-email-btn");
+  const toggleLocationBtn = document.getElementById("toggle-location-btn");
+  const togglePositionBtn = document.getElementById("toggle-position-btn");
+  const toggleNumberBtn = document.getElementById("toggle-number-btn");
 
   console.log("ALL ACTIVE IMAGE TARGETS:", allBusinessCards);
   let fileToSave = null;
@@ -53,6 +50,100 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setBackgroundFromURL(background_url);
   // EVENT LISTENERS
+
+  toggleEmailBtn.addEventListener("click", async (e) => {
+    // Find the text with a value of email
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "email"
+    );
+
+    console.log("THE TEXT TO HIDE:", textToHide);
+    // Change the text content of the button
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleEmailBtn.textContent = "Add Email";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleEmailBtn.textContent = "Hide Email";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+  toggleLocationBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "location"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleLocationBtn.textContent = "Add Location";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleLocationBtn.textContent = "Hide Location";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+
+  togglePositionBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "position"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      togglePositionBtn.textContent = "Add Position";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      togglePositionBtn.textContent = "Hide Position";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+  toggleNumberBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "phone number"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleNumberBtn.textContent = "Add Position";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleNumberBtn.textContent = "Hide Position";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
 
   genAndReplaceBtn.addEventListener("click", async (e) => {
     genAndReplaceBtn.textContent = "Replacing Cards...";
@@ -205,8 +296,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function drawText() {
+    console.log("TEXTS:", texts);
     for (let i = 0; i < texts.length; i++) {
       bcardCtx.save();
+
+      if (!texts[i].is_displayed) {
+        continue;
+      }
 
       if (i === selectedText) {
         bcardCtx.strokeStyle = "red";
@@ -643,14 +739,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  async function createImageTarget(theEmployee) {
+  async function createImageTarget(theEmployee, imageBlob) {
     try {
       console.log("CREATING BUSINESS CARD....");
 
-      // Finds the associated employee using the targetMetadata
       const formData = new FormData();
-
-      // console.log("Associated Employee:", associatedEmployee);
 
       const metadata = {
         Id: theEmployee.employee_id,
@@ -658,12 +751,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         LastName: theEmployee.last_name,
       };
 
-      formData.append("name", theEmployee.name);
+      formData.append("name", `${theEmployee.last_name} Business Card`);
       formData.append("width", 6);
       formData.append("active_flag", true);
       formData.append("bucket", "assets/targetImages");
       formData.append("application_metadata", JSON.stringify(metadata));
-      formData.append("image", ""); // ADD THE IMAGE HERE
+      formData.append(
+        "image",
+        imageBlob,
+        `canvas_image-${theEmployee.employee_id}-${Date.now()}.png`
+      );
 
       const response = await fetch("/arcms/api/v1/vuforia", {
         method: "POST",
@@ -692,37 +789,105 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  async function getAllEmployeeContacts() {
+    try {
+      console.log("Fetching active contacts...");
+
+      const response = await fetch("/arcms/api/v1/contacts/allContacts");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      console.log("ALL CONTACTS OF THE EMPLOYEES:", data.data);
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }
+
   async function generateAndReplaceTargets() {
     // 1. Get all employees
 
     const allEmployees = await getAllEmployees();
-
+    const allEmployeeContacts = await getAllEmployeeContacts();
     // 2. Get all image targets
-
     const allTargets = await getAllBcardTargets();
 
+    const allContacts = await getAllEmployeeContacts();
+
+    console.log("ALL TEXTS:", texts);
+    const targetNameText = texts.find(
+      (text) => text.text.toLowerCase() === "name"
+    );
+    const targetEmailText = texts.find(
+      (text) => text.text.toLowerCase() === "email"
+    );
+    const targetLocationText = texts.find(
+      (text) => text.text.toLowerCase() === "location"
+    );
+    const targetPositionText = texts.find(
+      (text) => text.text.toLowerCase() === "position"
+    );
+    const targetNumberText = texts.find(
+      (text) => text.text.toLowerCase() === "phone number"
+    );
+
     // 3. Iterate through all employees
-
     allEmployees.forEach((employee) => {
-      if (
-        allTargets.find(
-          (target) => target.associated_employee == employee.employee_id
-        )
-      ) {
-        // 4. If employees already has a business card target, replace it
-        console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
-        console.log("THE TEXTS:", texts);
-        // texts = texts.map((textObj) =>
-        //   textObj.text === "name"
-        //     ? { ...textObj, text: employee.name }
-        //     : textObj
-        // );
+      const employeeContact = allContacts.find(
+        (contact) => contact.employee_id === employee.employee_id
+      );
 
-        // drawText();
+      const target = allTargets.find(
+        (target) => target.associated_employee == employee.employee_id
+      );
+
+      if (target) {
+        // If employees already has a business card target, replace it
+        console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
+        console.log("ALL TEXTS:", texts);
+
+        if (targetNameText) {
+          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
+        }
+
+        if (targetEmailText) {
+          targetEmailText.text = employeeContact.email;
+        }
+
+        if (targetLocationText && employeeContact.location != null) {
+          targetLocationText.text = `${employeeContact.location}`;
+        }
+
+        if (targetPositionText) {
+          console.log("THE EMPLOYEE POSITION:", employee);
+          targetPositionText.text = employee.position;
+        }
+
+        if (targetNumberText && employeeContact.phone_number != null) {
+          targetNumberText.text = employeeContact.phone_number;
+        }
+
+        // texts = texts.map((textObj) => {
+        //   if (textObj.text != null && textObj.text != "") {
+        //     return {
+        //       ...textObj,
+        //       text: `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`,
+        //     };
+        //   } else {
+        //     return textObj;
+        //   }
+        // });
+        console.log("ALL NEW TEXTS:", texts);
+
+        draw();
 
         bcardCanvas.toBlob(async (blob) => {
           if (blob) {
-            console.log("THE BLOB:", blob);
+            console.log("THE BLOB CREATED!");
 
             await replaceImageTarget(
               employee,
@@ -735,12 +900,87 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Failed to convert canvas to Blob.");
           }
         }, "image/jpeg");
-        // replaceImageTarget(employee);
+        replaceImageTarget(employee);
       } else {
-        // 5. If the employee doesn't, create one
-        // createImageTarget();
+        // If the employee doesn't, create one
+
+        if (targetNameText) {
+          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
+        }
+
+        if (targetEmailText) {
+          targetEmailText.text = employeeContact.email;
+        }
+
+        if (targetLocationText && employeeContact.location != null) {
+          targetLocationText.text = `${employeeContact.location}`;
+        }
+
+        if (targetPositionText) {
+          console.log("THE EMPLOYEE POSITION:", employee);
+          targetPositionText.text = employee.position;
+        }
+
+        if (targetNumberText && employeeContact.phone_number != null) {
+          targetNumberText.text = employeeContact.phone_number;
+        }
+
+        // Update the canvas
+        draw();
+
+        // Use the canvas image as the new target
+        bcardCanvas.toBlob(async (blob) => {
+          if (blob) {
+            console.log("THE BLOB:", blob);
+
+            await createImageTarget(employee, blob);
+          } else {
+            console.error("Failed to convert canvas to Blob.");
+          }
+        }, "image/jpeg");
       }
     });
+
+    targetNameText.text = "Name";
+    targetEmailText.text = "Email";
+    targetLocationText.text = "Location";
+    targetPositionText.text = "Position";
+    targetNumberText.text = "Phone Number";
+
+    location.reload();
+  }
+
+  for (let i = 0; i < texts.length; i++) {
+    if (texts[i].text.toLowerCase() === "email") {
+      if (texts[i].is_displayed) {
+        toggleEmailBtn.textContent = "Hide Email";
+      } else {
+        toggleEmailBtn.textContent = "Add Email";
+      }
+    }
+
+    if (texts[i].text.toLowerCase() === "location") {
+      if (texts[i].is_displayed) {
+        toggleLocationBtn.textContent = "Hide Location";
+      } else {
+        toggleLocationBtn.textContent = "Add Location";
+      }
+    }
+    if (texts[i].text.toLowerCase() === "position") {
+      if (texts[i].is_displayed) {
+        togglePositionBtn.textContent = "Hide Position";
+      } else {
+        togglePositionBtn.textContent = "Add Position";
+      }
+    }
+
+    if (texts[i].text.toLowerCase() === "phone number") {
+      if (texts[i].is_displayed) {
+        toggleNumberBtn.textContent = "Hide Number";
+      } else {
+        toggleNumberBtn.textContent = "Add Number";
+      }
+    }
   }
 
   draw();

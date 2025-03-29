@@ -4,9 +4,17 @@ let currentPageForActive = 1;
 let currentPageForInactive = 1;
 const itemsPerPage = 5;
 
-// FOR ACTIVE EMPLOYEES
 const totalPagesActive = Math.ceil(activeEmployees.length / itemsPerPage);
 const tableBodyActive = document.getElementById("activeMembersTableBody");
+const prevMembersBtn = document.querySelector(".prev-page-members");
+const nextMembersBtn = document.querySelector(".next-page-members");
+const prevApprovalBtn = document.querySelector(".prev-page-approval");
+const nextApprovalBtn = document.querySelector(".next-page-approval");
+const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
+const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
+const approveAllBtn = document.querySelector(".approve-member-btn");
+
+// FOR ACTIVE EMPLOYEES
 
 async function fetchAllActiveEmployee() {
   try {
@@ -56,6 +64,26 @@ function setupPaginationActive() {
 
     paginationContainer.appendChild(pageButton);
   }
+
+  prevMembersBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForActive - 1 >= 1) {
+      currentPageForActive -= 1;
+      displayActiveMembers(currentPageForActive);
+      updatePaginationStateForActive();
+      updateActivePageForActive(currentPageForActive);
+    }
+  });
+  nextMembersBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForActive + 1 <= totalPages) {
+      currentPageForActive += 1;
+      console.log("CURRENT ACTIVE PAGE:", currentPageForActive);
+      displayActiveMembers(currentPageForActive);
+      updatePaginationStateForActive();
+      updateActivePageForActive(currentPageForActive);
+    }
+  });
 
   updatePaginationStateForActive();
 }
@@ -153,9 +181,6 @@ async function displayActiveMembers(pageNumber) {
 }
 
 // FOR INACTIVE EMPLOYEES
-const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
-const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
-const approveAllBtn = document.querySelector(".approve-member-btn");
 
 approveAllBtn.addEventListener("click", (e) => {
   approveAll();
@@ -212,6 +237,26 @@ function setupPaginationInactive() {
 
     paginationContainer.appendChild(pageButton);
   }
+
+  prevApprovalBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForInactive - 1 >= 1) {
+      currentPageForInactive -= 1;
+      displayInactiveMembers(i);
+      updatePaginationStateForInactive();
+      updateActivePageForInactive(i);
+    }
+  });
+
+  nextApprovalBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForInactive + 1 <= totalPages) {
+      currentPageForInactive += 1;
+      displayInactiveMembers(i);
+      updatePaginationStateForInactive();
+      updateActivePageForInactive(i);
+    }
+  });
 
   updatePaginationStateForInactive();
 }

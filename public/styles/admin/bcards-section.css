@@ -186,6 +186,18 @@
   transition: 0.3s;
 }
 
+.default-content-btns {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #9b3838;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
 #generate-card-btn:hover {
   background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
 }
