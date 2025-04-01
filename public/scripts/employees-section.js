@@ -362,22 +362,21 @@ async function approveUser(employeeId) {
       method: "POST",
     });
 
+    showSuccessMessage(`Employee ${employeeId} is approved!`);
     const result = await response.json();
-    console.log(`User ${employeeId} is approved!`);
-    console.log(result);
   } catch (err) {
     console.log(err);
   }
 }
 async function approveAll() {
   try {
+    showSuccessMessage(`All inactive employees are activated!`);
     const response = await fetch(`/approveAll`, {
       method: "POST",
     });
 
     const result = await response.json();
     tableBodyInactive.innerHTML = "";
-    alert(`All inactive users are activated!`);
     setTimeout(() => {
       location.reload();
     }, 1000);
@@ -397,7 +396,7 @@ async function deleteUser(employee_id) {
     const result = await response.json();
 
     if (response.ok) {
-      alert("User deleted successfully!");
+      showErrorMessage("User deleted successfully!");
 
       // Remove the deleted employee from the employees array
       activeEmployees = activeEmployees.filter(
@@ -408,11 +407,11 @@ async function deleteUser(employee_id) {
       displayActiveMembers(currentPageForActive); // Use the current page or update as necessary
       setupPaginationActive();
     } else {
-      alert(`Error: ${result.error}`);
+      showErrorMessage(`Error: ${result.error}`);
     }
   } catch (error) {
     console.error("Error deleting user:", error);
-    alert("An error occurred while deleting the user.");
+    showErrorMessage("An error occurred while deleting the user.");
   }
 }
 

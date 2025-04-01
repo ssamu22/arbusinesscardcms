@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt"); // For password hashing
 const path = require("path");
 const ensureAdmin = require("../middlewares/authMiddleware");
 const validator = require("validator"); // For email validation
+const supabase = require("../utils/supabaseClient");
 
 exports.fetchAllEmployee = async (req, res) => {
   console.log("THE CURRENT SESSION:", req.session);
@@ -212,18 +213,28 @@ exports.editEmployee = async (req, res) => {
 
 exports.deleteEmployee = async (req, res) => {
   try {
-    console.log("THE PARAMETER ID:", req.params.id);
-    const employee = await Employee.findById(req.params.id); // Fetch the existing employee by ID
-
-    console.log("THE EMPLOYEE:", employee);
-
-    if (!employee) {
-      return res
-        .status(404)
-        .json({ error: "Employee not found or unauthorized" });
-    }
-
     const deletedEmployee = await Employee.delete(req.params.id); // delete the employee
+    const deleteQueries = [
+      supabase.from("achievement").delete().eq("employee_id", req.params.id),
+      supabase.from("contact").delete().eq("employee_id", req.params.id),
+      supabase
+        .from("employee_schedule")
+        .delete()
+        .eq("employee_id", req.params.id),
+      supabase
+        .from("image_target")
+        .delete()
+        .eq("associated_employee", req.params.id),
+      supabase.from("organization").delete().eq("employee_id", req.params.id),
+    ];
+
+    const results = await Promise.all(deleteQueries);
+
+    results.forEach(({ error }, index) => {
+      if (error) {
+        console.error(`Error deleting from table ${index + 1}:`, error);
+      }
+    });
 
     res.status(200).json(deletedEmployee); // Return the delete employee
   } catch (error) {

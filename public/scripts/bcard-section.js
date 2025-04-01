@@ -889,6 +889,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (blob) {
             console.log("THE BLOB CREATED!");
 
+            const imageUrl = await updateBackground(fileToSave);
             await replaceImageTarget(
               employee,
               allTargets.find(
