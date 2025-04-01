@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const background_url = await getBackground();
   const contents = await getAllContents();
-  setBackgroundFromURL(background_url);
   let bcardCanvas = document.getElementById("canvas");
   let bcardCtx = bcardCanvas.getContext("2d");
   const contextMenu = document.getElementById("contextMenu");
@@ -11,24 +10,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
   const deleteBtn = document.getElementById("delete-text-btn");
+  const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
+  const allBusinessCards = await getAllBusinessCards();
+
+  const toggleEmailBtn = document.getElementById("toggle-email-btn");
+  const toggleLocationBtn = document.getElementById("toggle-location-btn");
+  const togglePositionBtn = document.getElementById("toggle-position-btn");
+  const toggleNumberBtn = document.getElementById("toggle-number-btn");
+
+  console.log("ALL ACTIVE IMAGE TARGETS:", allBusinessCards);
   let fileToSave = null;
   let backgroundImage = null;
   let $canvas = $("#canvas");
   let startX, startY;
   /* 
-      {
-       text: "SAMPLE TEXT",
-       x: 20,
-       y: 30,
-       scale_factor: 1,
-       type: "text",
-       font_family: "Verdana",
-       font_size: 16,
-       font_weight: 100,
-       color: "#45a049",
-       rotation: 0,
-     },
-  */
+  {
+    text: "SAMPLE TEXT",
+    x: 20,
+    y: 30,
+    scale_factor: 1,
+    type: "text",
+    font_family: "Verdana",
+    font_size: 16,
+    font_weight: 100,
+    color: "#45a049",
+    rotation: 0,
+    },
+    */
   let texts = []; // Store added texts
 
   contents.forEach((content) => {
@@ -40,7 +48,110 @@ document.addEventListener("DOMContentLoaded", async () => {
   let selectedText = -1; // Index of the selected text
   let textToEdit = -1;
 
+  setBackgroundFromURL(background_url);
   // EVENT LISTENERS
+
+  toggleEmailBtn.addEventListener("click", async (e) => {
+    // Find the text with a value of email
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "email"
+    );
+
+    console.log("THE TEXT TO HIDE:", textToHide);
+    // Change the text content of the button
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleEmailBtn.textContent = "Add Email";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleEmailBtn.textContent = "Hide Email";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+  toggleLocationBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "location"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleLocationBtn.textContent = "Add Location";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleLocationBtn.textContent = "Hide Location";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+
+  togglePositionBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "position"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      togglePositionBtn.textContent = "Add Position";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      togglePositionBtn.textContent = "Hide Position";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+  toggleNumberBtn.addEventListener("click", async (e) => {
+    const textToHide = texts.find(
+      (text) => text.text.toLowerCase() === "phone number"
+    );
+
+    if (textToHide.is_displayed) {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: false,
+      });
+      toggleNumberBtn.textContent = "Add Position";
+    } else {
+      await updateContent({
+        content_id: textToHide.content_id,
+        is_displayed: true,
+      });
+      toggleNumberBtn.textContent = "Hide Position";
+    }
+
+    textToHide.is_displayed = !textToHide.is_displayed;
+    draw();
+  });
+
+  genAndReplaceBtn.addEventListener("click", async (e) => {
+    genAndReplaceBtn.textContent = "Replacing Cards...";
+    await generateAndReplaceTargets();
+
+    genAndReplaceBtn.textContent = "Replacing Cards...";
+  });
+
   downloadBcardBtn.addEventListener("click", downloadCanvas);
 
   fileInput.addEventListener("change", async function (event) {
@@ -185,8 +296,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function drawText() {
+    console.log("TEXTS:", texts);
     for (let i = 0; i < texts.length; i++) {
       bcardCtx.save();
+
+      if (!texts[i].is_displayed) {
+        continue;
+      }
 
       if (i === selectedText) {
         bcardCtx.strokeStyle = "red";
@@ -518,6 +634,356 @@ document.addEventListener("DOMContentLoaded", async () => {
       return null;
     }
   }
+
+  async function getAllBusinessCards() {
+    try {
+      console.log("GETTING ALL BUSINESS CARDS....");
+      const response = await fetch("/arcms/api/v1/vuforia");
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const targets = data.targets;
+
+      console.log("ALL TARGETS:", targets);
+
+      return targets;
+    } catch (err) {
+      console.log("Error getting all business cards:", err);
+    }
+  }
+
+  async function getAllEmployees() {
+    try {
+      console.log("Fetching active employees...");
+
+      const response = await fetch("/arcms/api/v1/employees/active");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      }
+
+      const { employeesList } = await response.json();
+
+      activeEmployees = employeesList;
+
+      console.log("ALL ACTIVE EMPLOYEES IN THE SYSTEM:", activeEmployees);
+
+      return activeEmployees;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }
+
+  async function getAllBcardTargets() {
+    try {
+      console.log("GETTING ALL BUSINESS CARDS....");
+      const response = await fetch("/arcms/api/v1/vuforia");
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const targets = data.targets;
+
+      console.log("ALL TARGETS IN THE SYSTEM:", targets);
+
+      return targets;
+    } catch (err) {
+      console.log("Error getting all business cards:", err);
+    }
+  }
+
+  async function replaceImageTarget(employee, imageTarget, imageBlob) {
+    try {
+      const formData = new FormData();
+      formData.append("bucket", "assets/targetImages");
+      formData.append(
+        "image",
+        imageBlob,
+        `canvas_image-${employee.employee_id}-${Date.now()}.png`
+      );
+
+      console.log("THE IMAGE TARGET:", imageTarget);
+      const response = await fetch(
+        `/arcms/api/v1/vuforia/updateTarget/${imageTarget.image_target}`,
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      if (response.status === 200) {
+        showSuccessMessage("Business card successfully updated!");
+      }
+      const data = await response.json();
+
+      if (data.error?.result_code === "TargetStatusNotSuccess") {
+        showErrorMessage(
+          "The business card is still processing! Please try again later."
+        );
+      }
+
+      console.log("UPDATE RESPONSE:", data);
+    } catch (err) {
+      console.log("FAIELD TO UPDATE BUSINESS CARD DATA:", err);
+    }
+  }
+
+  async function createImageTarget(theEmployee, imageBlob) {
+    try {
+      console.log("CREATING BUSINESS CARD....");
+
+      const formData = new FormData();
+
+      const metadata = {
+        Id: theEmployee.employee_id,
+        FirstName: theEmployee.first_name,
+        LastName: theEmployee.last_name,
+      };
+
+      formData.append("name", `${theEmployee.last_name} Business Card`);
+      formData.append("width", 6);
+      formData.append("active_flag", true);
+      formData.append("bucket", "assets/targetImages");
+      formData.append("application_metadata", JSON.stringify(metadata));
+      formData.append(
+        "image",
+        imageBlob,
+        `canvas_image-${theEmployee.employee_id}-${Date.now()}.png`
+      );
+
+      const response = await fetch("/arcms/api/v1/vuforia", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        showErrorMessage(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      console.log("ADD DATA RESPONSE:", response);
+
+      const data = await response.json();
+
+      console.log("NEW TARGET DATA OF EMPLOYEE:", data);
+
+      if (response.status === 400) {
+        return showErrorMessage(
+          "Failed to add a new target! Please use another image or try again later."
+        );
+      }
+
+      showSuccessMessage("Successfully added a new business card target!");
+    } catch (err) {
+      console.log("Error creating business card", err);
+    }
+  }
+
+  async function getAllEmployeeContacts() {
+    try {
+      console.log("Fetching active contacts...");
+
+      const response = await fetch("/arcms/api/v1/contacts/allContacts");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      console.log("ALL CONTACTS OF THE EMPLOYEES:", data.data);
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }
+
+  async function generateAndReplaceTargets() {
+    // 1. Get all employees
+
+    const allEmployees = await getAllEmployees();
+    const allEmployeeContacts = await getAllEmployeeContacts();
+    // 2. Get all image targets
+    const allTargets = await getAllBcardTargets();
+
+    const allContacts = await getAllEmployeeContacts();
+
+    console.log("ALL TEXTS:", texts);
+    const targetNameText = texts.find(
+      (text) => text.text.toLowerCase() === "name"
+    );
+    const targetEmailText = texts.find(
+      (text) => text.text.toLowerCase() === "email"
+    );
+    const targetLocationText = texts.find(
+      (text) => text.text.toLowerCase() === "location"
+    );
+    const targetPositionText = texts.find(
+      (text) => text.text.toLowerCase() === "position"
+    );
+    const targetNumberText = texts.find(
+      (text) => text.text.toLowerCase() === "phone number"
+    );
+
+    // 3. Iterate through all employees
+    allEmployees.forEach((employee) => {
+      const employeeContact = allContacts.find(
+        (contact) => contact.employee_id === employee.employee_id
+      );
+
+      const target = allTargets.find(
+        (target) => target.associated_employee == employee.employee_id
+      );
+
+      if (target) {
+        // If employees already has a business card target, replace it
+        console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
+        console.log("ALL TEXTS:", texts);
+
+        if (targetNameText) {
+          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
+        }
+
+        if (targetEmailText) {
+          targetEmailText.text = employeeContact.email;
+        }
+
+        if (targetLocationText && employeeContact.location != null) {
+          targetLocationText.text = `${employeeContact.location}`;
+        }
+
+        if (targetPositionText) {
+          console.log("THE EMPLOYEE POSITION:", employee);
+          targetPositionText.text = employee.position;
+        }
+
+        if (targetNumberText && employeeContact.phone_number != null) {
+          targetNumberText.text = employeeContact.phone_number;
+        }
+
+        // texts = texts.map((textObj) => {
+        //   if (textObj.text != null && textObj.text != "") {
+        //     return {
+        //       ...textObj,
+        //       text: `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`,
+        //     };
+        //   } else {
+        //     return textObj;
+        //   }
+        // });
+        console.log("ALL NEW TEXTS:", texts);
+
+        draw();
+
+        bcardCanvas.toBlob(async (blob) => {
+          if (blob) {
+            console.log("THE BLOB CREATED!");
+
+            const imageUrl = await updateBackground(fileToSave);
+            await replaceImageTarget(
+              employee,
+              allTargets.find(
+                (target) => target.associated_employee == employee.employee_id
+              ),
+              blob
+            ); // Pass the blob as the image
+          } else {
+            console.error("Failed to convert canvas to Blob.");
+          }
+        }, "image/jpeg");
+        replaceImageTarget(employee);
+      } else {
+        // If the employee doesn't, create one
+
+        if (targetNameText) {
+          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
+        }
+
+        if (targetEmailText) {
+          targetEmailText.text = employeeContact.email;
+        }
+
+        if (targetLocationText && employeeContact.location != null) {
+          targetLocationText.text = `${employeeContact.location}`;
+        }
+
+        if (targetPositionText) {
+          console.log("THE EMPLOYEE POSITION:", employee);
+          targetPositionText.text = employee.position;
+        }
+
+        if (targetNumberText && employeeContact.phone_number != null) {
+          targetNumberText.text = employeeContact.phone_number;
+        }
+
+        // Update the canvas
+        draw();
+
+        // Use the canvas image as the new target
+        bcardCanvas.toBlob(async (blob) => {
+          if (blob) {
+            console.log("THE BLOB:", blob);
+
+            await createImageTarget(employee, blob);
+          } else {
+            console.error("Failed to convert canvas to Blob.");
+          }
+        }, "image/jpeg");
+      }
+    });
+
+    targetNameText.text = "Name";
+    targetEmailText.text = "Email";
+    targetLocationText.text = "Location";
+    targetPositionText.text = "Position";
+    targetNumberText.text = "Phone Number";
+
+    location.reload();
+  }
+
+  for (let i = 0; i < texts.length; i++) {
+    if (texts[i].text.toLowerCase() === "email") {
+      if (texts[i].is_displayed) {
+        toggleEmailBtn.textContent = "Hide Email";
+      } else {
+        toggleEmailBtn.textContent = "Add Email";
+      }
+    }
+
+    if (texts[i].text.toLowerCase() === "location") {
+      if (texts[i].is_displayed) {
+        toggleLocationBtn.textContent = "Hide Location";
+      } else {
+        toggleLocationBtn.textContent = "Add Location";
+      }
+    }
+    if (texts[i].text.toLowerCase() === "position") {
+      if (texts[i].is_displayed) {
+        togglePositionBtn.textContent = "Hide Position";
+      } else {
+        togglePositionBtn.textContent = "Add Position";
+      }
+    }
+
+    if (texts[i].text.toLowerCase() === "phone number") {
+      if (texts[i].is_displayed) {
+        toggleNumberBtn.textContent = "Hide Number";
+      } else {
+        toggleNumberBtn.textContent = "Add Number";
+      }
+    }
+  }
+
   draw();
 });
 
@@ -547,3 +1013,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 //     };
 //     return;
 //   }
+
+// STEPS FOR GENERATING/REPLACING BUSINESS CARDS
+// NOTE: THE CONTENT TYPE(name, email, etc...)  SHOULD ALREADY BE FIXED
+// CHANGE THE INPUT TO BUTTONS THAT YOU CAN TOGGLE TO HIDE OR SHOW THE PLACE HOLDER TEXTS

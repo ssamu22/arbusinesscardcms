@@ -70,6 +70,8 @@ exports.signup = async (req, res) => {
   const { fname, mname, honorifics, lname, email, password, passwordConfirm } =
     req.body;
 
+  const signupErrors = [];
+
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
   if (!fname || !lname || !email || !password || !passwordConfirm) {
@@ -90,10 +92,9 @@ exports.signup = async (req, res) => {
   // Check if email already exists
   const existingEmployee = await Employee.findByEmail(email);
   if (existingEmployee) {
-    console.log("USER EXISTS:", existingEmployee);
-    return res
-      .status(400)
-      .json({ status: "failed", message: "Email already exists." });
+    signupErrors.push(
+      "The email you used already exists! Please try another one."
+    );
   }
 
   console.log("CARRY ON ");
@@ -107,25 +108,19 @@ exports.signup = async (req, res) => {
   */
 
   if (password.length < 8 || password.length > 64) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Password must be between 8 to 64 characters long!",
-    });
+    signupErrors.push("Password must be between 8 to 64 characters long!");
   }
 
   if (!passwordRegex.test(password)) {
-    return res.status(400).json({
-      status: "failed",
-      message:
-        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
-    });
+    signupErrors.push(
+      "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!"
+    );
   }
 
   if (!(password === passwordConfirm)) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Passwords must match!",
-    });
+    signupErrors.push(
+      "The passwords you provided does not match! Please try again."
+    );
   }
 
   // Hash password
@@ -150,6 +145,13 @@ exports.signup = async (req, res) => {
 
   console.log(req.body);
   // Return response
+
+  if (signupErrors.length > 0) {
+    return res.status(400).json({
+      status: "failed",
+      errors: signupErrors,
+    });
+  }
   return res.status(200).json({
     status: "success",
     message: "User successfully register",

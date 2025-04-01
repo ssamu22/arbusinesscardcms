@@ -284,10 +284,16 @@ nav a i {
 }
 main {
   flex-grow: 1;
-  background-color: #fff;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
+  /*
+
+ */
+  /* background: url("/images/background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover; */
 }
 header {
   display: flex;
@@ -1052,6 +1058,7 @@ header {
 .success-message {
   background: #28a745;
   border: 1px solid #1e7e34;
+  z-index: 10;
 }
 
 .error-message {

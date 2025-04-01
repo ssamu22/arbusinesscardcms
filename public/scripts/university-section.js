@@ -26,6 +26,10 @@ const editImageOverlay = document.querySelector(".edit-image-overlay");
 const uploadCanvas = document.querySelector(".upload-canvas");
 const closeUploadBtn = document.getElementById("close-upload-div");
 const uploadAwardImg = document.getElementById("file-awardupload");
+const uploadAwardCtx = uploadCanvas.getContext("2d");
+
+drawInitialImage();
+
 const submitAwardImgBtn = document.getElementById("submit-award-img");
 const addAwardBtn = document.getElementById("add-award-btn");
 const addAwardOverlay = document.querySelector(".add-award-overlay");
@@ -34,6 +38,7 @@ const addCategoryInput = document.getElementById("new-cat-input");
 const addTitleInput = document.getElementById("new-title-input");
 const addFileInput = document.getElementById("file-add-award");
 const newAwardCanvas = document.querySelector(".add-award-canvas");
+const newAwardCtx = newAwardCanvas.getContext("2d");
 const submitNewAwardbtn = document.getElementById("submit-add-award");
 let editImageAwardId = "";
 const awardBucket = "assets/awardImages";
@@ -55,16 +60,25 @@ addFileInput.addEventListener("change", (event) => {
         newAwardCanvas.width = img.naturalWidth;
         newAwardCanvas.height = img.naturalHeight;
 
-        const ctx = newAwardCanvas.getContext("2d");
-
         // Disable image smoothing for better quality
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
+        newAwardCtx.imageSmoothingEnabled = true;
+        newAwardCtx.imageSmoothingQuality = "high";
 
         // Clear canvas before drawing new image
-        ctx.clearRect(0, 0, newAwardCanvas.width, newAwardCanvas.height);
+        newAwardCtx.clearRect(
+          0,
+          0,
+          newAwardCanvas.width,
+          newAwardCanvas.height
+        );
         // Draw the image on the canvas
-        ctx.drawImage(img, 0, 0, newAwardCanvas.width, newAwardCanvas.height);
+        newAwardCtx.drawImage(
+          img,
+          0,
+          0,
+          newAwardCanvas.width,
+          newAwardCanvas.height
+        );
       };
 
       img.src = e.target.result; // Set the image source to the file's data URL
@@ -83,8 +97,8 @@ closeAddAwardBtn.addEventListener("click", (ev) => {
   addCategoryInput.value = "";
   addTitleInput.value = "";
   addFileInput.value = "";
-  const ctx = newAwardCanvas.getContext("2d");
-  ctx.clearRect(0, 0, newAwardCanvas.width, newAwardCanvas.height);
+  newAwardCtx.clearRect(0, 0, newAwardCanvas.width, newAwardCanvas.height);
+  drawInitialImage();
   awardFile = null;
   awardFilename = "";
 });
@@ -164,8 +178,11 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
       <input type="text" id="award-title-${awardid}" class="award-tit" value="${awardTit}" disabled/>
     </div>
 
-    <button type="button" id="ach-edit-${awardid}" class="ach-edit-btn">Edit</button>
-    <button type="button" id="ach-submit-${awardid}" class="ach-submit-btn" style="display: none;">Submit</button>
+      <div class= "award-edit-div">
+        <button type="button" id="ach-submit-${awardid}" class="ach-submit-btn" style="display: none;">Submit</button>
+        <button type="button" id="ach-edit-${awardid}" class="ach-edit-btn">Edit</button>
+      </div>
+
   `;
 
   awardContainer.appendChild(awardItem);
@@ -287,16 +304,22 @@ uploadAwardImg.addEventListener("change", (event) => {
         uploadCanvas.width = img.naturalWidth;
         uploadCanvas.height = img.naturalHeight;
 
-        const ctx = uploadCanvas.getContext("2d");
+        const uploadAwardCtx = uploadCanvas.getContext("2d");
 
         // Disable image smoothing for better quality
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
+        uploadAwardCtx.imageSmoothingEnabled = true;
+        uploadAwardCtx.imageSmoothingQuality = "high";
 
         // Clear canvas before drawing new image
-        ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+        uploadAwardCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
         // Draw the image on the canvas
-        ctx.drawImage(img, 0, 0, uploadCanvas.width, uploadCanvas.height);
+        uploadAwardCtx.drawImage(
+          img,
+          0,
+          0,
+          uploadCanvas.width,
+          uploadCanvas.height
+        );
       };
 
       img.src = e.target.result; // Set the image source to the file's data URL
@@ -308,9 +331,8 @@ uploadAwardImg.addEventListener("change", (event) => {
 
 closeUploadBtn.addEventListener("click", (ev) => {
   editImageOverlay.style.display = "none";
-  const ctx = uploadCanvas.getContext("2d");
-  ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
-
+  uploadAwardCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+  drawInitialImage();
   uploadAwardImg.value = "";
 });
 const achievementsTabContent = document.querySelector(
@@ -455,8 +477,11 @@ function generateAwards(awards, awardImages) {
         
         <label for="award-title-${award.award_id}">Title</label>
         <input type="text" id="award-title-${award.award_id}" class="award-tit" value="${award.award_title}" disabled/>
+
+        <div class = "award-edit-div">
         <button type="button" id="ach-edit-${award.award_id}" class="ach-edit-btn">Edit</button>
         <button type="button" id="ach-submit-${award.award_id}" class="ach-submit-btn" style="display: none;">Submit</button>
+        </div>
       </div>
 
 
@@ -565,4 +590,27 @@ function removeCancelClass(cancelBtn, submitBtn) {
   submitBtn.style.display = "none";
   cancelBtn.classList.remove("cancel-btn");
   cancelBtn.textContent = "Edit";
+}
+
+function drawInitialImage() {
+  // initial upload award image
+  const initialImage = new Image();
+  initialImage.src = "/images/icon_placeholder.jpg"; // Make sure this path is correct
+  initialImage.onload = function () {
+    uploadAwardCtx.drawImage(
+      initialImage,
+      0,
+      0,
+      uploadCanvas.width,
+      uploadCanvas.height
+    );
+
+    newAwardCtx.drawImage(
+      initialImage,
+      0,
+      0,
+      newAwardCanvas.width,
+      newAwardCanvas.height
+    );
+  };
 }

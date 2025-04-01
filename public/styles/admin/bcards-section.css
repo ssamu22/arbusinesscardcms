@@ -1,13 +1,17 @@
 .bcards-section {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
 .bcard-section-content {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 2rem;
+  width: 100%;
 }
 
 #canvas {
@@ -172,4 +176,32 @@
   font-size: 16px;
   transition: 0.3s;
   display: none;
+}
+
+#generate-bcard-btn {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #9b3838;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.default-content-btns {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #9b3838;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+#generate-card-btn:hover {
+  background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
 }

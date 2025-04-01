@@ -10,6 +10,8 @@
 .university-contents {
   padding: 20px;
   background-color: var(--background-color);
+  height: 90%;
+  overflow-y: scroll;
 }
 .university-contents h2 {
   color: var(--primary-color);
@@ -168,8 +170,13 @@
   flex-direction: column;
 }
 
+.new-ach-text {
+  text-align: center;
+}
+
 .award-item {
   display: flex;
+  width: 70%;
   align-items: center;
   gap: 20px;
 }
@@ -179,8 +186,8 @@
 }
 
 .award-image-div {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   background-color: lightgray;
   flex-shrink: 0;
   border-radius: 8px;
@@ -201,6 +208,28 @@
   background: white;
 }
 
+.award-tit,
+.award-cat {
+  margin: none;
+  width: 100%;
+}
+
+.ach-edit-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+#add-award-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
 .edit-image-overlay {
   width: 100%;
   height: 100%;
@@ -216,17 +245,63 @@
 
 .upload-image-div {
   width: 700px;
-  height: 500px;
   background: white;
   border-radius: 5px;
   border: 1px solid black;
+  display: relative;
+  animation: slideIn 0.3s ease;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.award-item-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.change-achicon-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#close-upload-div,
+#close-add-div {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
 }
 
 .upload-canvas {
   height: 300px;
   width: 300px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
+.award-btns-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-award-container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 .add-award-overlay {
   width: 100%;
   height: 100%;
@@ -242,10 +317,10 @@
 
 .add-award-div {
   width: 700px;
-  height: 500px;
   background: white;
   border-radius: 5px;
   border: 2px solid black;
+  animation: slideIn 0.3s ease;
 }
 
 .add-award-canvas {
@@ -433,6 +508,11 @@
   position: relative;
   height: 200px;
   overflow: hidden;
+}
+
+#file-upload-btn {
+  background: red;
+  color: white;
 }
 
 .event-image {

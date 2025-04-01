@@ -289,3 +289,100 @@ Accepted values for updating:
     });
   });
 };
+
+exports.updateImageTarget = async (req, res) => {
+  console.log("UPDATING IMAGE TARGET:");
+  console.log("THE FILE:", req.file);
+
+  if (!req.file) {
+    return res.status(404).json({
+      status: "failed",
+      message: "User did not upload a new target image!",
+    });
+  }
+
+  let theImage = null;
+  let uploadedImage = null;
+
+  const newTargetImage = util.encodeFileBase64(
+    `${__dirname}/../uploads/markers/${req.file.originalname}`
+  );
+
+  console.log("THE NEW TARGET IMAGE:", newTargetImage);
+
+  const update = {};
+
+  update.image = newTargetImage;
+  // Wrap the client.updateTarget in a promise
+
+  console.log("THE PARAMS ID:", req.params.id);
+  const updateTargetPromise = new Promise((resolve, reject) => {
+    client.updateTarget(req.params.id, update, (error, result) => {
+      if (error) {
+        // Reject with the error or result, depending on your API
+        return reject(result);
+      } else {
+        console.log("THE CARD HAS BEEN SUCCESSFULLY UPDATED!");
+        return resolve(result);
+      }
+    });
+  });
+
+  try {
+    // Await the updateTarget call
+    await updateTargetPromise;
+
+    // Proceed with uploading the image to the database
+    uploadedImage = await Image.uploadImage(
+      req.file,
+      req.body.bucket,
+      req.file.originalname
+    );
+
+    if (!uploadedImage) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Error uploading the image to the database!",
+      });
+    }
+
+    // Get the image by its id
+    theImage = await Image.getImageById(uploadedImage.image_id);
+
+    console.log("THE NEW IMAGE:", theImage);
+    if (!theImage) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Image cannot be found!",
+        uploadedImage,
+        theImage,
+      });
+    }
+
+    console.log("THE REQ PARAMS ID:", req.params.id);
+    const { data, error: dbError } = await supabase
+      .from("image_target")
+      .update({
+        image_id: uploadedImage.image_id,
+      })
+      .eq("image_target", req.params.id);
+
+    if (dbError) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Failed to store new target in the database",
+      });
+    }
+
+    // Send a single response after all operations are done
+    return res.status(200).json({ status: "success" });
+  } catch (err) {
+    console.error("Error updating the business card target:", err);
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "Failed to update the business card target in Vuforia! Please try again.",
+      error: err,
+    });
+  }
+};

@@ -1,25 +1,55 @@
 <section id="university-section" class="university-contents">
   <div class="edit-image-overlay">
     <div class="upload-image-div">
-      <button type="button" id="close-upload-div">X</button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="30px"
+        viewBox="0 -960 960 960"
+        width="30px"
+        fill="#e3e3e3"
+        id="close-upload-div"
+      >
+        <path
+          d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+        />
+      </svg>
       <div class="upload-container">
         <canvas class="upload-canvas"></canvas>
-        <input
-          type="file"
-          id="file-awardupload"
-          class="upload-btn"
-          accept="image/*"
-        />
-        <button type="button" id="submit-award-img" class="submit-btn" disabled>
-          Submit
-        </button>
+
+        <div class="change-achicon-div">
+          <input
+            type="file"
+            id="file-awardupload"
+            class="upload-btn"
+            accept="image/*"
+          />
+          <button
+            type="button"
+            id="submit-award-img"
+            class="submit-btn"
+            disabled
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="add-award-overlay">
     <div class="add-award-div">
-      <button type="button" id="close-add-div">X</button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="30px"
+        viewBox="0 -960 960 960"
+        width="30px"
+        fill="#e3e3e3"
+        id="close-add-div"
+      >
+        <path
+          d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+        />
+      </svg>
       <div class="add-award-container">
         <canvas class="add-award-canvas"></canvas>
         <input
@@ -169,7 +199,7 @@ University Philosophy</textarea
     class="university-tab-content admin-achievements-content"
   >
     <div class="achievements-form">
-      <h3>Add New Achievement</h3>
+      <h3 class="new-ach-text">Add New Achievement</h3>
 
       <div class="award-list">
         <div class="award-item-container"></div>

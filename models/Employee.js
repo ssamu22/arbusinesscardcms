@@ -207,7 +207,7 @@ class Employee {
       const { data, error } = await supabase
         .from("employee")
         .select(
-          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive"
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position"
         )
         .eq("isActive", true);
 
