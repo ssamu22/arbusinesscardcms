@@ -17,6 +17,9 @@
         <canvas class="upload-canvas"></canvas>
 
         <div class="change-achicon-div">
+          <label for="file-awardupload" class="file-awardupload-label"
+            >Select Image</label
+          >
           <input
             type="file"
             id="file-awardupload"
@@ -52,21 +55,37 @@
       </svg>
       <div class="add-award-container">
         <canvas class="add-award-canvas"></canvas>
-        <input
-          type="file"
-          id="file-add-award"
-          class="upload-btn"
-          accept="image/*"
-        />
-        <div>
+        <div class="cat-title-div">
           <label for="new-cat-input">Category</label>
-          <input type="text" id="new-cat-input" value="" />
+          <input
+            type="text"
+            id="new-cat-input"
+            class="new-ach-inputs"
+            value=""
+          />
           <label for="new-title-input">Title</label>
-          <input type="text" id="new-title-input" value="" />
+          <input
+            type="text"
+            id="new-title-input"
+            class="new-ach-inputs"
+            value=""
+          />
+          <label
+            for="file-add-award"
+            class="file-awardupload-label"
+            id="add-award-label"
+            >Select Image</label
+          >
+          <input
+            type="file"
+            id="file-add-award"
+            class="upload-btn"
+            accept="image/*"
+          />
+          <button type="button" id="submit-add-award" class="submit-btn">
+            Submit
+          </button>
         </div>
-        <button type="button" id="submit-add-award" class="submit-btn">
-          Submit
-        </button>
       </div>
     </div>
   </div>

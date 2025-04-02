@@ -163,6 +163,7 @@
 
 .edit-award-img {
   display: none;
+  background: var(--primary-color);
 }
 
 .award-list {
@@ -171,18 +172,17 @@
 }
 
 .new-ach-text {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .award-item {
   display: flex;
-  width: 70%;
+  width: 90%;
   align-items: center;
-  gap: 20px;
-}
-
-.award-item:not(:first-child) {
-  margin-top: 40px;
+  gap: 10px;
 }
 
 .award-image-div {
@@ -255,10 +255,12 @@
 }
 
 .award-item-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-items: center;
+  padding: 20px;
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
 }
 
 .upload-container {
@@ -270,6 +272,7 @@
 
 .change-achicon-div {
   display: flex;
+  gap: 10px;
   justify-content: center;
   align-items: center;
 }
@@ -292,6 +295,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#file-add-award {
+  display: none;
+}
+
+#file-awardupload {
+  display: none;
+}
+
+#add-award-label {
+  margin-top: 10px;
+  width: 79%;
+}
+
+.file-awardupload-label {
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  grid-column: 1 / -1;
+  text-align: center;
+}
+.file-awardupload-label:hover {
+  background-color: #8f7501;
 }
 
 .add-award-container {
@@ -340,7 +371,6 @@
   color: var(--primary-color);
   font-size: 24px;
   margin-bottom: 20px;
-  text-align: center;
 }
 
 .markers-section h3 {
@@ -653,8 +683,53 @@
   transition: background-color 0.3s;
 }
 
+#submit-add-award {
+  margin-top: 10px;
+  width: 83%;
+}
+
 .submit-btn:hover {
   background-color: var(--primary-dark);
+}
+
+.award-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+}
+
+.upload-btn {
+  display: none;
+}
+
+.cat-title-div {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.new-ach-inputs {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-family: inherit;
+}
+
+.new-ach-inputs:focus {
+  border-color: #2b142e;
+  box-shadow: 0 0 8px rgba(43, 20, 46, 0.4);
+}
+
+.award-form label {
+  font-weight: bold;
+  color: #2b142e;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {

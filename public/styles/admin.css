@@ -737,7 +737,7 @@ header {
 .section-title {
   font-size: 24px;
   margin-bottom: 20px;
-  color: #333;
+  color: #9b3838;
 }
 
 .management-grid {
@@ -748,6 +748,19 @@ header {
   ); /* Two columns for Departments and Achievement Types */
   gap: 20px;
   grid-template-rows: auto 1fr; /* Auto rows for top, 1fr row for bottom */
+}
+
+.faq-questions {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.faq-questions:focus {
+  border-color: #2b142e; /* Dark purple */
+  box-shadow: 0 0 8px rgba(43, 20, 46, 0.4);
 }
 
 .management-card {
@@ -1027,6 +1040,10 @@ header {
   outline: none;
 }
 
+#admin-name{
+  color: white; 
+}
+
 @media (max-width: 768px) {
   .um-grid {
     grid-template-columns: 1fr;
@@ -1039,7 +1056,20 @@ header {
 }
 
 .faq-answers {
+  height: 150px;
+  padding: 12px;
+  border: 2px solid #ddaeed;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-family: inherit;
   resize: none;
+}
+
+.faq-answers:focus {
+  border-color: #2b142e;
+  box-shadow: 0 0 8px rgba(43, 20, 46, 0.4);
 }
 
 .message-div {

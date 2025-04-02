@@ -506,7 +506,7 @@ async function updateAchievement(achievement_id, newName, newIconClass) {
     }
 
     console.log("Achievement type updated successfully.");
-    alert("Achievement type updated successfully.");
+    showSuccessMessage("Achievement type updated successfully.");
   } catch (error) {
     console.error(error);
   }
