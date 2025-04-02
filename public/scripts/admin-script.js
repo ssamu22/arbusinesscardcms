@@ -601,10 +601,7 @@ function editFAQs(button) {
       answerTextarea.disabled = true;
     });
 
-    // Optionally, save changes to a server or localStorage here
-    if (confirm("Do you want to save changes?")) {
-      saveFAQs();
-    }
+    saveFAQs();
   }
 }
 
