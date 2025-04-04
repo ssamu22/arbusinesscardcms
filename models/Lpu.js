@@ -58,6 +58,8 @@ class LpuBranch {
       .update({ [principle]: newText })
       .eq("lpu_branch_id", parseInt(id));
 
+    console.log("THE UPDATED PRINCIPLE: ", data);
+
     if (error) {
       console.error("Error updating principle:", error);
       return { error: error.message };

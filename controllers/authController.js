@@ -141,6 +141,19 @@ exports.signup = async (req, res) => {
   // Use the Employee class to create a new employee
   const newEmployee = await Employee.create(employeeData);
 
+  console.log("THE NEW EMPLOYEE:", newEmployee);
+  console.log("NEW EMPLOYEE ID:", newEmployee.employee_id);
+
+  const { data, error } = await supabase.from("contact").insert({
+    employee_id: newEmployee.employee_id,
+    email: email,
+  });
+
+  if (error) {
+    console.log("ERROR CREATING CONTACT");
+  }
+
+  console.log("NEW EMPLOYEE CONTACT:", data);
   // Inactive users must be displayed in the admin page for the admin to accept or reject the user.
 
   console.log(req.body);

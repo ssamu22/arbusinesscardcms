@@ -76,24 +76,6 @@
   background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
 }
 
-.context-menu {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 5px;
-  display: none;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-.context-menu button {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-  text-align: left;
-}
-
 .draw-text-btn,
 #download-bcard {
   margin-bottom: 15px;
@@ -112,10 +94,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-}
-
-.context-menu button:hover {
-  background: #f0f0f0;
 }
 
 #bcard-bg {

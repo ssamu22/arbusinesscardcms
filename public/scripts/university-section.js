@@ -181,6 +181,7 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
       <div class= "award-edit-div">
         <button type="button" id="ach-submit-${awardid}" class="ach-submit-btn" style="display: none;">Submit</button>
         <button type="button" id="ach-edit-${awardid}" class="ach-edit-btn">Edit</button>
+        <button type ="button" id ="ach-delete-${awardid} class="ach-delete-btn">Delete</button>
       </div>
 
   `;
@@ -367,6 +368,8 @@ principleForms.forEach((frm, idx) => {
       newText: escapeHTML(formTextArea.value),
     });
 
+    console.log("THE REQUEST BODY:", requestBody);
+
     removeCancelClass(editBtns[idx], submitBtns[idx]);
     fetch(frm.action, {
       method: frm.method,
@@ -392,6 +395,7 @@ principleForms.forEach((frm, idx) => {
 
           return response.json();
         } else {
+          console.log("PRINCIPLE ERROR?", response);
           throw new Error("Error updating principle");
         }
       })
@@ -477,10 +481,11 @@ function generateAwards(awards, awardImages) {
         
         <label for="award-title-${award.award_id}">Title</label>
         <input type="text" id="award-title-${award.award_id}" class="award-tit" value="${award.award_title}" disabled/>
-
+        
         <div class = "award-edit-div">
         <button type="button" id="ach-edit-${award.award_id}" class="ach-edit-btn">Edit</button>
         <button type="button" id="ach-submit-${award.award_id}" class="ach-submit-btn" style="display: none;">Submit</button>
+        <button type ="button" id = "ach-delete-${award.award_id} class="ach-delete-btn">Delete</button>
         </div>
       </div>
 

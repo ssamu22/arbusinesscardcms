@@ -13,11 +13,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
   const allBusinessCards = await getAllBusinessCards();
 
-  const toggleEmailBtn = document.getElementById("toggle-email-btn");
-  const toggleLocationBtn = document.getElementById("toggle-location-btn");
-  const togglePositionBtn = document.getElementById("toggle-position-btn");
-  const toggleNumberBtn = document.getElementById("toggle-number-btn");
-
   console.log("ALL ACTIVE IMAGE TARGETS:", allBusinessCards);
   let fileToSave = null;
   let backgroundImage = null;
@@ -51,105 +46,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   setBackgroundFromURL(background_url);
   // EVENT LISTENERS
 
-  toggleEmailBtn.addEventListener("click", async (e) => {
-    // Find the text with a value of email
-    const textToHide = texts.find(
-      (text) => text.text.toLowerCase() === "email"
-    );
-
-    console.log("THE TEXT TO HIDE:", textToHide);
-    // Change the text content of the button
-
-    if (textToHide.is_displayed) {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: false,
-      });
-      toggleEmailBtn.textContent = "Add Email";
-    } else {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: true,
-      });
-      toggleEmailBtn.textContent = "Hide Email";
-    }
-
-    textToHide.is_displayed = !textToHide.is_displayed;
-    draw();
-  });
-  toggleLocationBtn.addEventListener("click", async (e) => {
-    const textToHide = texts.find(
-      (text) => text.text.toLowerCase() === "location"
-    );
-
-    if (textToHide.is_displayed) {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: false,
-      });
-      toggleLocationBtn.textContent = "Add Location";
-    } else {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: true,
-      });
-      toggleLocationBtn.textContent = "Hide Location";
-    }
-
-    textToHide.is_displayed = !textToHide.is_displayed;
-    draw();
-  });
-
-  togglePositionBtn.addEventListener("click", async (e) => {
-    const textToHide = texts.find(
-      (text) => text.text.toLowerCase() === "position"
-    );
-
-    if (textToHide.is_displayed) {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: false,
-      });
-      togglePositionBtn.textContent = "Add Position";
-    } else {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: true,
-      });
-      togglePositionBtn.textContent = "Hide Position";
-    }
-
-    textToHide.is_displayed = !textToHide.is_displayed;
-    draw();
-  });
-  toggleNumberBtn.addEventListener("click", async (e) => {
-    const textToHide = texts.find(
-      (text) => text.text.toLowerCase() === "phone number"
-    );
-
-    if (textToHide.is_displayed) {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: false,
-      });
-      toggleNumberBtn.textContent = "Add Position";
-    } else {
-      await updateContent({
-        content_id: textToHide.content_id,
-        is_displayed: true,
-      });
-      toggleNumberBtn.textContent = "Hide Position";
-    }
-
-    textToHide.is_displayed = !textToHide.is_displayed;
-    draw();
-  });
-
   genAndReplaceBtn.addEventListener("click", async (e) => {
     genAndReplaceBtn.textContent = "Replacing Cards...";
     await generateAndReplaceTargets();
 
-    genAndReplaceBtn.textContent = "Replacing Cards...";
+    genAndReplaceBtn.textContent = "Generate & Replace";
   });
 
   downloadBcardBtn.addEventListener("click", downloadCanvas);
@@ -184,6 +85,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   applyBtn.addEventListener("click", (e) => {
+    if (textToEdit < 0) {
+      showErrorMessage("Please select a text to edit.");
+    }
     editText(textToEdit);
     draw();
   });
@@ -340,6 +244,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // This will handle the update of the font options of a selected text
   function resetTextOptions() {
     textToEdit = -1;
+
+    contextMenu.style.display = "none";
+
     const textInput = document.getElementById("text-content");
     const fontInput = document.getElementById("text-font");
     const scaleInput = document.getElementById("scaleFactor");
@@ -347,6 +254,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fontWeightInput = document.getElementById("fontWeight");
     const colorInput = document.getElementById("color");
 
+    textInput.disabled = true;
+    fontInput.disabled = true;
+    scaleInput.disabled = true;
+    fontSizeInput.disabled = true;
+    fontWeightInput.disabled = true;
     textInput.value = "";
     fontInput.value = "Arial";
     scaleInput.value = "1";
@@ -363,9 +275,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fontWeightInput = document.getElementById("fontWeight");
     const colorInput = document.getElementById("color");
 
+    fontInput.disabled = false;
+    scaleInput.disabled = false;
+    fontSizeInput.disabled = false;
+    fontWeightInput.disabled = false;
+    colorInput.disabled = false;
     textInput.value = texts[idx].text;
+    colorInput.value = texts[idx].color;
+    if (
+      textInput.value.toLowerCase() === "name" ||
+      textInput.value.toLowerCase() === "email" ||
+      textInput.value.toLowerCase() === "location" ||
+      textInput.value.toLowerCase() === "position" ||
+      textInput.value.toLowerCase() === "phone number"
+    ) {
+      textInput.disabled = true;
+    } else {
+      contextMenu.style.display = "block";
+      textInput.disabled = false;
+    }
     fontInput.value = texts[idx].font_family;
-    scaleInput.value = texts[idx].scale_factor;
     fontSizeInput.value = texts[idx].font_size;
     fontWeightInput.value = texts[idx].font_weight;
     colorInput.value = texts[idx].color;
@@ -373,19 +302,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // This will handle the update of a text in the business card
   async function editText(idx) {
+    if (idx === -1) {
+      return;
+    }
     const textInput = document.getElementById("text-content");
     const fontInput = document.getElementById("text-font");
-    const scaleInput = document.getElementById("scaleFactor");
     const fontSizeInput = document.getElementById("fontSize");
     const fontWeightInput = document.getElementById("fontWeight");
     const colorInput = document.getElementById("color");
-
-    // Show an error message
-
-    if (idx === -1) {
-      showErrorMessage("Please select a text to edit!");
-      return;
-    }
 
     // Show an error message if any values are missing
     if (
@@ -395,13 +319,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       !fontWeightInput.value ||
       !colorInput.value
     ) {
-      showErrorMessage("Please fill up all the necessary fields!");
       return;
     }
 
     texts[idx].text = textInput.value;
     texts[idx].font_family = fontInput.value;
-    texts[idx].scale_factor = scaleInput.value;
     texts[idx].font_size = fontSizeInput.value;
     texts[idx].font_weight = fontWeightInput.value;
     texts[idx].color = colorInput.value;
@@ -410,7 +332,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       content_id: texts[idx].content_id,
       x: texts[idx].x,
       y: texts[idx].y,
-      scale_factor: texts[idx].scale_factor,
       type: texts[idx].type,
       text: texts[idx].text,
       color: texts[idx].color,
@@ -418,7 +339,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       font_weight: texts[idx].font_weight,
       font_family: texts[idx].font_family,
     });
-    draw();
   }
 
   // handle mousedown events (select text)
@@ -432,7 +352,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check if clicking on a text
     for (let i = 0; i < texts.length; i++) {
       if (textHittest(startX, startY, i)) {
-        console.log("SELECTED TEXT INDEX:", i);
         textToEdit = i;
         updateTextOptions(textToEdit);
         selectedText = i;
@@ -445,19 +364,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     draw();
   }
-
-  bcardCanvas.addEventListener("contextmenu", function (event) {
-    event.preventDefault(); // Prevent default right-click menu
-
-    if (textToEdit !== -1) {
-      // Show the custom menu at cursor position
-      contextMenu.style.display = "block";
-      contextMenu.style.left = `${event.pageX}px`;
-      contextMenu.style.top = `${event.pageY}px`;
-    } else {
-      contextMenu.style.display = "none";
-    }
-  });
 
   // handle mousemove events (drag text)
   function handleMouseMove(e) {
@@ -484,6 +390,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // handle mouseup events (deselect text)
   function handleMouseUp(e) {
     e.preventDefault();
+    editText(textToEdit);
     selectedText = -1;
   }
 
@@ -595,11 +502,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
 
-      if (response.status === 200) {
-        showSuccessMessage("Added a new text!");
-      } else {
-        showErrorMessage("Failed to add a new text! Please try again.");
-      }
       return responseData.data[0];
     } catch (err) {
       console.log("Failed to add new content:", err);
@@ -627,7 +529,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const responseData = await response.json();
       console.log("NEW DATA ADDED:", responseData.data[0]);
 
-      showSuccessMessage("Business card design successfully updated!");
       return responseData.data[0];
     } catch (err) {
       console.log("Failed to delete content!", err);
@@ -728,8 +629,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await response.json();
 
       if (data.error?.result_code === "TargetStatusNotSuccess") {
+        console.log("THE EMPLOYEE:", employee);
         showErrorMessage(
-          "The business card is still processing! Please try again later."
+          `${employee.last_name}'s business card is still processing! Please try again later.`
         );
       }
 
@@ -808,180 +710,276 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // async function generateAndReplaceTargets() {
+  //   // 1. Get all employees
+  //   const allEmployees = await getAllEmployees();
+  //   // 2. Get all image targets
+  //   const allTargets = await getAllBcardTargets();
+  //   // 3, Get all employee contacts
+  //   const allContacts = await getAllEmployeeContacts();
+
+  //   console.log("ALL TEXTS:", texts);
+
+  //   const targetNameText = texts.find(
+  //     (text) => text.text.toLowerCase() === "name"
+  //   );
+  //   const targetEmailText = texts.find(
+  //     (text) => text.text.toLowerCase() === "email"
+  //   );
+  //   const targetLocationText = texts.find(
+  //     (text) => text.text.toLowerCase() === "location"
+  //   );
+  //   const targetPositionText = texts.find(
+  //     (text) => text.text.toLowerCase() === "position"
+  //   );
+  //   const targetNumberText = texts.find(
+  //     (text) => text.text.toLowerCase() === "phone number"
+  //   );
+
+  //   // 3. Iterate through all employees
+  //   allEmployees.forEach((employee) => {
+  //     const employeeContact = allContacts.find(
+  //       (contact) => contact.employee_id === employee.employee_id
+  //     );
+
+  //     console.log("THE EMPLOYEE CONTACT:", employeeContact);
+
+  //     const target = allTargets.find(
+  //       (target) => target.associated_employee == employee.employee_id
+  //     );
+
+  //     console.log("THE EMPLOYEE TARGET:", target);
+
+  //     if (target) {
+  //       // If employees already has a business card target, replace it
+  //       console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
+  //       if (targetEmailText.is_displayed && !employeeContact.email) {
+  //         showErrorMessage(`${employee.last_name} doesn't have an email`);
+  //         return;
+  //       }
+
+  //       if (targetLocationText.is_displayed && !employee.location) {
+  //         showErrorMessage(
+  //           `${employee.last_name} did not provide his/her location`
+  //         );
+
+  //         return;
+  //       }
+
+  //       if (targetPositionText.is_displayed && !employee.position) {
+  //         showErrorMessage(
+  //           `${employee.last_name} did not provide his/her position`
+  //         );
+  //         return;
+  //       }
+
+  //       if (targetNumberText.is_displayed && !employeeContact.phone_number) {
+  //         showErrorMessage(
+  //           `${employee.last_name} did not provide his/her phone number`
+  //         );
+  //         return;
+  //       }
+
+  //       targetNameText.text = `${employee.honorifics ?? ""} ${
+  //         employee.first_name
+  //       } ${employee.middle_name ?? ""} ${employee.last_name}`;
+  //       targetEmailText.text = employeeContact.email;
+
+  //       targetLocationText.text = `${employee.location}`;
+
+  //       console.log("THE EMPLOYEE POSITION:", employee);
+  //       targetPositionText.text = employee.position;
+
+  //       targetNumberText.text = employeeContact.phone_number;
+
+  //       draw();
+
+  //       bcardCanvas.toBlob(async (blob) => {
+  //         if (blob) {
+  //           console.log("THE BLOB CREATED!");
+
+  //           await replaceImageTarget(
+  //             employee,
+  //             allTargets.find(
+  //               (target) => target.associated_employee == employee.employee_id
+  //             ),
+  //             blob
+  //           ); // Pass the blob as the image
+  //         } else {
+  //           console.error("Failed to convert canvas to Blob.");
+  //         }
+  //       }, "image/jpeg");
+  //       replaceImageTarget(employee);
+  //     } else {
+  //       // If the employee doesn't, create one
+  //       console.log("THIS EMPLOYEE DOESN'T");
+
+  //       if (targetEmailText.is_displayed && !employeeContact.email) {
+  //         return;
+  //       }
+
+  //       if (targetLocationText.is_displayed && !employee.location) {
+  //         return;
+  //       }
+
+  //       if (targetPositionText.is_displayed && !employee.position) {
+  //         return;
+  //       }
+
+  //       if (targetNumberText.is_displayed && !employeeContact.phone_number) {
+  //         return;
+  //       }
+
+  //       console.log(
+  //         "THE NAME:",
+  //         `${employee.honorifics ?? ""} ${employee.first_name} ${
+  //           employee.middle_name ?? ""
+  //         } ${employee.last_name}`
+  //       );
+
+  //       targetNameText.text = `${employee.honorifics ?? ""} ${
+  //         employee.first_name
+  //       } ${employee.middle_name ?? ""} ${employee.last_name}`;
+
+  //       targetEmailText.text = employeeContact.email;
+
+  //       targetLocationText.text = `${employee.location}`;
+
+  //       targetPositionText.text = employee.position;
+
+  //       targetNumberText.text = employeeContact.phone_number;
+
+  //       // Update the canvas
+  //       draw();
+
+  //       // Use the canvas image as the new target
+  //       bcardCanvas.toBlob(async (blob) => {
+  //         if (blob) {
+  //           console.log("THE BLOB:", blob);
+
+  //           await createImageTarget(employee, blob);
+  //         } else {
+  //           console.error("Failed to convert canvas to Blob.");
+  //         }
+  //       }, "image/jpeg");
+  //     }
+  //   });
+
+  //   if (targetNameText) targetNameText.text = "Name";
+  //   if (targetEmailText) targetEmailText.text = "Email";
+  //   if (targetLocationText) targetLocationText.text = "Location";
+  //   if (targetPositionText) targetPositionText.text = "Position";
+  //   if (targetNumberText) targetNumberText.text = "Phone Number";
+
+  //   location.reload();
+  // }
+
   async function generateAndReplaceTargets() {
     // 1. Get all employees
-
     const allEmployees = await getAllEmployees();
-    const allEmployeeContacts = await getAllEmployeeContacts();
     // 2. Get all image targets
     const allTargets = await getAllBcardTargets();
-
+    // 3. Get all employee contacts
     const allContacts = await getAllEmployeeContacts();
 
     console.log("ALL TEXTS:", texts);
+
     const targetNameText = texts.find(
       (text) => text.text.toLowerCase() === "name"
     );
-    const targetEmailText = texts.find(
-      (text) => text.text.toLowerCase() === "email"
-    );
-    const targetLocationText = texts.find(
-      (text) => text.text.toLowerCase() === "location"
-    );
-    const targetPositionText = texts.find(
-      (text) => text.text.toLowerCase() === "position"
-    );
-    const targetNumberText = texts.find(
-      (text) => text.text.toLowerCase() === "phone number"
-    );
+
+    // Store all asynchronous operations in an array
+    const tasks = [];
 
     // 3. Iterate through all employees
-    allEmployees.forEach((employee) => {
+    for (const employee of allEmployees) {
       const employeeContact = allContacts.find(
         (contact) => contact.employee_id === employee.employee_id
       );
+
+      console.log("THE EMPLOYEE CONTACT:", employeeContact);
 
       const target = allTargets.find(
         (target) => target.associated_employee == employee.employee_id
       );
 
+      console.log("THE EMPLOYEE TARGET:", target);
+
       if (target) {
-        // If employees already has a business card target, replace it
+        // If employee already has a business card target, replace it
         console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
-        console.log("ALL TEXTS:", texts);
 
-        if (targetNameText) {
-          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
-        }
-
-        if (targetEmailText) {
-          targetEmailText.text = employeeContact.email;
-        }
-
-        if (targetLocationText && employeeContact.location != null) {
-          targetLocationText.text = `${employeeContact.location}`;
-        }
-
-        if (targetPositionText) {
-          console.log("THE EMPLOYEE POSITION:", employee);
-          targetPositionText.text = employee.position;
-        }
-
-        if (targetNumberText && employeeContact.phone_number != null) {
-          targetNumberText.text = employeeContact.phone_number;
-        }
-
-        // texts = texts.map((textObj) => {
-        //   if (textObj.text != null && textObj.text != "") {
-        //     return {
-        //       ...textObj,
-        //       text: `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`,
-        //     };
-        //   } else {
-        //     return textObj;
-        //   }
-        // });
-        console.log("ALL NEW TEXTS:", texts);
+        targetNameText.text = `${employee.honorifics ?? ""} ${
+          employee.first_name
+        } ${employee.middle_name ?? ""} ${employee.last_name}`;
 
         draw();
 
-        bcardCanvas.toBlob(async (blob) => {
-          if (blob) {
-            console.log("THE BLOB CREATED!");
+        const task = new Promise((resolve, reject) => {
+          bcardCanvas.toBlob(async (blob) => {
+            if (blob) {
+              console.log("THE BLOB CREATED!");
+              try {
+                await replaceImageTarget(employee, target, blob);
+                resolve();
+              } catch (error) {
+                console.error("Error replacing image target:", error);
+                reject(error);
+              }
+            } else {
+              console.error("Failed to convert canvas to Blob.");
+              reject(new Error("Failed to convert canvas to Blob."));
+            }
+          }, "image/jpeg");
+        });
 
-            const imageUrl = await updateBackground(fileToSave);
-            await replaceImageTarget(
-              employee,
-              allTargets.find(
-                (target) => target.associated_employee == employee.employee_id
-              ),
-              blob
-            ); // Pass the blob as the image
-          } else {
-            console.error("Failed to convert canvas to Blob.");
-          }
-        }, "image/jpeg");
-        replaceImageTarget(employee);
+        tasks.push(task);
       } else {
         // If the employee doesn't, create one
+        console.log("THIS EMPLOYEE DOESN'T");
 
-        if (targetNameText) {
-          targetNameText.text = `${employee.honorifics} ${employee.first_name} ${employee.middle_name} ${employee.last_name}`;
-        }
+        console.log(
+          "THE NAME:",
+          `${employee.honorifics ?? ""} ${employee.first_name} ${
+            employee.middle_name ?? ""
+          } ${employee.last_name}`
+        );
 
-        if (targetEmailText) {
-          targetEmailText.text = employeeContact.email;
-        }
-
-        if (targetLocationText && employeeContact.location != null) {
-          targetLocationText.text = `${employeeContact.location}`;
-        }
-
-        if (targetPositionText) {
-          console.log("THE EMPLOYEE POSITION:", employee);
-          targetPositionText.text = employee.position;
-        }
-
-        if (targetNumberText && employeeContact.phone_number != null) {
-          targetNumberText.text = employeeContact.phone_number;
-        }
+        targetNameText.text = `${employee.honorifics ?? ""} ${
+          employee.first_name
+        } ${employee.middle_name ?? ""} ${employee.last_name}`;
 
         // Update the canvas
         draw();
 
-        // Use the canvas image as the new target
-        bcardCanvas.toBlob(async (blob) => {
-          if (blob) {
-            console.log("THE BLOB:", blob);
+        const task = new Promise((resolve, reject) => {
+          bcardCanvas.toBlob(async (blob) => {
+            if (blob) {
+              console.log("THE BLOB:", blob);
+              try {
+                await createImageTarget(employee, blob);
+                resolve();
+              } catch (error) {
+                console.error("Error creating image target:", error);
+                reject(error);
+              }
+            } else {
+              console.error("Failed to convert canvas to Blob.");
+              reject(new Error("Failed to convert canvas to Blob."));
+            }
+          }, "image/jpeg");
+        });
 
-            await createImageTarget(employee, blob);
-          } else {
-            console.error("Failed to convert canvas to Blob.");
-          }
-        }, "image/jpeg");
+        tasks.push(task);
       }
-    });
+    }
 
-    targetNameText.text = "Name";
-    targetEmailText.text = "Email";
-    targetLocationText.text = "Location";
-    targetPositionText.text = "Position";
-    targetNumberText.text = "Phone Number";
+    // Wait for all async tasks to complete before resetting text and reloading
+    await Promise.all(tasks);
+
+    if (targetNameText) targetNameText.text = "Name";
 
     location.reload();
-  }
-
-  for (let i = 0; i < texts.length; i++) {
-    if (texts[i].text.toLowerCase() === "email") {
-      if (texts[i].is_displayed) {
-        toggleEmailBtn.textContent = "Hide Email";
-      } else {
-        toggleEmailBtn.textContent = "Add Email";
-      }
-    }
-
-    if (texts[i].text.toLowerCase() === "location") {
-      if (texts[i].is_displayed) {
-        toggleLocationBtn.textContent = "Hide Location";
-      } else {
-        toggleLocationBtn.textContent = "Add Location";
-      }
-    }
-    if (texts[i].text.toLowerCase() === "position") {
-      if (texts[i].is_displayed) {
-        togglePositionBtn.textContent = "Hide Position";
-      } else {
-        togglePositionBtn.textContent = "Add Position";
-      }
-    }
-
-    if (texts[i].text.toLowerCase() === "phone number") {
-      if (texts[i].is_displayed) {
-        toggleNumberBtn.textContent = "Hide Number";
-      } else {
-        toggleNumberBtn.textContent = "Add Number";
-      }
-    }
   }
 
   draw();
