@@ -153,6 +153,7 @@ async function addNewAward(formData) {
         result.award_data.data[0].award_title,
         result.image_data.image_url
       );
+      addAwardOverlay.style.display = "none";
     } else {
       console.error("Error:", response.status, response.statusText);
     }
@@ -163,6 +164,7 @@ async function addNewAward(formData) {
 
 function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
   const awardItem = document.createElement("div");
+  awardItem.id = `award-item-${awardid}`;
   awardItem.classList.add("award-item");
   awardItem.innerHTML = `
     
@@ -176,13 +178,13 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
       
       <label for="award-title-${awardid}">Title</label>
       <input type="text" id="award-title-${awardid}" class="award-tit" value="${awardTit}" disabled/>
-    </div>
 
       <div class= "award-edit-div">
         <button type="button" id="ach-submit-${awardid}" class="ach-submit-btn" style="display: none;">Submit</button>
         <button type="button" id="ach-edit-${awardid}" class="ach-edit-btn">Edit</button>
+        <button type ="button" id ="ach-delete-${awardid}" class="ach-delete-btn">Delete</button>
       </div>
-
+    </div>
   `;
 
   awardContainer.appendChild(awardItem);
@@ -205,6 +207,7 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
 
   const awardEditBtn = awardItem.querySelector(`#ach-edit-${awardid}`);
   const awardSubmitBtn = awardItem.querySelector(`#ach-submit-${awardid}`);
+  const awardDeleteBtn = awardItem.querySelector(`#ach-delete-${awardid}`);
   const awardCat = awardItem.querySelector(`.award-cat`);
   const awardTitle = awardItem.querySelector(`.award-tit`);
 
@@ -227,6 +230,12 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
       awardCat.disabled = false;
       awardTitle.disabled = false;
     }
+  });
+
+  awardDeleteBtn.addEventListener("click", async (e) => {
+    const awardToDelete = document.getElementById(`award-item-${awardid}`);
+    await deleteAward(awardid);
+    awardToDelete.remove();
   });
 
   // Submit Button Logic
@@ -254,6 +263,23 @@ function createNewAward(awardid, awardCategory, awardTit, imgUrl) {
       });
   });
 }
+
+async function deleteAward(awardId) {
+  try {
+    const response = await fetch(`/arcms/api/v1/awards/${awardId}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      return showErrorMessage("Failed to delete award! Please try again.");
+    }
+
+    showErrorMessage("Award Deleted!");
+  } catch (error) {
+    return showErrorMessage("Failed to delete award! Please try again.");
+  }
+}
+
 async function uploadNewAwardImg(formData, formAwardId) {
   try {
     const response = await fetch(`/lpu/1/award/images/${formAwardId}`, {
@@ -267,6 +293,8 @@ async function uploadNewAwardImg(formData, formAwardId) {
       console.log("Success:", result);
       showSuccessMessage("Award logo successfully updated!");
       editImageOverlay.style.display = "none";
+      drawInitialImage();
+
       document.querySelector(
         `#award-div-${formAwardId}`
       ).style.backgroundImage = `url('${result.data.image_url}')`;
@@ -367,6 +395,8 @@ principleForms.forEach((frm, idx) => {
       newText: escapeHTML(formTextArea.value),
     });
 
+    console.log("THE REQUEST BODY:", requestBody);
+
     removeCancelClass(editBtns[idx], submitBtns[idx]);
     fetch(frm.action, {
       method: frm.method,
@@ -392,6 +422,7 @@ principleForms.forEach((frm, idx) => {
 
           return response.json();
         } else {
+          console.log("PRINCIPLE ERROR?", response);
           throw new Error("Error updating principle");
         }
       })
@@ -464,6 +495,7 @@ function generateAwards(awards, awardImages) {
   // <img src= class="award-image" />
   awards.forEach((award, idx) => {
     const awardItem = document.createElement("div");
+    awardItem.id = `award-item-${award.award_id}`;
     awardItem.classList.add("award-item");
     awardItem.innerHTML = `
       
@@ -477,10 +509,11 @@ function generateAwards(awards, awardImages) {
         
         <label for="award-title-${award.award_id}">Title</label>
         <input type="text" id="award-title-${award.award_id}" class="award-tit" value="${award.award_title}" disabled/>
-
+        
         <div class = "award-edit-div">
         <button type="button" id="ach-edit-${award.award_id}" class="ach-edit-btn">Edit</button>
         <button type="button" id="ach-submit-${award.award_id}" class="ach-submit-btn" style="display: none;">Submit</button>
+        <button type ="button" id = "ach-delete-${award.award_id}" class="ach-delete-btn">Delete</button>
         </div>
       </div>
 
@@ -509,6 +542,10 @@ function generateAwards(awards, awardImages) {
     const awardSubmitBtn = awardItem.querySelector(
       `#ach-submit-${award.award_id}`
     );
+
+    const awardDeleteBtn = awardItem.querySelector(
+      `#ach-delete-${award.award_id}`
+    );
     const awardCat = awardItem.querySelector(`.award-cat`);
     const awardTitle = awardItem.querySelector(`.award-tit`);
 
@@ -531,6 +568,15 @@ function generateAwards(awards, awardImages) {
         awardCat.disabled = false;
         awardTitle.disabled = false;
       }
+    });
+
+    awardDeleteBtn.addEventListener("click", async (e) => {
+      const awardToDelete = document.getElementById(
+        `award-item-${award.award_id}`
+      );
+
+      await deleteAward(award.award_id);
+      awardToDelete.remove();
     });
 
     // Submit Button Logic

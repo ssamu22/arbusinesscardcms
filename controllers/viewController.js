@@ -1,6 +1,18 @@
 const supabase = require("../utils/supabaseClient");
 const crypto = require("crypto");
 
+exports.getLoginPage = (req, res) => {
+  res.render("auth/user/login"); // Render login.ejs
+};
+
+exports.getAdminLoginPage = (req, res) => {
+  res.render("auth/admin/login"); // Render admin login page
+};
+
+exports.get404Page = (req, res) => {
+  res.status(200).render("auth/page404");
+};
+
 exports.getRegisterPage = (req, res) => {
   res.status(200).render("auth/user/register");
 };
@@ -38,7 +50,7 @@ exports.getResetAdminPasswordPage = async (req, res) => {
     .eq("password_reset_token", candidateToken);
 
   if (data.length === 0) {
-    return res.redirect("/login");
+    return res.redirect("/");
   }
 
   console.log("THE DATA;", data);
@@ -48,7 +60,7 @@ exports.getResetAdminPasswordPage = async (req, res) => {
   console.log("IS EXPIRED?", expirationDate < now);
 
   if (expirationDate < now) {
-    return res.redirect("/admin/login");
+    return res.redirect("/admin");
   }
 
   res.status(200).render("auth/admin/reset-admin-password", {
@@ -73,7 +85,7 @@ exports.getResetPasswordPage = async (req, res) => {
     .eq("password_reset_token", candidateToken);
 
   if (data.length === 0) {
-    return res.redirect("/login");
+    return res.redirect("/");
   }
 
   console.log("THE DATA;", data);
@@ -83,7 +95,7 @@ exports.getResetPasswordPage = async (req, res) => {
   console.log("IS EXPIRED?", expirationDate < now);
 
   if (expirationDate < now) {
-    return res.redirect("/login");
+    return res.redirect("/");
   }
 
   res.status(200).render("auth/user/reset-password", {

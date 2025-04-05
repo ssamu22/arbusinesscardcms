@@ -39,13 +39,6 @@ class Employee {
   // Public method to check the password
   async validatePassword(plainPassword) {
     const hashedPassword = this.#getPassword(); // Access private method
-
-    console.log("THE PLAIN PASSWORD:" + plainPassword);
-    console.log("THE HASHED PASSWORD:" + hashedPassword);
-    console.log(
-      "IS PASSWORD THE SAME:",
-      await bcrypt.compare(plainPassword, hashedPassword)
-    );
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 

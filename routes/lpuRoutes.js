@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-lpuController = require("../controllers/lpuController");
-awardController = require("../controllers/awardController");
+const lpuController = require("../controllers/lpuController");
+const awardController = require("../controllers/awardController");
 
 const multer = require("multer");
 

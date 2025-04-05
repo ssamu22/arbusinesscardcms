@@ -23,18 +23,12 @@ exports.updatePrinciple = async (req, res) => {
 
   const { id, principle } = req.params;
 
-  // Check if newText is available
-  if (!req.body.newText) {
-    return res.status(400).json({
-      status: "error",
-      message: "newText is required in the form data",
-    });
-  }
+  console.log("THE NEW TEXT:", req.body.newText);
 
   const updatedPrinciple = await lpu.updatePrinciple(
     id,
     principle,
-    req.body.newText
+    req.body.newText ?? ""
   );
 
   if (updatedPrinciple.error) {

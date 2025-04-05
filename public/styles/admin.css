@@ -564,17 +564,17 @@ header {
 
 .university-form button,
 .achievements-form button {
-  color: #fff;
+  /* color: #fff; */
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  /* transition: background-color 0.3s; */
 }
 
 .university-form button:hover,
 .achievements-form button:hover {
-  background-color: #cdd0d1;
+  /* background-color: #cdd0d1; */
 }
 
 .achievements-list {

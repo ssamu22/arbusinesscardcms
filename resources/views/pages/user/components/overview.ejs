@@ -1,78 +1,159 @@
 <div id="overview" class="content-section active">
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="profile-header">
-                <img src="" alt="Profile Picture" id="profile-picture" class="profile-picture">
-                <div class="profile-actions">
-                    <button onclick="document.getElementById('profile-img').click()" class="btn-outline">
-                        <i class="bi bi-camera"></i>
-                        Change
-                    </button>
-                    <input type="file" id="profile-img" class="form-control" accept="image/png, image/jpeg, image/jpg" hidden>
-                    <!-- <button class="btn-outline">
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="profile-header">
+        <img
+          src=""
+          alt="Profile Picture"
+          id="profile-picture"
+          class="profile-picture"
+        />
+        <div class="profile-actions">
+          <button
+            onclick="document.getElementById('profile-img').click()"
+            class="btn-outline"
+          >
+            <i class="bi bi-camera"></i>
+            Change
+          </button>
+          <input
+            type="file"
+            id="profile-img"
+            class="form-control"
+            accept="image/png, image/jpeg, image/jpg"
+            hidden
+          />
+          <!-- <button class="btn-outline">
                         <i class="bi bi-trash"></i>
                         Remove
                     </button> -->
-                </div>
-            </div>
-
-            <h5 class="card-title">Profile Information</h5>
-            <p class="card-text">Update your personal and professional information</p>
-
-            <form id="profileForm" action="/update-profile" method="POST">
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label for="firstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstName" value="<%= user.first_name %>" placeholder="Enter your first name" disabled>
-                        <input type="hidden" name="firstName" value="<%= user.first_name %>">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label for="middleName" class="form-label">Middle Name</label>
-                        <input type="text" class="form-control" id="middleName" value="<%= user.middle_name %>" placeholder="Enter your middle name" disabled>
-                        <input type="hidden" name="middleName" value="<%= user.middle_name %>">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label for="lastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" value="<%= user.last_name %>" placeholder="Enter your last name" disabled>
-                        <input type="hidden" name="lastName" value="<%= user.last_name %>">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label for="position" class="form-label">Current Position</label>
-                        <input type="text" class="form-control" name="position" id="position" placeholder="Enter your current position">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label for="department" class="form-label">Department</label>
-                        <select name="department" id="departmentDropdown" class="form-control">
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label for="honorifics" class="form-label">Honorifics</label>
-                        <input type="text" class="form-control" name="honorifics" id="honorifics" value="<%= user.honorifics %>" placeholder="Enter honorifics">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="researchFields" class="form-label">Research Fields</label>
-                    <input type="text" class="form-control" id="researchFields" name="researchFields" placeholder="Enter your fields here...">
-                </div>
-
-                <div class="form-group">
-                    <label for="introduction" class="form-label">Introduction</label>
-                    <textarea class="form-control description-field" name="introduction" id="introduction" placeholder="Write a brief introduction about yourself"></textarea>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-outline">Cancel</button>
-                    <button type="submit" class="btn btn-custom" id="saveProfile">Update</button>
-                </div>
-            </form>
         </div>
+      </div>
+
+      <h5 class="card-title">Profile Information</h5>
+      <p class="card-text">Update your personal and professional information</p>
+
+      <form
+        id="profileForm"
+        action="arcms/api/v1/employees/update-profile"
+        method="POST"
+      >
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              value="<%= user.first_name %>"
+              placeholder="Enter your first name"
+              disabled
+            />
+            <input
+              type="hidden"
+              name="firstName"
+              value="<%= user.first_name %>"
+            />
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="middleName" class="form-label">Middle Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="middleName"
+              value="<%= user.middle_name %>"
+              placeholder="Enter your middle name"
+              disabled
+            />
+            <input
+              type="hidden"
+              name="middleName"
+              value="<%= user.middle_name %>"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="lastName"
+              value="<%= user.last_name %>"
+              placeholder="Enter your last name"
+              disabled
+            />
+            <input
+              type="hidden"
+              name="lastName"
+              value="<%= user.last_name %>"
+            />
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="position" class="form-label">Current Position</label>
+            <input
+              type="text"
+              class="form-control"
+              name="position"
+              id="position"
+              placeholder="Enter your current position"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="department" class="form-label">Department</label>
+            <select
+              name="department"
+              id="departmentDropdown"
+              class="form-control"
+            >
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="honorifics" class="form-label">Honorifics</label>
+            <input
+              type="text"
+              class="form-control"
+              name="honorifics"
+              id="honorifics"
+              value="<%= user.honorifics %>"
+              placeholder="Enter honorifics"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="researchFields" class="form-label">Research Fields</label>
+          <input
+            type="text"
+            class="form-control"
+            id="researchFields"
+            name="researchFields"
+            placeholder="Enter your fields here..."
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="introduction" class="form-label">Introduction</label>
+          <textarea
+            class="form-control description-field"
+            name="introduction"
+            id="introduction"
+            placeholder="Write a brief introduction about yourself"
+          ></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline">Cancel</button>
+          <button type="submit" class="btn btn-custom" id="saveProfile">
+            Update
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>

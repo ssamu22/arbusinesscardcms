@@ -138,20 +138,34 @@ exports.signup = async (req, res) => {
     date_created: new Date().toISOString(), // Automatically set the creation date
   };
 
-  // Use the Employee class to create a new employee
-  const newEmployee = await Employee.create(employeeData);
-
-  // Inactive users must be displayed in the admin page for the admin to accept or reject the user.
-
-  console.log(req.body);
-  // Return response
-
   if (signupErrors.length > 0) {
     return res.status(400).json({
       status: "failed",
       errors: signupErrors,
     });
   }
+
+  // Use the Employee class to create a new employee
+  const newEmployee = await Employee.create(employeeData);
+
+  console.log("THE NEW EMPLOYEE:", newEmployee);
+  console.log("NEW EMPLOYEE ID:", newEmployee.employee_id);
+
+  const { data, error } = await supabase.from("contact").insert({
+    employee_id: newEmployee.employee_id,
+    email: email,
+  });
+
+  if (error) {
+    console.log("ERROR CREATING CONTACT");
+  }
+
+  console.log("NEW EMPLOYEE CONTACT:", data);
+  // Inactive users must be displayed in the admin page for the admin to accept or reject the user.
+
+  console.log(req.body);
+  // Return response
+
   return res.status(200).json({
     status: "success",
     message: "User successfully register",
@@ -289,31 +303,69 @@ exports.approveAll = async (req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
+  // Check if the body contains the current password, new password, and confirm password
+  const { newPassword, currentPassword, passwordConfirm } = req.body;
   const employee_id = req.session.user.employee_id;
-  try {
-    const employee = await Employee.findById(employee_id);
 
-    if (!employee) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const checkPassword = await employee.validatePassword(oldPassword);
-    if (!checkPassword) {
-      return res
-        .status(401)
-        .json({ message: "Current password is incorrect!" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    await Employee.changePassword(employee_id, hashedPassword);
-
-    res.status(200).json({ message: "Password changed successfully!" });
-  } catch (error) {
-    console.error("Error changing password:", error);
-    res.status(500).json({ message: "Failed to change password" });
+  if (!currentPassword || !newPassword || !passwordConfirm) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Please fill out all the required inputs!",
+    });
   }
+
+  // Get the current admin
+  const employee = await Employee.findById(employee_id);
+  const passwordMatch = await employee.validatePassword(
+    req.body.currentPassword
+  );
+  // Check if the current password is correct
+  if (!passwordMatch) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Your current password is incorrect!",
+    });
+  }
+  // Validate the password and password confirm
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
+
+  // Check the length of the new password
+  if (newPassword.length < 8 || newPassword.length > 64) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Password must be between 8 to 64 characters long!",
+    });
+  }
+
+  // Check the format of the new password
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
+    });
+  }
+
+  // Check if password and password confirm are the same
+  if (!(newPassword === passwordConfirm)) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Passwords must match!",
+    });
+  }
+
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update the admin password into the new one
+
+  await Employee.changePassword(employee_id, hashedPassword);
+
+  // Send response
+  res.status(200).json({
+    status: "success",
+    message: "Password successfully updated!",
+  });
 };
 
 exports.forgotPassword = async (req, res) => {
@@ -421,6 +473,19 @@ exports.resetPassword = async (req, res) => {
   });
 };
 
+exports.isAuthenticated = (req, res, next) => {
+  // If user is authenticated, redirect. else, go to the next middleware
+  console.log("USER HAS SESSION? ", req.session);
+  if (req.session.user) return res.redirect("/home");
+  if (req.session.admin) return res.redirect("/admin/home");
+
+  next();
+};
+
+exports.preventCache = (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+};
 const createPasswordResetToken = () => {
   const resetToken = crypto.randomBytes(64).toString("hex");
 

@@ -2,7 +2,9 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const authRoutes = require("./routes/authRoutes"); // Import routes
+
+const viewRoutes = require("./routes/viewRoutes");
+const authRoutes = require("./routes/authRoutes");
 const apiRoutes = require("./routes/api"); // Import routes
 const uploadRoutes = require("./routes/uploadRoutes");
 const lpuRoutes = require("./routes/lpuRoutes");
@@ -18,6 +20,9 @@ const scheduleRoutes = require("./routes/scheduleRoutes");
 const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
 const vuforiaRouter = require("./routes/vuforiaRoutes");
+const awardRouter = require("./routes/awardRoutes");
+
+const viewController = require("./controllers/viewController");
 
 // TRY TO IMPLEMENT REDIS
 
@@ -58,13 +63,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Use routes from the authRoutes file
-app.use("/", authRoutes);
+app.use("/", viewRoutes);
 app.use("/api", apiRoutes);
 
 app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
 app.use("/events", eventRoutes);
 
+app.use("/arcms/api/v1/awards", awardRouter);
 app.use("/arcms/api/v1/vuforia", vuforiaRouter);
 app.use("/arcms/api/v1/admin", adminRoutes);
 app.use("/arcms/api/v1/auth", authRoutes);
@@ -77,6 +83,11 @@ app.use("/arcms/api/v1/contacts", contactRoutes);
 app.use("/arcms/api/v1/schedule", scheduleRoutes);
 app.use("/arcms/api/v1/bcardContents", bcardRoutes);
 app.use("/arcms/api/v1/bcardBg", bcardBgRoutes);
+
+// 404 page
+
+app.get("*", viewController.get404Page);
+
 const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

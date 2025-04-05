@@ -3,10 +3,14 @@ const resendEmailSection = document.querySelector(".resend-email-section");
 const sendEmailBtn = document.querySelector(".send-email-btn");
 const resendEmailBtn = document.querySelector(".resend-email-btn");
 const countdownElement = document.getElementById("exp-countdown");
+const messageDiv = document.querySelector(".message-div");
+const alertMessage = document.querySelector(".alert-message");
+const closeMessageBtn = document.querySelector(".close-message-btn");
 let timer;
 forgotPwordForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  if (!e.target["reset-email"].value) return alert("Please provide an email!");
+  if (!e.target["reset-email"].value)
+    return showErrorMessage("Please provide an email!");
 
   sendTokenLink(e.target["reset-email"].value);
 });
@@ -27,7 +31,7 @@ async function sendTokenLink(email) {
       sendEmailBtn.textContent = "Sending Email";
 
       if (data.status == "failed") {
-        alert(data.message);
+        showErrorMessage(data.message);
         return;
       }
       forgotPwordForm.style.display = "none";
@@ -69,3 +73,23 @@ function stopCountdown() {
   clearInterval(timer);
   countdownElement.textContent = "10:00";
 }
+
+function showSuccessMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("error-message");
+  messageDiv.classList.add("success-message");
+  alertMessage.textContent = message;
+}
+function showErrorMessage(message) {
+  messageDiv.style.display = "flex";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.add("error-message");
+  alertMessage.textContent = message;
+}
+
+closeMessageBtn.addEventListener("click", () => {
+  messageDiv.style.display = "none";
+  messageDiv.classList.remove("success-message");
+  messageDiv.classList.remove("error-message");
+  alertMessage.textContent = "";
+});

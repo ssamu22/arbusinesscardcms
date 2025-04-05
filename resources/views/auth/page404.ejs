@@ -28,7 +28,7 @@
       }
 
       .login-container {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.099);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -165,94 +165,14 @@
     <div class="login-container">
       <div class="left-section">
         <div class="brand">ARCMS</div>
-        <h1 class="welcome-text">Admin Portal</h1>
+        <h1 class="welcome-text">404 Page Not Found</h1>
         <p class="tagline">
-          Manage your content with ease. Access advanced features and control
-          your website efficiently.
+          The page you're looking for doesn't exist or has been moved. Please
+          check the URL or return to the homepage.
         </p>
-      </div>
-      <div class="right-section">
-        <h2 class="text-white mb-4">Admin Login</h2>
-        <div
-          id="error-message"
-          class="alert alert-danger d-none"
-          role="alert"
-        ></div>
-        <form id="login-form">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              name="email"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              name="password"
-              required
-            />
-          </div>
-          <a href="/admin/forgot-admin-password" class="text-white"
-            >Forgot your password?</a
-          >
-          <button type="submit" class="btn-login">Login</button>
-        </form>
       </div>
     </div>
 
-    <script>
-      document
-        .getElementById("login-form")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const loginBtn = document.querySelector(".btn-login");
-          loginBtn.textContent = "Logging in...";
-          const errorElement = document.getElementById("error-message");
-          errorElement.textContent = "";
-          errorElement.classList.add("d-none");
-
-          const formData = new FormData(this);
-          const data = Object.fromEntries(formData);
-
-          try {
-            const response = await fetch("/arcms/api/v1/auth/admin/login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-              window.location.href = "/admin/home";
-              loginBtn.textContent = "Login";
-            } else {
-              if (response.status === 401) {
-                const result = await response.json();
-                displayError(result.message || "Invalid email or password.");
-                loginBtn.textContent = "Login";
-              } else {
-                throw new Error("Unexpected server response.");
-              }
-            }
-          } catch (error) {
-            displayError("An error occurred. Please try again later.");
-            console.error("Login error:", error);
-          }
-        });
-
-      function displayError(message) {
-        const errorElement = document.getElementById("error-message");
-        errorElement.textContent = message;
-        errorElement.classList.remove("d-none");
-      }
-    </script>
+    <script></script>
   </body>
 </html>

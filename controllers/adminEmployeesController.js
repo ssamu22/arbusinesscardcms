@@ -6,6 +6,18 @@ const path = require("path");
 const ensureAdmin = require("../middlewares/authMiddleware");
 const validator = require("validator"); // For email validation
 const supabase = require("../utils/supabaseClient");
+var vuforia = require("vuforia-api");
+const upload = require("../middlewares/upload");
+
+var client = vuforia.client({
+  serverAccessKey: process.env.VUFORIA_SERVER_ACCESS_KEY,
+  serverSecretKey: process.env.VUFORIA_SERVER_SECRET_KEY,
+  clientAccessKey: process.env.VUFORIA_CLIENT_ACCESS_KEY,
+  clientSecretKey: process.env.VUFORIA_CLIENT_SECRET_KEY,
+});
+
+// util for base64 encoding and decoding
+var util = vuforia.util();
 
 exports.fetchAllEmployee = async (req, res) => {
   console.log("THE CURRENT SESSION:", req.session);
@@ -213,6 +225,24 @@ exports.editEmployee = async (req, res) => {
 
 exports.deleteEmployee = async (req, res) => {
   try {
+    const { data, error } = await supabase
+      .from("image_target")
+      .select()
+      .eq("associated_employee", req.params.id)
+      .single();
+
+    if (data && !error) {
+      client.deleteTarget(data.image_target, async function (error, result) {
+        // Check if the business card in vuforia is successfully deleted
+        if (error) {
+          console.log("Vuforia business card not deleted:", error);
+        } else {
+          console.log("Vuforia business card deleted!");
+        }
+      });
+    }
+
+    console.log("THE DELETED IMAGE TARGET: ", data);
     const deletedEmployee = await Employee.delete(req.params.id); // delete the employee
     const deleteQueries = [
       supabase.from("achievement").delete().eq("employee_id", req.params.id),
