@@ -68,7 +68,7 @@ exports.logout = (req, res) => {
     if (err) {
       console.error("Error during logout:", err);
     }
-    res.redirect("/admin/login");
+    res.redirect("/admin");
   });
 };
 

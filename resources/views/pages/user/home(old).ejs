@@ -1,454 +1,577 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css"
+    />
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .sidebar {
-            height: 100vh;
-            background-color: #ffffff;
-            color: #333333;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .main-content {
-            height: 100vh;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .card {
-            border-radius: 10px;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .nav-link {
-            color: #333333;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
-        .nav-link:hover, .nav-link.active {
-            background-color: #e9ecef;
-        }
-        .btn-custom {
-            background-color: #3b82f6;
-            color: white;
-            border-radius: 5px;
-        }
-        .btn-custom:hover {
-            background-color: #2563eb;
-            color: white;
-        }
-        .top-bar {
-            background-color: #3b82f6;
-            color: white;
-            padding: 10px 0;
-        }
-        .profile-section {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-        .profile-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 10px;
-        }
-        .no-data-found {
-            text-align: center;
-            padding: 50px 0;
-        }
-        .no-data-found img {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
+      body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #ffffff;
+        color: #333333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .main-content {
+        height: 100vh;
+        overflow-y: auto;
+        padding: 20px;
+      }
+      .card {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .nav-link {
+        color: #333333;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: #e9ecef;
+      }
+      .btn-custom {
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 5px;
+      }
+      .btn-custom:hover {
+        background-color: #2563eb;
+        color: white;
+      }
+      .top-bar {
+        background-color: #3b82f6;
+        color: white;
+        padding: 10px 0;
+      }
+      .profile-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+      }
+      .no-data-found {
+        text-align: center;
+        padding: 50px 0;
+      }
+      .no-data-found img {
+        max-width: 200px;
+        margin-bottom: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container-fluid">
-        <div class="row">
-            <!-- Top Bar -->
-            <div class="col-12 top-bar">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <h3 class="m-0">AR Business Cards</h3>
-                        </div>
-                        <div class="col-6 profile-section">
-                            <div class="profile-icon">
-                                <i class="bi bi-bell"></i>
-                            </div>
-                            <div class="profile-icon">
-                                <i class="bi bi-chat"></i>
-                            </div>
-                            <div class="profile-icon">
-                                <i class="bi bi-person"></i>
-                            </div>
-                        </div>
-                    </div>
+      <div class="row">
+        <!-- Top Bar -->
+        <div class="col-12 top-bar">
+          <div class="container">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <h3 class="m-0">AR Business Cards</h3>
+              </div>
+              <div class="col-6 profile-section">
+                <div class="profile-icon">
+                  <i class="bi bi-bell"></i>
                 </div>
+                <div class="profile-icon">
+                  <i class="bi bi-chat"></i>
+                </div>
+                <div class="profile-icon">
+                  <i class="bi bi-person"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+          <div class="position-sticky pt-3">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="overview">
+                  <i class="bi bi-house-door me-2"></i> Overview
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="timeline">
+                  <i class="bi bi-calendar-event me-2"></i> Timeline
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="achievements">
+                  <i class="bi bi-trophy me-2"></i> Achievements
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="organizations">
+                  <i class="bi bi-building me-2"></i> Organizations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="contacts">
+                  <i class="bi bi-person-lines-fill me-2"></i> Contacts
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section="about-lpu-c">
+                  <i class="bi bi-info-circle me-2"></i> About LPU-C
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+          <!-- Overview Section -->
+          <div id="overview" class="content-section active">
+            <div
+              class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
+            >
+              <h1 class="h2">Overview</h1>
             </div>
 
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="overview">
-                                <i class="bi bi-house-door me-2"></i> Overview
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="timeline">
-                                <i class="bi bi-calendar-event me-2"></i> Timeline
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="achievements">
-                                <i class="bi bi-trophy me-2"></i> Achievements
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="organizations">
-                                <i class="bi bi-building me-2"></i> Organizations
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="contacts">
-                                <i class="bi bi-person-lines-fill me-2"></i> Contacts
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="about-lpu-c">
-                                <i class="bi bi-info-circle me-2"></i> About LPU-C
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <!-- Profile Section (now part of Overview) -->
+            <!-- Profile Section (now part of Overview) -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Profile Information</h5>
+                <p class="card-text text-muted">
+                  Update your personal and professional information
+                </p>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-                <!-- Overview Section -->
-                <div id="overview" class="content-section active">
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                        <h1 class="h2">Overview</h1>
-                    </div>
+                <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link active"
+                      id="personal-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#personal"
+                      type="button"
+                      role="tab"
+                      aria-controls="personal"
+                      aria-selected="true"
+                    >
+                      <i class="bi bi-person me-2"></i>Personal
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="professional-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#professional"
+                      type="button"
+                      role="tab"
+                      aria-controls="professional"
+                      aria-selected="false"
+                    >
+                      <i class="bi bi-briefcase me-2"></i>Professional
+                    </button>
+                  </li>
+                </ul>
 
-                    <!-- Profile Section (now part of Overview) -->
-                    <!-- Profile Section (now part of Overview) -->
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Profile Information</h5>
-        <p class="card-text text-muted">Update your personal and professional information</p>
-        
-        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">
-                    <i class="bi bi-person me-2"></i>Personal
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="professional-tab" data-bs-toggle="tab" data-bs-target="#professional" type="button" role="tab" aria-controls="professional" aria-selected="false">
-                    <i class="bi bi-briefcase me-2"></i>Professional
-                </button>
-            </li>
-        </ul>
-    
-        <div class="tab-content mt-3" id="profileTabsContent">
-            <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                <form>
-                    <div class="row mb-3">
+                <div class="tab-content mt-3" id="profileTabsContent">
+                  <div
+                    class="tab-pane fade show active"
+                    id="personal"
+                    role="tabpanel"
+                    aria-labelledby="personal-tab"
+                  >
+                    <form>
+                      <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" value="<%= user.first_name %>" placeholder="Enter your first name" disabled>
+                          <label for="firstName" class="form-label"
+                            >First Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="firstName"
+                            value="<%= user.first_name %>"
+                            placeholder="Enter your first name"
+                            disabled
+                          />
                         </div>
                         <div class="col-md-6">
-                            <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="middleName" value="<%= user.middle_name %>" placeholder="Enter your middle name" disabled>
+                          <label for="middleName" class="form-label"
+                            >Middle Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="middleName"
+                            value="<%= user.middle_name %>"
+                            placeholder="Enter your middle name"
+                            disabled
+                          />
                         </div>
-                    </div>
-                    <div class="row mb-3">
+                      </div>
+                      <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" value="<%= user.last_name %>" placeholder="Enter your last name" disabled>
+                          <label for="lastName" class="form-label"
+                            >Last Name</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="lastName"
+                            value="<%= user.last_name %>"
+                            placeholder="Enter your last name"
+                            disabled
+                          />
                         </div>
                         <div class="col-md-6">
-                            <label for="honorifics" class="form-label">Honorifics</label>
-                            <input type="text" class="form-control" id="honorifics" value="<%= user.honorifics %>" placeholder="Enter honorifics">
+                          <label for="honorifics" class="form-label"
+                            >Honorifics</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="honorifics"
+                            value="<%= user.honorifics %>"
+                            placeholder="Enter honorifics"
+                          />
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="introduction" class="form-label">Introduction</label>
-                        <textarea class="form-control" id="introduction" rows="4" placeholder="Write a brief introduction about yourself"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="tab-pane fade" id="professional" role="tabpanel" aria-labelledby="professional-tab">
-                <form>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Position</label>
-                        <input type="text" class="form-control" id="position" placeholder="Enter your position (e.g., President, Researcher)">
-                    </div>
-                    <div class="mb-3">
-                        <label for="researchFields" class="form-label">Research Fields</label>
-                        <input id="researchFields" name="researchFields" placeholder="Enter your fields here..." value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="introduction" class="form-label"
+                          >Introduction</label
+                        >
+                        <textarea
+                          class="form-control"
+                          id="introduction"
+                          rows="4"
+                          placeholder="Write a brief introduction about yourself"
+                        ></textarea>
+                      </div>
+                    </form>
+                  </div>
+                  <div
+                    class="tab-pane fade"
+                    id="professional"
+                    role="tabpanel"
+                    aria-labelledby="professional-tab"
+                  >
+                    <form>
+                      <div class="mb-3">
+                        <label for="position" class="form-label"
+                          >Position</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="position"
+                          placeholder="Enter your position (e.g., President, Researcher)"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="researchFields" class="form-label"
+                          >Research Fields</label
+                        >
+                        <input
+                          id="researchFields"
+                          name="researchFields"
+                          placeholder="Enter your fields here..."
+                          value=""
+                        />
                         <!-- <select class="form-select" id="researchFields" multiple aria-label="Select research fields">
                             
                         </select>
                         <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple fields</small> -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="department" class="form-label">Department</label>
+                      </div>
+                      <div class="mb-3">
+                        <label for="department" class="form-label"
+                          >Department</label
+                        >
                         <select id="departmentDropdown">
-                            <!-- Options will be populated by JavaScript -->
+                          <!-- Options will be populated by JavaScript -->
                         </select>
-                    </div>
-                </form>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-custom mt-3"
+                  id="saveProfile"
+                >
+                  Save Profile
+                </button>
+              </div>
             </div>
-        </div>
-        <button type="submit" class="btn btn-custom mt-3" id="saveProfile">Save Profile</button>
-    </div>
-</div>
-                </div>
+          </div>
 
-                <!-- Other sections -->
-                <div id="timeline" class="content-section">
-                    <h2>Timeline</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
+          <!-- Other sections -->
+          <div id="timeline" class="content-section">
+            <h2>Timeline</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
 
-                <div id="achievements" class="content-section">
-                    <h2>Achievements</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
+          <div id="achievements" class="content-section">
+            <h2>Achievements</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
 
-                <div id="organizations" class="content-section">
-                    <h2>Organizations</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
+          <div id="organizations" class="content-section">
+            <h2>Organizations</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
 
-                <div id="contacts" class="content-section">
-                    <h2>Contacts</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
+          <div id="contacts" class="content-section">
+            <h2>Contacts</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
 
-                <div id="about-lpu-c" class="content-section">
-                    <h2>About LPU-C</h2>
-                    <div class="no-data-found">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200" alt="No data illustration">
-                        <p>No Data Found!</p>
-                    </div>
-                </div>
-            </main>
-        </div>
+          <div id="about-lpu-c" class="content-section">
+            <h2>About LPU-C</h2>
+            <div class="no-data-found">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/placeholder.svg?height=200&width=200"
+                alt="No data illustration"
+              />
+              <p>No Data Found!</p>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
-        let tagify;
+      let tagify;
 
-        // Fetch current introduction from the server and populate the textarea
-        async function fetchDetails() {
-            const response = await fetch('/api/details');
-            const data = await response.json();
-            document.getElementById('introduction').value = data.introduction; 
-            document.getElementById('position').value = data.position;
+      // Fetch current introduction from the server and populate the textarea
+      async function fetchDetails() {
+        const response = await fetch("/api/details");
+        const data = await response.json();
+        document.getElementById("introduction").value = data.introduction;
+        document.getElementById("position").value = data.position;
 
-            let fieldsInput = document.getElementById('researchFields');
-            tagify = new Tagify(fieldsInput, {
-                delimiters: ",", // Tags are separated by commas
-                maxTags: 10,      // Optional limit
-                editTags: true    // Allow users to edit tags
-            });
+        let fieldsInput = document.getElementById("researchFields");
+        tagify = new Tagify(fieldsInput, {
+          delimiters: ",", // Tags are separated by commas
+          maxTags: 10, // Optional limit
+          editTags: true, // Allow users to edit tags
+        });
 
-            tagify.addTags(data.fields);
-            // Populate fields
-            // const fieldsContainer = document.getElementById('fieldsContainer');
-            // data.fields.forEach((field, index) => {
-            //     const fieldDiv = createFieldElement(field, index);
-            //     fieldsContainer.appendChild(fieldDiv);
-            // });
-        }
-
-        // Fetch departments and populate dropdown
-        async function fetchDepartments() {
-            const response = await fetch('/api/departments');
-            const departments = await response.json();
-            
-            const dropdown = document.getElementById('departmentDropdown');
-            departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.department_id;
-                option.textContent = department.department_name;
-                dropdown.appendChild(option);
-            });
-
-            // Set the selected department based on the logged-in user (session info)
-            const currentDepartmentId = '<%= user.department_id %>'; // Assuming you pass session info from the backend
-            dropdown.value = currentDepartmentId;
-        }
-
-        // function createFieldElement(field, index) {
-        //     const div = document.createElement('div');
-        //     div.className = 'field-container';
-        //     div.innerHTML = `
-        //         <input type="text" value="${field}" placeholder="Field ${index + 1}">
-        //         <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
-        //     `;
-        //     return div;
-        // }
-
-        // document.getElementById('addFieldButton').addEventListener('click', () => {
-        //     const fieldsContainer = document.getElementById('fieldsContainer');
-        //     const fieldDiv = createFieldElement('', fieldsContainer.children.length);
+        tagify.addTags(data.fields);
+        // Populate fields
+        // const fieldsContainer = document.getElementById('fieldsContainer');
+        // data.fields.forEach((field, index) => {
+        //     const fieldDiv = createFieldElement(field, index);
         //     fieldsContainer.appendChild(fieldDiv);
         // });
+      }
 
-        // function removeField(button) {
-        //     button.parentElement.remove(); // Remove the field input
-        // }
+      // Fetch departments and populate dropdown
+      async function fetchDepartments() {
+        const response = await fetch("/api/departments");
+        const departments = await response.json();
 
-        // document.getElementById('editIntroductionForm').addEventListener('submit', async (e) => {
-        //     e.preventDefault();
-        //     const newIntroduction = document.getElementById('introduction').value;
-        //     const newPosition = document.getElementById('position').value;
-// 
-        //     const fieldInputs = document.querySelectorAll('#fieldsContainer input');
-        //     const fields = Array.from(fieldInputs).map(input => input.value).filter(value => value); // Collect non-empty fields
-// 
-// 
-        //     // Send the updated introduction to the server
-        //     const response = await fetch('/api/details', {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({ introduction: newIntroduction, position: newPosition, field: fields })
-        //     });
-// 
-        //     if (response.ok) {
-        //         alert(`Information updated successfully!`); // Display the updated introduction
-        //         window.location.href = '/home'; // Redirect to home or wherever you want
-        //     } else {
-        //         alert('Failed to update information.');
-        //     }
-        // });
-
-        // Fetch the current introduction on page load
-        
-
-        // Navigation handling
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.sidebar .nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    const targetSection = this.getAttribute('data-section');
-
-                    // Update active states for nav links
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // Show the corresponding content section and hide others
-                    contentSections.forEach(section => {
-                        if (section.id === targetSection) {
-                            section.classList.add('active');
-                            section.style.display = "block";
-                        } else {
-                            section.classList.remove('active');
-                            section.style.display = "none";
-                        }
-                    });
-                });
-            });
+        const dropdown = document.getElementById("departmentDropdown");
+        departments.forEach((department) => {
+          const option = document.createElement("option");
+          option.value = department.department_id;
+          option.textContent = department.department_name;
+          dropdown.appendChild(option);
         });
-        let profileData = {
-            personal: {},
-            professional: {}
+
+        // Set the selected department based on the logged-in user (session info)
+        const currentDepartmentId = "<%= user.department_id %>"; // Assuming you pass session info from the backend
+        dropdown.value = currentDepartmentId;
+      }
+
+      // function createFieldElement(field, index) {
+      //     const div = document.createElement('div');
+      //     div.className = 'field-container';
+      //     div.innerHTML = `
+      //         <input type="text" value="${field}" placeholder="Field ${index + 1}">
+      //         <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+      //     `;
+      //     return div;
+      // }
+
+      // document.getElementById('addFieldButton').addEventListener('click', () => {
+      //     const fieldsContainer = document.getElementById('fieldsContainer');
+      //     const fieldDiv = createFieldElement('', fieldsContainer.children.length);
+      //     fieldsContainer.appendChild(fieldDiv);
+      // });
+
+      // function removeField(button) {
+      //     button.parentElement.remove(); // Remove the field input
+      // }
+
+      // document.getElementById('editIntroductionForm').addEventListener('submit', async (e) => {
+      //     e.preventDefault();
+      //     const newIntroduction = document.getElementById('introduction').value;
+      //     const newPosition = document.getElementById('position').value;
+      //
+      //     const fieldInputs = document.querySelectorAll('#fieldsContainer input');
+      //     const fields = Array.from(fieldInputs).map(input => input.value).filter(value => value); // Collect non-empty fields
+      //
+      //
+      //     // Send the updated introduction to the server
+      //     const response = await fetch('/api/details', {
+      //         method: 'PUT',
+      //         headers: {
+      //             'Content-Type': 'application/json'
+      //         },
+      //         body: JSON.stringify({ introduction: newIntroduction, position: newPosition, field: fields })
+      //     });
+      //
+      //     if (response.ok) {
+      //         alert(`Information updated successfully!`); // Display the updated introduction
+      //         window.location.href = '/home'; // Redirect to home or wherever you want
+      //     } else {
+      //         alert('Failed to update information.');
+      //     }
+      // });
+
+      // Fetch the current introduction on page load
+
+      // Navigation handling
+      document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll(".sidebar .nav-link");
+        const contentSections = document.querySelectorAll(".content-section");
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const targetSection = this.getAttribute("data-section");
+
+            // Update active states for nav links
+            navLinks.forEach((l) => l.classList.remove("active"));
+            this.classList.add("active");
+
+            // Show the corresponding content section and hide others
+            contentSections.forEach((section) => {
+              if (section.id === targetSection) {
+                section.classList.add("active");
+                section.style.display = "block";
+              } else {
+                section.classList.remove("active");
+                section.style.display = "none";
+              }
+            });
+          });
+        });
+      });
+      let profileData = {
+        personal: {},
+        professional: {},
+      };
+
+      async function updateProfileData() {
+        // Gather personal information
+        profileData.personal = {
+          firstName: document.getElementById("firstName").value,
+          middleName: document.getElementById("middleName").value,
+          lastName: document.getElementById("lastName").value,
+          honorifics: document.getElementById("honorifics").value,
+          introduction: document.getElementById("introduction").value,
         };
 
-        async function updateProfileData() {
-        
-            // Gather personal information
-            profileData.personal = {
-                firstName: document.getElementById('firstName').value,
-                middleName: document.getElementById('middleName').value,
-                lastName: document.getElementById('lastName').value,
-                honorifics: document.getElementById('honorifics').value,
-                introduction: document.getElementById('introduction').value
-            };
-        
-            let selectedFields = tagify.value.map(tag => tag.value);
-        
-            // Gather professional information
-            profileData.professional = {
-                position: document.getElementById('position').value,
-                researchFields: selectedFields, // Research fields from Tagify
-                department: document.getElementById('departmentDropdown').value // Selected department
-            };
-        
-            try {
-                const response = await fetch('/update-profile', { // Ensure the correct API endpoint
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(profileData) // Convert profileData to a JSON string
-                });
-        
-                if (response.ok) {
-                    alert(`Profile updated successfully!`); // Display the updated introduction
-                    window.location.href = '/home'; // Redirect to home or wherever you want
-                } else {
-                    const errorData = await response.json();
-                    alert(`Failed to update profile: ${errorData.message}`); // Show error message from the server
-                }
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('An error occurred while updating the profile.');
+        let selectedFields = tagify.value.map((tag) => tag.value);
+
+        // Gather professional information
+        profileData.professional = {
+          position: document.getElementById("position").value,
+          researchFields: selectedFields, // Research fields from Tagify
+          department: document.getElementById("departmentDropdown").value, // Selected department
+        };
+
+        try {
+          const response = await fetch(
+            "arcms/api/v1/employees/update-profile",
+            {
+              // Ensure the correct API endpoint
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(profileData), // Convert profileData to a JSON string
             }
+          );
+
+          if (response.ok) {
+            alert(`Profile updated successfully!`); // Display the updated introduction
+            window.location.href = "/home"; // Redirect to home or wherever you want
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to update profile: ${errorData.message}`); // Show error message from the server
+          }
+        } catch (error) {
+          console.error("Error updating profile:", error);
+          alert("An error occurred while updating the profile.");
         }
-        // Profile data management
-        document.addEventListener('DOMContentLoaded', function() {
-            const saveButton = document.querySelector('#saveProfile');
+      }
+      // Profile data management
+      document.addEventListener("DOMContentLoaded", function () {
+        const saveButton = document.querySelector("#saveProfile");
 
-            saveButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                updateProfileData();
-                console.log('Profile data saved:', profileData);
-            });
+        saveButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          updateProfileData();
+          console.log("Profile data saved:", profileData);
         });
+      });
 
-        fetchDetails();
-        fetchDepartments();
+      fetchDetails();
+      fetchDepartments();
     </script>
-</body>
+  </body>
 </html>

@@ -358,7 +358,7 @@ async function displayInactiveMembers(pageNumber) {
 
 async function approveUser(employeeId) {
   try {
-    const response = await fetch(`/approve/${employeeId}`, {
+    const response = await fetch(`/arcms/api/v1/auth/approve/${employeeId}`, {
       method: "POST",
     });
 
@@ -371,7 +371,7 @@ async function approveUser(employeeId) {
 async function approveAll() {
   try {
     showSuccessMessage(`All inactive employees are activated!`);
-    const response = await fetch(`/approveAll`, {
+    const response = await fetch(`/arcms/api/v1/auth/approveAll`, {
       method: "POST",
     });
 

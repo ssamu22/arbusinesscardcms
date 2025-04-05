@@ -1,5 +1,6 @@
 const Award = require("./../models/Award");
 const Image = require("./../models/Image");
+const supabase = require("../utils/supabaseClient");
 
 exports.getAwards = async (req, res) => {
   console.log("Headers:", req.headers);
@@ -89,6 +90,24 @@ exports.editAward = async (req, res) => {
     message: "successfully edited lpu awards!",
     data: updatedAward,
   });
+};
+
+exports.deleteAward = async (req, res) => {
+  const { data, error } = await supabase
+    .from("award")
+    .delete()
+    .eq("award_id", req.params.id);
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to delete award! Please try again.",
+    });
+  }
+
+  res
+    .status(204)
+    .json({ status: "success", message: "Award successfully deleted." });
 };
 
 exports.uploadAwardImage = async (req, res) => {
