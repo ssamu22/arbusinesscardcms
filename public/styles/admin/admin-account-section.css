@@ -146,13 +146,14 @@
   border: 1px solid black;
 }
 
+
+
 .image-input-div {
   display: flex;
   gap: 5px;
 }
 
 .upload-admin-canvas {
-  background: red;
   width: 400px;
   height: 400px;
   border-radius: 50%;

@@ -7,6 +7,7 @@ const axios = require("axios");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const supabase = require("../utils/supabaseClient");
+const Image = require("../models/Image");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -136,6 +137,7 @@ exports.signup = async (req, res) => {
     password: hashedPassword, // Store the hashed password
     image_id: 68, // Use default profile image_id
     date_created: new Date().toISOString(), // Automatically set the creation date
+    isActive: req.body.isActive ? true : false,
   };
 
   if (signupErrors.length > 0) {
@@ -214,6 +216,8 @@ exports.updateProfile = async (req, res) => {
       field: formattedResearchFields,
       department_id: department,
     };
+
+    console.log("THE UPDATED PROFILE DATA:", updatedProfileData);
     if (image_id) {
       updatedProfileData.image_id = image_id;
     }
@@ -250,16 +254,19 @@ exports.updateProfile = async (req, res) => {
 
 exports.approveUser = async (req, res) => {
   // Change the status of the user from inactive to active
-  const user = await Employee.update(req.params.employeeId, { isActive: true });
+  const { data: user, error } = await supabase
+    .from("employee")
+    .update({ isActive: true })
+    .eq("employee_id", req.params.employeeId)
+    .single();
 
-  console.log("USER APPROVED:", user.getEmail());
+  console.log("THE APPROVED USER:", user);
+
   // Send an email to the user
-  const nodemailer = require("nodemailer");
-
   try {
     const info = await transporter.sendMail({
       from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-      to: user.getEmail(), //  receivers
+      to: user.email, //  receivers
       subject: "✔ Registration Approved ✔",
       text: `Registration Approved`,
       html: `<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>`,
@@ -267,6 +274,9 @@ exports.approveUser = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+  const image = await Image.getImageById(user.image_id);
+  user.image_url = image ? image.image_url : null;
 
   res.status(200).json({
     status: "success",

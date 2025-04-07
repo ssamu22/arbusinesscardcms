@@ -51,6 +51,7 @@ editAdminImgBtn.addEventListener("click", (e) => {
   adminImgOverlay.style.display = "flex";
 });
 closeUploadAdmin.addEventListener("click", (e) => {
+  drawInitialAvatar();
   adminImgOverlay.style.display = "none";
 });
 

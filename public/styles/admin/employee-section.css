@@ -10,6 +10,52 @@
   --border-color: #ddd;
 }
 
+.confirm-delete-overlay {
+  position: fixed; /* <-- THIS makes it stick to the screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.42);
+  /* display: flex; */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.close-delete-overlay {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.delete-employee-div {
+  animation: slideIn 0.3s ease;
+  padding: 20px;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+.confirm-delete-btn {
+  padding: 10px;
+  padding-inline: 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+#delete-yes-btn {
+  background: var(--primary-color);
+  color: white;
+}
+#delete-no-btn {
+  color: black;
+}
+
 /* Improve the members section layout */
 .members-section {
   background-color: var(--background-color);
@@ -17,6 +63,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 20px;
+  overflow-y: scroll;
 }
 
 .members-header {

@@ -1,4 +1,25 @@
 <section id="members-section" class="members-section">
+  <div class="confirm-delete-overlay" id="confirm-delete-overlay">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="30px"
+      viewBox="0 -960 960 960"
+      width="30px"
+      fill="#e3e3e3"
+      class="close-delete-overlay"
+    >
+      <path
+        d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+      />
+    </svg>
+
+    <div class="delete-employee-div">
+      <p>Are you sure you want to delete this employee?</p>
+      <button class="confirm-delete-btn" id="delete-yes-btn">Yes</button>
+      <button class="confirm-delete-btn" id="delete-no-btn">No</button>
+    </div>
+  </div>
+
   <div class="members-header">
     <h2>Members</h2>
     <button class="add-member-btn" id="openModal">

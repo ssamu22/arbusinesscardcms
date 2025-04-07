@@ -36,6 +36,31 @@
 
         <!-- Main content -->
         <main class="col-md-9 col-lg-9 px-md-2 main-content">
+          <div class="confirm-action-overlay" id="confirm-action-overlay">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="30px"
+              viewBox="0 -960 960 960"
+              width="30px"
+              fill="#e3e3e3"
+              class="close-confirm-action"
+              id="close-confirm-action"
+            >
+              <path
+                d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+              />
+            </svg>
+
+            <div class="confirm-action-div">
+              <p class="action-text" id="action-text">
+                Are you sure you want to chuchu?
+              </p>
+              <button class="confirm-action-btn" id="confirm-yes-btn">
+                Yes
+              </button>
+              <button class="confirm-action-btn" id="confirm-no-btn">No</button>
+            </div>
+          </div>
           <!-- Content Section -->
           <%- include('../resources/views/pages/user/components/overview.ejs')
           %>
@@ -49,11 +74,32 @@
       const sidebar = document.querySelector(".sidebar");
       const mainContent = document.querySelector(".main-content");
       const sidebarToggle = document.getElementById("sidebarToggle");
+      const confirmOverlay = document.getElementById("confirm-action-overlay");
+      const actionText = document.getElementById("action-text");
+      const confirmYesBtn = document.getElementById("confirm-yes-btn");
+      const confirmNoBtn = document.getElementById("confirm-no-btn");
 
-      sidebarToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        mainContent.classList.toggle("expanded");
-      });
+      function showOverlay(actionPrompt) {
+        confirmOverlay.style.display = "flex";
+        changeActionText(actionPrompt);
+      }
+
+      function hideOverlay() {
+        confirmOverlay.style.display = "none";
+      }
+
+      function changeActionText(text) {
+        actionText.textContent = text;
+      }
+
+      function confirmAction(fn) {
+        fn();
+      }
+
+      // sidebarToggle.addEventListener("click", () => {
+      //   sidebar.classList.toggle("collapsed");
+      //   mainContent.classList.toggle("expanded");
+      // });
       // Navigation handling
       document.addEventListener("DOMContentLoaded", function () {
         const navLinks = document.querySelectorAll(".sidebar .nav-link");
@@ -176,7 +222,6 @@
 
             formData.append("file", file);
             formData.append("bucket", bucket);
-            formData.append("fileName", fileName);
 
             console.log("Uploading image: ", formData);
 
@@ -189,6 +234,9 @@
               if (response.ok) {
                 return await response.json(); // Returns { bucket, fileName, url }
               } else {
+                const sad = await response.json();
+
+                console.log("ERROR?", sad);
                 console.error("Failed to upload image:", response.statusText);
               }
             } catch (error) {
@@ -236,7 +284,6 @@
 
                   if (response.ok) {
                     alert(result.message); // Show success message
-                    window.location.href = "/home"; // Redirect to home after success
                   } else {
                     alert("Error: " + result.message); // Show error message
                   }

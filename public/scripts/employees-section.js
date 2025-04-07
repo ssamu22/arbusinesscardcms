@@ -14,7 +14,38 @@ const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
 const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
 const approveAllBtn = document.querySelector(".approve-member-btn");
 
+const deleteOverlay = document.getElementById("confirm-delete-overlay");
+const deleteYesBtn = document.getElementById("delete-yes-btn");
+const deleteNoBtn = document.getElementById("delete-no-btn");
+const closeDeleteOverlay = document.querySelector(".close-delete-overlay");
+
+let employeeToDelete = null;
+let unapprovedToDelete = null;
+
 // FOR ACTIVE EMPLOYEES
+
+function showDeleteOverlay() {
+  deleteOverlay.style.display = "flex";
+}
+
+deleteYesBtn.addEventListener("click", (e) => {
+  deleteUser(employeeToDelete);
+
+  unapprovedToDelete?.remove();
+  hideDeleteOverlay();
+});
+
+deleteNoBtn.addEventListener("click", (e) => {
+  hideDeleteOverlay();
+});
+
+closeDeleteOverlay.addEventListener("click", (e) => {
+  hideDeleteOverlay();
+});
+
+function hideDeleteOverlay() {
+  deleteOverlay.style.display = "none";
+}
 
 async function fetchAllActiveEmployee() {
   try {
@@ -125,6 +156,8 @@ async function displayActiveMembers(pageNumber) {
   tableBodyActive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
     const row = document.createElement("tr");
+
+    console.log("the freaking member:", member);
     const name =
       (member.honorifics || "") +
       " " +
@@ -170,12 +203,10 @@ async function displayActiveMembers(pageNumber) {
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-      const confirmation = confirm(
-        "Are you sure you want to delete this employee?"
-      );
-      if (confirmation) {
-        deleteUser(employeeId);
-      }
+
+      employeeToDelete = employeeId;
+      unapprovedToDelete = button.parentElement.parentElement;
+      showDeleteOverlay();
     });
   });
 }
@@ -345,13 +376,8 @@ async function displayInactiveMembers(pageNumber) {
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-      const confirmation = confirm(
-        "Are you sure you want to delete this employee?"
-      );
-      if (confirmation) {
-        deleteUser(employeeId);
-        button.parentElement.parentElement.style.display = "none";
-      }
+      employeeToDelete = employeeId;
+      showDeleteOverlay();
     });
   });
 }
@@ -364,6 +390,11 @@ async function approveUser(employeeId) {
 
     showSuccessMessage(`Employee ${employeeId} is approved!`);
     const result = await response.json();
+    const employee = result.data;
+
+    activeEmployees.push(employee);
+    displayActiveMembers(currentPageForActive); // Default to page 1
+    setupPaginationActive();
   } catch (err) {
     console.log(err);
   }
@@ -377,9 +408,8 @@ async function approveAll() {
 
     const result = await response.json();
     tableBodyInactive.innerHTML = "";
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+
+    location.reload();
   } catch (err) {
     console.log(err);
   }
@@ -445,13 +475,16 @@ document
     event.preventDefault();
 
     const formData = new FormData(event.target);
+
+    console.log("THE FORM DATA:", formData);
+
+    formData.append("isActive", true);
     const userData = Object.fromEntries(formData.entries());
 
-    submitBtn.textContent = "Loading...";
-    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating User...";
 
     try {
-      const response = await fetch("/arcms/api/v1/employees", {
+      const response = await fetch("/arcms/api/v1/admin/create-employee", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -460,23 +493,29 @@ document
       const result = await response.json();
 
       if (response.ok) {
-        alert("User created successfully!");
+        showSuccessMessage("User created successfully!");
         submitBtn.textContent = "Save";
         submitBtn.disabled = false;
         modal.style.display = "none";
         event.target.reset();
 
-        const { employee } = result;
+        const employee = result.data;
+
+        console.log("THE NEW EMPLOYEE:", employee);
 
         activeEmployees.push(employee);
         displayActiveMembers(currentPageForActive); // Default to page 1
         setupPaginationActive();
       } else {
-        alert(`Error: ${result.error}`);
+        showErrorMessage(`Error: ${result.message}`);
       }
+
+      submitBtn.textContent = "Save";
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("An error occurred while creating the user.");
+      showErrorMessage(
+        "An error occurred while creating the user. Please try again later."
+      );
     }
   });
 
