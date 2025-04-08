@@ -243,11 +243,10 @@ exports.changeAdminPassword = async (req, res) => {
   // Check if the body contains the current password, new password, and confirm password
 
   const { newPassword, currentPassword, passwordConfirm } = req.body;
+
+  let changePassErrors = [];
   if (!currentPassword || !newPassword || !passwordConfirm) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Please fill out all the required inputs!",
-    });
+    changePassErrors.push("Please fill out all the required inputs!");
   }
 
   // Get the current admin
@@ -255,56 +254,52 @@ exports.changeAdminPassword = async (req, res) => {
   const passwordMatch = await admin.validatePassword(req.body.currentPassword);
   // Check if the current password is correct
   if (!passwordMatch) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Your current password is incorrect!",
-    });
+    changePassErrors.push("Your current password is incorrect!");
   }
   // Validate the password and password confirm
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
   // Check the length of the new password
   if (newPassword.length < 8 || newPassword.length > 64) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Password must be between 8 to 64 characters long!",
-    });
+    changePassErrors.push("Password must be between 8 to 64 characters long!");
   }
 
   // Check the format of the new password
   if (!passwordRegex.test(newPassword)) {
-    return res.status(400).json({
-      status: "failed",
-      message:
-        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
-    });
+    changePassErrors.push(
+      "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!"
+    );
   }
 
   // Check if password and password confirm are the same
   if (!(newPassword === passwordConfirm)) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Passwords must match!",
-    });
+    changePassErrors.push("Passwords must match!");
   }
 
   // Hash the new password
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  // Update the admin password into the new one
-  const { data, error } = await supabase
-    .from("admin")
-    .update({
-      password: hashedPassword,
-    })
-    .eq("email", req.session.admin.email);
-
   // Send response
-  res.status(200).json({
-    status: "success",
-    message: "Password successfully updated!",
-    data,
-  });
+
+  if (changePassErrors.length != 0) {
+    return res.status(400).json({
+      status: "failed",
+      errors: changePassErrors,
+    });
+  } else {
+    // Update the admin password into the new one
+    const { data, error } = await supabase
+      .from("admin")
+      .update({
+        password: hashedPassword,
+      })
+      .eq("email", req.session.admin.email);
+    res.status(200).json({
+      status: "success",
+      message: "Password successfully updated!",
+      data,
+    });
+  }
 };
 
 exports.createEmployee = async (req, res) => {

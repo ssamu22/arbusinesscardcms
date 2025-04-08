@@ -53,7 +53,7 @@
 
   <div class="acc-flex-container">
     <div class="admin-account-container">
-      <h1 class = "section-title">My Account</h1>
+      <h1 class="section-title">My Account</h1>
 
       <div class="edit-img-div-container">
         <div class="edit-img-div">
@@ -98,7 +98,15 @@
       </button>
 
       <div class="admin-psword-container hidden" id="admin-psword-container">
-        <h2>Change Your Password</h2>
+        <h2>
+          Change Your Password
+          <span class="tooltip-error-pass"
+            >i
+            <div class="tooltip-error-text">
+              <ul class="tooltip-error-list"></ul>
+            </div>
+          </span>
+        </h2>
         <form class="edit-admin-psword">
           <label for="admin-current-psword" class="admin-label"
             >Current Password</label
@@ -111,7 +119,18 @@
             placeholder="Current Password"
           />
 
-          <label for="admin-new-psword" class="admin-label">New Password</label>
+          <label for="admin-new-psword" class="admin-label"
+            >New Password
+            <span class="tooltip-change-pass"
+              >i
+              <div class="tooltip-text">
+                • Must be atleast 8 characters long<br />
+                • Must contain at least 1 uppercase letter, 1 lowercase letter,
+                1 digit, and 1 special character<br />
+                • Passwords must match
+              </div>
+            </span>
+          </label>
           <input
             type="password"
             class="admin-psword"

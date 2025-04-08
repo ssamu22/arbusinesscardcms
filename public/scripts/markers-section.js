@@ -31,6 +31,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const createActiveInput = document.getElementById("create-active");
   const createMetadata = document.getElementById("create-metadata");
   const saveCreateBtn = document.querySelector(".save-create-target");
+
+
+  const errorPasswordList = document
   let editing = false;
 
   let targetIdToEdit = null;
@@ -265,18 +268,23 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     try {
       console.log("CREATING BUSINESS CARD....");
       saveCreateBtn.textContent = "Adding Target...";
-      if (!createTargetUpload.files[0])
+      if (!createTargetUpload.files[0]) {
+        saveCreateBtn.textContent = "Add Target";
         return showErrorMessage("Please upload a business card image!");
-
-      if (!createNameInput.value)
+      }
+      if (!createNameInput.value) {
+        saveCreateBtn.textContent = "Add Target";
         return showErrorMessage(
           "Please provide the name of the business card target!"
         );
+      }
 
-      if (!createWidthInput.value)
+      if (!createWidthInput.value) {
+        saveCreateBtn.textContent = "Add Target";
         return showErrorMessage(
           "Please specify the width of the business card target!"
         );
+      }
 
       // Finds the associated employee using the targetMetadata
       const associatedEmployee = employees.find(

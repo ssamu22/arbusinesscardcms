@@ -2043,6 +2043,11 @@
               passwordConfirm: confirmPassword.value.trim(),
             };
 
+            const passErrorsDiv = document.querySelector(".pass-errors-div");
+            const passErrorsList = document.querySelector(".pass-errors-list");
+
+            console.log("THE PASSERROR LIST");
+
             try {
               const response = await fetch(
                 "/arcms/api/v1/auth/change-password",
@@ -2058,28 +2063,27 @@
               const responseData = await response.json();
 
               if (!response.ok) {
-                throw new Error(
-                  responseData.message || "Failed to change password"
-                );
+                passErrorsList.innerHTML = "";
+                passErrorsDiv.style.display = "block";
+                responseData.errors.forEach((e) => {
+                  console.log(e);
+                  const li = document.createElement("li");
+                  li.textContent = e;
+                  passErrorsList.appendChild(li);
+                });
+              } else {
+                console.log("Password successfully saved");
+                alert("Password updated successfully!");
+                passErrorsDiv.style.display = "none";
+                resetChangePasswordForm();
               }
-
-              console.log("Password successfully saved");
-              alert("Password updated successfully!");
-              resetChangePasswordForm();
             } catch (error) {
-              console.error("Error saving password:", error);
-              alert(error.message);
+              console.log("Error saving password:", error);
             }
           }
 
           formContainer.addEventListener("submit", async (e) => {
             e.preventDefault();
-
-            if (newPassword.value.trim() !== confirmPassword.value.trim()) {
-              alert("Confirm password does not match the new password!");
-              return;
-            }
-
             if (confirm("Do you want to save changes?")) {
               await changePassword();
             }

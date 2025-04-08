@@ -269,13 +269,32 @@ function setupPaginationInactive() {
     paginationContainer.appendChild(pageButton);
   }
 
+  // prevMembersBtn.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   if (currentPageForActive - 1 >= 1) {
+  //     currentPageForActive -= 1;
+  //     displayActiveMembers(currentPageForActive);
+  //     updatePaginationStateForActive();
+  //     updateActivePageForActive(currentPageForActive);
+  //   }
+  // });
+  // nextMembersBtn.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   if (currentPageForActive + 1 <= totalPages) {
+  //     currentPageForActive += 1;
+  //     console.log("CURRENT ACTIVE PAGE:", currentPageForActive);
+  //     displayActiveMembers(currentPageForActive);
+  //     updatePaginationStateForActive();
+  //     updateActivePageForActive(currentPageForActive);
+  //   }
+
   prevApprovalBtn.addEventListener("click", (e) => {
     e.preventDefault();
     if (currentPageForInactive - 1 >= 1) {
       currentPageForInactive -= 1;
-      displayInactiveMembers(i);
+      displayInactiveMembers(currentPageForInactive);
       updatePaginationStateForInactive();
-      updateActivePageForInactive(i);
+      updateActivePageForInactive(currentPageForInactive);
     }
   });
 
@@ -283,9 +302,9 @@ function setupPaginationInactive() {
     e.preventDefault();
     if (currentPageForInactive + 1 <= totalPages) {
       currentPageForInactive += 1;
-      displayInactiveMembers(i);
+      displayInactiveMembers(currentPageForInactive);
       updatePaginationStateForInactive();
-      updateActivePageForInactive(i);
+      updateActivePageForInactive(currentPageForInactive);
     }
   });
 
