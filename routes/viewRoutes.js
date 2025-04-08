@@ -10,6 +10,7 @@ const path = require("path");
 router.use(authController.preventCache);
 
 // Route for user login page
+
 router.get("/", authController.isAuthenticated, viewController.getLoginPage);
 
 router.get(
@@ -18,7 +19,11 @@ router.get(
   viewController.getAdminLoginPage
 );
 
-router.get("/register", viewController.getRegisterPage);
+router.get(
+  "/register",
+  authController.isAuthenticated,
+  viewController.getRegisterPage
+);
 router.get("/success", viewController.getSuccessPage);
 router.get("/forgot-password", viewController.getForgotPasswordPage);
 router.get("/reset-password/:token", viewController.getResetPasswordPage);

@@ -33,11 +33,7 @@
       <h5 class="card-title">Profile Information</h5>
       <p class="card-text">Update your personal and professional information</p>
 
-      <form
-        id="profileForm"
-        action="arcms/api/v1/employees/update-profile"
-        method="POST"
-      >
+      <form id="profileForm" method="POST">
         <div class="row">
           <div class="col-md-6 form-group">
             <label for="firstName" class="form-label">First Name</label>
@@ -45,14 +41,9 @@
               type="text"
               class="form-control"
               id="firstName"
-              value="<%= user.first_name %>"
-              placeholder="Enter your first name"
-              disabled
-            />
-            <input
-              type="hidden"
               name="firstName"
               value="<%= user.first_name %>"
+              placeholder="Enter your first name"
             />
           </div>
           <div class="col-md-6 form-group">
@@ -61,14 +52,9 @@
               type="text"
               class="form-control"
               id="middleName"
-              value="<%= user.middle_name %>"
-              placeholder="Enter your middle name"
-              disabled
-            />
-            <input
-              type="hidden"
               name="middleName"
               value="<%= user.middle_name %>"
+              placeholder="Enter your middle name"
             />
           </div>
         </div>
@@ -80,14 +66,9 @@
               type="text"
               class="form-control"
               id="lastName"
-              value="<%= user.last_name %>"
-              placeholder="Enter your last name"
-              disabled
-            />
-            <input
-              type="hidden"
               name="lastName"
               value="<%= user.last_name %>"
+              placeholder="Enter your last name"
             />
           </div>
           <div class="col-md-6 form-group">
@@ -144,13 +125,13 @@
             name="introduction"
             id="introduction"
             placeholder="Write a brief introduction about yourself"
+            maxlength="1000"
           ></textarea>
         </div>
 
         <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline">Cancel</button>
           <button type="submit" class="btn btn-custom" id="saveProfile">
-            Update
+            Save
           </button>
         </div>
       </form>

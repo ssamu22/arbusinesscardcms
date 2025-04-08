@@ -146,13 +146,113 @@
   border: 1px solid black;
 }
 
+.tooltip-change-pass {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  background: #ccc;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  line-height: 16px;
+  margin-left: 5px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: left;
+  padding: 12px;
+  border-radius: 5px;
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 13px;
+  width: 280px;
+  line-height: 1.6;
+  z-index: 10;
+}
+
+.tooltip-change-pass:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-error-pass {
+  position: relative;
+  display: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  background: #dc3545; /* red for error indicator */
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  margin-left: 5px;
+  transition: background 0.3s;
+}
+
+.tooltip-error-pass:hover {
+  background: #d9363e; /* darker red on hover */
+}
+
+.tooltip-error-text {
+  visibility: hidden;
+  background-color: #dc3545; /* bright red for error */
+  color: #fff;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 6px;
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 13px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  width: 280px;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  overflow-wrap: break-word;
+}
+
+.tooltip-error-list {
+  margin: 0;
+  padding-left: 18px; /* for bullet indent */
+  list-style-type: disc; /* default bullet */
+}
+
+.tooltip-error-list li {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #fff; /* matches tooltip text color */
+  line-height: 1.5;
+}
+
+.tooltip-error-pass:hover .tooltip-error-text {
+  visibility: visible;
+  opacity: 1;
+}
+
 .image-input-div {
   display: flex;
   gap: 5px;
 }
 
 .upload-admin-canvas {
-  background: red;
   width: 400px;
   height: 400px;
   border-radius: 50%;

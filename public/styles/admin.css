@@ -1040,8 +1040,8 @@ header {
   outline: none;
 }
 
-#admin-name{
-  color: white; 
+#admin-name {
+  color: white;
 }
 
 @media (max-width: 768px) {
@@ -1073,7 +1073,7 @@ header {
 }
 
 .message-div {
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100%;
   text-align: center;
@@ -1083,6 +1083,7 @@ header {
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  z-index: 9999;
 }
 
 .success-message {

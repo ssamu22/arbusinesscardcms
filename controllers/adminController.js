@@ -243,11 +243,10 @@ exports.changeAdminPassword = async (req, res) => {
   // Check if the body contains the current password, new password, and confirm password
 
   const { newPassword, currentPassword, passwordConfirm } = req.body;
+
+  let changePassErrors = [];
   if (!currentPassword || !newPassword || !passwordConfirm) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Please fill out all the required inputs!",
-    });
+    changePassErrors.push("Please fill out all the required inputs!");
   }
 
   // Get the current admin
@@ -255,60 +254,142 @@ exports.changeAdminPassword = async (req, res) => {
   const passwordMatch = await admin.validatePassword(req.body.currentPassword);
   // Check if the current password is correct
   if (!passwordMatch) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Your current password is incorrect!",
-    });
+    changePassErrors.push("Your current password is incorrect!");
   }
   // Validate the password and password confirm
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
   // Check the length of the new password
   if (newPassword.length < 8 || newPassword.length > 64) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Password must be between 8 to 64 characters long!",
-    });
+    changePassErrors.push("Password must be between 8 to 64 characters long!");
   }
 
   // Check the format of the new password
   if (!passwordRegex.test(newPassword)) {
-    return res.status(400).json({
-      status: "failed",
-      message:
-        "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!",
-    });
+    changePassErrors.push(
+      "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character!"
+    );
   }
 
   // Check if password and password confirm are the same
   if (!(newPassword === passwordConfirm)) {
-    return res.status(400).json({
-      status: "failed",
-      message: "Passwords must match!",
-    });
+    changePassErrors.push("Passwords must match!");
   }
 
   // Hash the new password
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  // Update the admin password into the new one
-  const { data, error } = await supabase
-    .from("admin")
-    .update({
-      password: hashedPassword,
-    })
-    .eq("email", req.session.admin.email);
-
   // Send response
+
+  if (changePassErrors.length != 0) {
+    return res.status(400).json({
+      status: "failed",
+      errors: changePassErrors,
+    });
+  } else {
+    // Update the admin password into the new one
+    const { data, error } = await supabase
+      .from("admin")
+      .update({
+        password: hashedPassword,
+      })
+      .eq("email", req.session.admin.email);
+    res.status(200).json({
+      status: "success",
+      message: "Password successfully updated!",
+      data,
+    });
+  }
+};
+
+exports.createEmployee = async (req, res) => {
+  console.log("CREATE EMP:", req.body);
+
+  // Check if the email already exists in the db
+  const existingEmployee = await supabase
+    .from("employee")
+    .select()
+    .eq("email", req.body.email)
+    .single();
+
+  if (existingEmployee.data) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "An existing account is already associated with the email! Please try another one.",
+    });
+  }
+
+  // Generate an 8-charac random password
+  const randomPassword = generateRandomPassword();
+  console.log("RANDOM PASSWORD:", randomPassword); // Example output: "B3y$9jL2"
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(randomPassword, 10);
+  console.log("HASHED PASSWORD:", hashedPassword); // Example output: "B3y$9jL2"
+
+  // Create user data to store in the db
+  const newUserData = {
+    first_name: req.body.fname,
+    middle_name: req.body.mname,
+    last_name: req.body.lname,
+    honorifics: req.body.honorifics,
+    email: req.body.email,
+    isActive: true,
+    password: hashedPassword,
+    image_id: 68, // Use default profile image_id
+    date_created: new Date().toISOString(),
+  };
+
+  // Create the user
+  const { data, error } = await supabase.from("employee").insert(newUserData);
+
+  // Get the url of the image
+
+  const image = await Image.getImageById(data[0].image_id);
+  data[0].image_url = image ? image.image_url : null;
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: `Failed to create new user: ${error}`,
+    });
+  }
+
+  // Email the password to the user
+  const info = await transporter.sendMail({
+    from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+    to: req.body.email, // recipient address
+    subject: "Your Account Has Been Created for ARCMS",
+    text: `Your account has been successfully created.`,
+    html: `
+      <body>
+        <h2>Welcome to ARCMS!</h2>
+        <p>Dear User,</p>
+        <p>We are excited to inform you that an account has been created for you by the admin. You can now log in to your account using the credentials below:</p>
+        <p><strong>Username:</strong> ${req.body.email}</p>
+        <p><strong>Password:</strong> ${randomPassword}</p> <!-- Assuming you store a temporary password -->
+        <p>To get started, please log in at the following link:</p>
+        <p><a href="https://your-website-url.com/login" style="color: #007bff; text-decoration: none;">Login to your account</a></p>
+        <p><strong>Important:</strong> Please log in as soon as possible and change your password to something more secure after your first login.</p>
+        <p>If you have any questions or need further assistance, feel free to contact our support team.</p>
+        <p>Thank you for joining ARCMS!</p>
+        <p>Best regards,<br/>The ARCMS Team</p>
+      </body>
+    `,
+  });
+
   res.status(200).json({
     status: "success",
-    message: "Password successfully updated!",
-    data,
+    message: "User created!",
+    data: data[0],
   });
 };
 
 exports.changeAdminImage = async (req, res) => {
   const { bucket } = req.body;
+
+  console.log("REQ.SESSION:", req.session.admin);
 
   // Check if the image file, bucket, and file name exists
   if (!req.file || !bucket) {
@@ -346,7 +427,7 @@ exports.changeAdminImage = async (req, res) => {
   const { adminData, error } = await supabase
     .from("admin")
     .update({ image_id: uploadedImage.image_id })
-    .eq("email", "blueming972@gmail.com");
+    .eq("admin_id", req.session.admin.admin_id);
 
   if (error) {
     return res.status(400).json({
@@ -381,3 +462,13 @@ const createPasswordResetToken = () => {
     tokenExpirationDate,
   };
 };
+
+function generateRandomPassword(length = 8) {
+  return [...crypto.getRandomValues(new Uint8Array(length))]
+    .map((x) =>
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=<>?".charAt(
+        x % 70
+      )
+    )
+    .join("");
+}

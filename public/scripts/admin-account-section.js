@@ -14,6 +14,9 @@ const adminImageUpload = document.getElementById("file-admin-upload");
 const adminImgOverlay = document.querySelector(".admin-image-overlay");
 const closeUploadAdmin = document.querySelector(".close-upload-admin");
 
+const errorPasswordList = document.querySelector(".tooltip-error-list");
+const errorPasswordTooltip = document.querySelector(".tooltip-error-pass");
+
 submitAdminImg.addEventListener("click", (e) => {
   updateAdminAvatar();
 });
@@ -51,6 +54,7 @@ editAdminImgBtn.addEventListener("click", (e) => {
   adminImgOverlay.style.display = "flex";
 });
 closeUploadAdmin.addEventListener("click", (e) => {
+  drawInitialAvatar();
   adminImgOverlay.style.display = "none";
 });
 
@@ -114,6 +118,7 @@ async function updateAdminName() {
 
 async function updateAdminPassword() {
   try {
+    submitPassBtn.textContent = "Changing Password...";
     const currentPasswordInput = document.getElementById(
       "admin-current-psword"
     );
@@ -140,18 +145,27 @@ async function updateAdminPassword() {
 
     console.log("THE RESPNOSE:", response);
     const data = await response.json();
+    errorPasswordList.innerHTML = "";
 
     if (response.status === 400) {
-      showErrorMessage(data.message);
+      errorPasswordTooltip.style.display = "inline-block";
+      data.errors.forEach((e) => {
+        console.log(e);
+        const li = document.createElement("li");
+        li.textContent = e;
+        errorPasswordList.appendChild(li);
+      });
     }
 
     if (response.status === 200) {
+      errorPasswordTooltip.style.display = "none";
       showSuccessMessage(data.message);
       currentPasswordInput.value = "";
       newPasswordInput.value = "";
       confirmPasswordInput.value = "";
     }
-    console.log("DATA AFTER UPDATING PASSWORD:", data);
+
+    submitPassBtn.textContent = "Submit";
   } catch (err) {
     console.log("Error updating password:", err);
   }
