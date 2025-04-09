@@ -528,6 +528,10 @@
               ];
             const achievement_type = selectedOption.dataset.achievementId;
 
+            if (!title || !description || !date_achieved || !achievement_type) {
+              return; // Stop further execution
+            }
+
             let newAchievement = {};
 
             if (isEditing) {
