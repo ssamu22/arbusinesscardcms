@@ -32,8 +32,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const createMetadata = document.getElementById("create-metadata");
   const saveCreateBtn = document.querySelector(".save-create-target");
 
-
-  const errorPasswordList = document
+  const errorPasswordList = document;
   let editing = false;
 
   let targetIdToEdit = null;
@@ -54,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   });
 
   closeCreateOverlay.addEventListener("click", (e) => {
+    displayedCreateImage.src = "/images/image_upload_placeholder.jpg";
     createMarkerOverlay.style.display = "none";
   });
 
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   function createImageTarget(name, imgUrl, target_id) {
     return `
   <div class="image-target" id=${target_id}>
-    <img class="target-img" src="${imgUrl}" />
+    <img class="target-img" id = "target-img-${target_id}" src="${imgUrl}" />
     <h3 class="target-name">${name}</h3>
   </div>
 `;
@@ -199,6 +199,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   async function updateBusinessCardData() {
     try {
+      editTargetBtn.textContent = "Saving...";
       const associatedEmployee = employees.find(
         (employee) => employee.employee_id === parseInt(targetMetadata.value)
       );
@@ -234,6 +235,15 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         showSuccessMessage("Business card successfully updated!");
       }
       const data = await response.json();
+
+      if (data.image_url) {
+        displayedTargetImage.src = data.image_url;
+        const markerNewImage = document.getElementById(
+          `target-img-${targetIdToEdit}`
+        );
+
+        markerNewImage.src = data.image_url;
+      }
 
       console.log("UPDATE RESPONSE:", data);
     } catch (err) {
