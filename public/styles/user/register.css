@@ -1,134 +1,189 @@
+/* Main styles from design.html */
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+.main-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #2a1f30 0%, #5d1b4c 100%);
-  background-image: url("/images/background.png");
+  background-image: url('/images/background.png');
   background-size: cover;
   background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.login-container {
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem;
-  width: 80%;
-  max-width: 1000px;
-  display: flex;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-.left-section {
-  flex: 1;
-  padding: 2rem;
+/* Left side with welcome message */
+.welcome-section {
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
 }
 
-.right-section {
-  flex: 1;
-  padding: 2rem;
+.welcome-content {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.brand {
+.brand-name {
+  color: #dc3545;
+  font-weight: 700;
   font-size: 2.5rem;
-  font-weight: bold;
   margin-bottom: 1rem;
-  background: linear-gradient(45deg, #a3202b, rgb(255, 63, 63));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+}
+
+.welcome-title {
+  font-size: 3rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
 }
 
 .welcome-text {
-  font-size: 3rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: white;
-}
-
-.tagline {
   font-size: 1.1rem;
+  line-height: 1.6;
   margin-bottom: 2rem;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.social-icons {
+/* Form section styles */
+.form-section {
+  background-color: rgba(255, 255, 255, 0.95);
+  min-height: 100vh;
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
-.social-icons i {
-  color: white;
-  font-size: 1.5rem;
-  opacity: 0.7;
-  transition: opacity 0.3s;
-}
-
-.social-icons i:hover {
-  opacity: 1;
-}
-
-.form-control {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 0.8rem;
-}
-
-.form-control:focus {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
-  box-shadow: none;
-}
-
-.form-control::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.form-label {
-  color: white;
-}
-
-.btn-login {
-  background: linear-gradient(45deg, #a3202b, rgb(255, 63, 63));
-  border: none;
-  color: white;
-  padding: 0.8rem;
-  border-radius: 5px;
+.form-container {
   width: 100%;
+  max-width: 550px;
+  padding: 2rem;
+}
+
+/* ERROR BOX STYLES WITH GRAY HEADER AND RED ACCENTS */
+.register-errors.alert-danger {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border-left: 4px solid #dc3545;
+}
+
+.error-header {
+  background-color: #495057; /* Gray header as requested */
+  color: white;
+  padding: 12px 15px;
   font-weight: 600;
-  margin-top: 1rem;
-  transition: transform 0.3s;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.error-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.error-header i {
+  margin-right: 10px;
+  color: #ff8080; /* Light red icon for visibility */
+}
+
+.error-count {
+  background-color: #dc3545; /* Red badge for visibility */
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+.error-body {
+  padding: 15px;
+}
+
+.register-errors-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.register-errors-list li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  color: #343a40;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.register-errors-list li:last-child {
+  border-bottom: none;
+}
+
+.register-errors-list li::before {
+  content: "\F623"; /* Bootstrap icon code for x-circle */
+  font-family: "bootstrap-icons";
+  color: #dc3545; /* Red icons for visibility */
+  margin-right: 10px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.error-footer {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-top: 1px solid rgba(108, 117, 125, 0.2);
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Form control styles */
+.form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+}
+
+/* Button styles */
+.btn-login {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  width: 100%;
 }
 
 .btn-login:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(45deg, #a3202b, rgb(255, 63, 63));
+  background-color: #c82333;
+  border-color: #bd2130;
 }
 
-.auth-links {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.auth-links a {
-  color: rgba(255, 255, 255, 0.7);
+/* Sign in link */
+.sign-in-link {
+  color: #0d6efd;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.auth-links a:hover {
-  color: white;
+.sign-in-link:hover {
+  text-decoration: underline;
 }
 
+/* Tooltip styles */
 .tooltip-register-pass {
   position: relative;
   display: inline-block;
@@ -143,6 +198,7 @@ body {
   line-height: 16px;
   margin-left: 5px;
 }
+
 .tooltip-text {
   visibility: hidden;
   background-color: black;
@@ -165,18 +221,14 @@ body {
   opacity: 1;
 }
 
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .login-container {
-    flex-direction: column;
-    width: 90%;
+  .welcome-section {
+    min-height: auto;
+    padding: 2rem;
   }
-
-  .left-section {
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .right-section {
-    padding: 1rem;
+  
+  .form-section {
+    min-height: auto;
   }
 }
