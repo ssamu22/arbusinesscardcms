@@ -322,6 +322,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    if (fontSizeInput.value < 16) {
+      fontSizeInput.value = 16;
+    }
+
     texts[idx].text = textInput.value;
     texts[idx].font_family = fontInput.value;
     texts[idx].font_size = fontSizeInput.value;
@@ -358,6 +362,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         break;
       } else {
         contextMenu.style.display = "none";
+        console.log("THE USER NO LONGER WANTS TO EDIT SOME SHIT!");
         resetTextOptions();
       }
     }
