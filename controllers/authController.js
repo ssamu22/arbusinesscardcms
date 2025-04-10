@@ -334,6 +334,13 @@ exports.changePassword = async (req, res) => {
   // Validate the password and password confirm
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
+  // Check if the new password is the same as the last password
+  if (currentPassword === newPassword) {
+    passErrors.push(
+      "Your new password must not be the same as your last password."
+    );
+  }
+
   // Check the length of the new password
   if (newPassword.length < 8 || newPassword.length > 64) {
     passErrors.push("Password must be between 8 to 64 characters long!");
@@ -437,6 +444,12 @@ exports.resetPassword = async (req, res) => {
       message: "Fill out all required inputs!",
     });
   }
+
+  // if (currentPassword === newPassword) {
+  //   passErrors.push(
+  //     "Your new password must not be the same as your last password."
+  //   );
+  // }
 
   if (password.length < 8 || password.length > 64) {
     return res.status(400).json({

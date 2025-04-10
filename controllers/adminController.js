@@ -256,6 +256,13 @@ exports.changeAdminPassword = async (req, res) => {
   if (!passwordMatch) {
     changePassErrors.push("Your current password is incorrect!");
   }
+
+  if (currentPassword === newPassword) {
+    changePassErrors.push(
+      "Your new password must not be the same as your last password."
+    );
+  }
+
   // Validate the password and password confirm
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 

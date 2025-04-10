@@ -282,13 +282,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     colorInput.disabled = false;
     textInput.value = texts[idx].text;
     colorInput.value = texts[idx].color;
-    if (
-      textInput.value.toLowerCase() === "name" ||
-      textInput.value.toLowerCase() === "email" ||
-      textInput.value.toLowerCase() === "location" ||
-      textInput.value.toLowerCase() === "position" ||
-      textInput.value.toLowerCase() === "phone number"
-    ) {
+    if (textInput.value.toLowerCase() === "name") {
       textInput.disabled = true;
     } else {
       contextMenu.style.display = "block";
@@ -362,7 +356,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         break;
       } else {
         contextMenu.style.display = "none";
-        console.log("THE USER NO LONGER WANTS TO EDIT SOME SHIT!");
         resetTextOptions();
       }
     }
