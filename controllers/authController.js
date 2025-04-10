@@ -269,7 +269,7 @@ exports.approveUser = async (req, res) => {
       to: user.email, //  receivers
       subject: "✔ Registration Approved ✔",
       text: `Registration Approved`,
-      html: `<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>`,
+      html: `<p>Your registration has been approved by the administrators. Please <a href= 'https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>`,
     });
   } catch (err) {
     console.log(err);
