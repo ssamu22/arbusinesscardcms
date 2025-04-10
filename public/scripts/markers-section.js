@@ -324,6 +324,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       });
 
       if (!response.ok) {
+        saveCreateBtn.textContent = "Add Target";
         showErrorMessage(`Error: ${response.status} - ${response.statusText}`);
       }
 
@@ -334,6 +335,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       console.log("ADD BCARD DATA:", data);
 
       if (response.status === 400) {
+        saveCreateBtn.textContent = "Add Target";
         return showErrorMessage(
           "Failed to add a new target! Please use another image or try again later."
         );
