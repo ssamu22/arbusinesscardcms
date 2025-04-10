@@ -77,6 +77,8 @@
 }
 
 .draw-text-btn,
+.clear-btn,
+.highlight-name-btn,
 #download-bcard {
   margin-bottom: 15px;
   padding: 10px;

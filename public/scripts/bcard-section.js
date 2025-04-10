@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
   const deleteBtn = document.getElementById("delete-text-btn");
+  const clearBtn = document.getElementById("clear-btn");
+  const highlightNameBtn = document.getElementById("highlight-name-btn");
   const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
   const allBusinessCards = await getAllBusinessCards();
 
@@ -45,6 +47,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setBackgroundFromURL(background_url);
   // EVENT LISTENERS
+
+  highlightNameBtn.addEventListener("click", async (e) => {
+    for (let i = 0; i < texts.length; i++) {
+      if (texts[i].text.toLowerCase() === "name") {
+        texts[i].x = 384;
+        texts[i].y = 225;
+        break;
+      }
+    }
+
+    draw();
+  });
+
+  clearBtn.addEventListener("click", async (e) => {
+    removeAllContent();
+  });
 
   genAndReplaceBtn.addEventListener("click", async (e) => {
     genAndReplaceBtn.textContent = "Replacing Cards...";
@@ -111,6 +129,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Add text when clicking submit
   $("#submit-new-text").click(async function () {
+    if ($("#theText").val().toLowerCase() === "name") {
+      showErrorMessage("Cannot duplicate default content!");
+      return;
+    }
     let y = texts.length * 20 + 20;
     let textValue = $("#theText").val();
 
@@ -209,6 +231,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       if (i === selectedText) {
+        console.log("THE SELECTED TEXT:", i);
         bcardCtx.strokeStyle = "red";
         bcardCtx.lineWidth = 2;
         bcardCtx.strokeRect(
@@ -478,11 +501,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      console.log("CONTENT DELETED!");
     } catch (err) {
       console.log("Failed to delete content!", err);
       return null;
+    }
+  }
+
+  async function removeAllContent() {
+    try {
+      response = await fetch(`/arcms/api/v1/bcardContents/delete-all`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        console.log(await response.json());
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      texts = texts.filter((txt) => txt.text.toLowerCase() === "name");
+      draw();
+    } catch (err) {
+      console.log("Error removing all content!", err);
     }
   }
 
@@ -529,7 +568,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       return responseData.data[0];
     } catch (err) {
-      console.log("Failed to delete content!", err);
+      console.log("Failed to update content!", err);
       return null;
     }
   }

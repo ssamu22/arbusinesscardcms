@@ -106,3 +106,27 @@ exports.deleteContent = async (req, res) => {
     message: "Successfully deleted business card content",
   });
 };
+
+exports.deleteAllContent = async (req, res) => {
+  console.log("DELETING BCARD CONTENT!");
+
+  const { error } = await supabase
+    .from("bcard_content")
+    .delete()
+    .not("text", "ilike", "name"); // case-insensitive NOT LIKE
+
+  console.log(error);
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to delete business card content",
+      error,
+    });
+  }
+
+  res.status(204).json({
+    status: "success",
+    message: "Successfully deleted business card content",
+  });
+};
