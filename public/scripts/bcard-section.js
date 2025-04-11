@@ -57,6 +57,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
+    // deleteBtn.style.display = "block";
+
     draw();
   });
 

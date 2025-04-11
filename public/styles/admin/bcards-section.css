@@ -185,3 +185,7 @@
 #generate-card-btn:hover {
   background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
 }
+
+#contextMenu {
+  display: none;
+}
