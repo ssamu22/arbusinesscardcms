@@ -196,14 +196,10 @@ body {
   border-radius: 50%;
 }
 
-.logout {
-  font-size: 20px;
-  margin-top: auto;
-  padding: 0 12px;
-}
 
 .logout .logout-side .fas {
   color: white !important;
+  margin-right: 10px;
 }
 
 .logout .nav-link {
@@ -280,7 +276,6 @@ nav a i {
 
 .logout {
   padding: 20px;
-  border-top: 1px solid #34495e;
 }
 main {
   flex-grow: 1;
