@@ -91,9 +91,7 @@
   transition: background-color 0.3s;
 }
 
-.add-member-btn:hover {
-  background-color: var(--secondary-dark);
-}
+
 
 /* Improve the table layout */
 .members-table {
