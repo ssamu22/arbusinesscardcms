@@ -92,6 +92,22 @@
 }
 
 .add-member-btn:hover {
+  color: black;
+  background-color: var(--secondary-dark);
+}
+
+.add-admin-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-admin-btn:hover {
+  color: black;
   background-color: var(--secondary-dark);
 }
 

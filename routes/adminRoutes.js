@@ -48,4 +48,6 @@ router.post("/reset-password/:id", adminController.resetPassword);
 
 router.post("/create-employee", adminController.createEmployee);
 
+router.post("/create-admin", adminController.createAdmin);
+
 module.exports = router;

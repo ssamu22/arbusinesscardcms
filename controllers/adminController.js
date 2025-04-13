@@ -377,7 +377,7 @@ exports.createEmployee = async (req, res) => {
         <p><strong>Username:</strong> ${req.body.email}</p>
         <p><strong>Password:</strong> ${randomPassword}</p> <!-- Assuming you store a temporary password -->
         <p>To get started, please log in at the following link:</p>
-        <p><a href="https://your-website-url.com/login" style="color: #007bff; text-decoration: none;">Login to your account</a></p>
+        <p><a href="https://arbusinesscardcms.onrender.com" style="color: #007bff; text-decoration: none;">Login to your account</a></p>
         <p><strong>Important:</strong> Please log in as soon as possible and change your password to something more secure after your first login.</p>
         <p>If you have any questions or need further assistance, feel free to contact our support team.</p>
         <p>Thank you for joining ARCMS!</p>
@@ -389,6 +389,89 @@ exports.createEmployee = async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "User created!",
+    data: data[0],
+  });
+};
+
+exports.createAdmin = async (req, res) => {
+  // Check if the email already exists in the db
+  const existingAdmin = await supabase
+    .from("admin")
+    .select()
+    .eq("email", req.body.email)
+    .single();
+
+  if (existingAdmin.data) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "An existing admin account is already associated with the email! Please try another one.",
+    });
+  }
+
+  // Generate an 8-charac random password
+  const randomPassword = generateRandomPassword();
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+  // Create user data to store in the db
+  const newAdminData = {
+    admin_name: req.body.admin_name,
+    email: req.body.email,
+    password: hashedPassword,
+  };
+
+  // Create the admin
+  const { data, error } = await supabase.from("admin").insert(newAdminData);
+
+  // Get the url of the image
+
+  const image = await Image.getImageById(data[0].image_id);
+  data[0].image_url = image ? image.image_url : null;
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: `Failed to create new user: ${error}`,
+    });
+  }
+
+  // Email the password to the user
+  // Email the password to the new admin
+  const info = await transporter.sendMail({
+    from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+    to: req.body.email, // recipient address
+    subject: "You’ve Been Invited as an Admin on ARCMS",
+    text: `Welcome to ARCMS! An admin account has been created for you. Username: ${req.body.email}, Temporary Password: ${randomPassword}. Please log in and change your password.`,
+    html: `
+    <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h2 style="color: #333;">Welcome to ARCMS!</h2>
+      <p>Dear Admin,</p>
+      <p>We’re excited to inform you that you’ve been invited to join <strong>ARCMS</strong> as an administrator. Your account has been successfully created and you can now access the admin dashboard using the credentials below:</p>
+      
+      <ul>
+        <li><strong>Username:</strong> ${req.body.email}</li>
+        <li><strong>Temporary Password:</strong> ${randomPassword}</li>
+      </ul>
+      
+      <p>To get started, please log in here:</p>
+      <p>
+        <a href="https://arbusinesscardcms.onrender.com/admin" style="background-color: #007bff; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 4px;">Login to ARCMS</a>
+      </p>
+      
+      <p><strong>Important:</strong> For security reasons, please log in as soon as possible and change your password after your first login.</p>
+      
+      <p>If you have any questions or need assistance, don’t hesitate to reach out to our support team.</p>
+      
+      <p>Welcome aboard!<br/>— The ARCMS Team</p>
+    </body>
+  `,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Admin successfully invited!",
     data: data[0],
   });
 };

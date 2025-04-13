@@ -954,7 +954,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           employee.middle_name
             ? employee.middle_name.charAt(0).toUpperCase() + "."
             : ""
-        } ${employee.last_name}`;
+        } ${employee.last_name}`
+          .replace(/\s+/g, " ")
+          .trim();
 
         draw();
 

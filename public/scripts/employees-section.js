@@ -269,25 +269,6 @@ function setupPaginationInactive() {
     paginationContainer.appendChild(pageButton);
   }
 
-  // prevMembersBtn.addEventListener("click", (e) => {
-  //   e.preventDefault();
-  //   if (currentPageForActive - 1 >= 1) {
-  //     currentPageForActive -= 1;
-  //     displayActiveMembers(currentPageForActive);
-  //     updatePaginationStateForActive();
-  //     updateActivePageForActive(currentPageForActive);
-  //   }
-  // });
-  // nextMembersBtn.addEventListener("click", (e) => {
-  //   e.preventDefault();
-  //   if (currentPageForActive + 1 <= totalPages) {
-  //     currentPageForActive += 1;
-  //     console.log("CURRENT ACTIVE PAGE:", currentPageForActive);
-  //     displayActiveMembers(currentPageForActive);
-  //     updatePaginationStateForActive();
-  //     updateActivePageForActive(currentPageForActive);
-  //   }
-
   prevApprovalBtn.addEventListener("click", (e) => {
     e.preventDefault();
     if (currentPageForInactive - 1 >= 1) {
@@ -467,11 +448,25 @@ async function deleteUser(employee_id) {
 // Get modal elements
 const modal = document.getElementById("userModal");
 const openModalBtn = document.getElementById("openModal");
+const addAdminBtn = document.getElementById("openAdminModal");
 const closeModalBtn = document.querySelector(".close-btn");
 const submitBtn = document.getElementById("create-user-btn");
-
+const submitAdminBtn = document.getElementById("create-admin-btn");
+const newUserForm = document.getElementById("userForm");
+const newAdminForm = document.getElementById("newAdminForm");
+const modalHeader = document.getElementById("create-modal-header");
 // Open the modal
 openModalBtn.addEventListener("click", () => {
+  modalHeader.textContent = "Create New User";
+  newUserForm.style.display = "block";
+  newAdminForm.style.display = "none";
+  modal.style.display = "block";
+});
+
+addAdminBtn.addEventListener("click", () => {
+  modalHeader.textContent = "Create New Admin";
+  newUserForm.style.display = "none";
+  newAdminForm.style.display = "block";
   modal.style.display = "block";
 });
 
@@ -488,55 +483,97 @@ window.addEventListener("click", (event) => {
 });
 
 // Handle form submission
-document
-  .getElementById("userForm")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
+newUserForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    const formData = new FormData(event.target);
+  const formData = new FormData(event.target);
 
-    console.log("THE FORM DATA:", formData);
+  console.log("THE FORM DATA:", formData);
 
-    formData.append("isActive", true);
-    const userData = Object.fromEntries(formData.entries());
+  formData.append("isActive", true);
+  const userData = Object.fromEntries(formData.entries());
 
-    submitBtn.textContent = "Creating User...";
+  submitBtn.textContent = "Creating User...";
 
-    try {
-      const response = await fetch("/arcms/api/v1/admin/create-employee", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
+  try {
+    const response = await fetch("/arcms/api/v1/admin/create-employee", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok) {
-        showSuccessMessage("User created successfully!");
-        submitBtn.textContent = "Save";
-        submitBtn.disabled = false;
-        modal.style.display = "none";
-        event.target.reset();
-
-        const employee = result.data;
-
-        console.log("THE NEW EMPLOYEE:", employee);
-
-        activeEmployees.push(employee);
-        displayActiveMembers(currentPageForActive); // Default to page 1
-        setupPaginationActive();
-      } else {
-        showErrorMessage(`Error: ${result.message}`);
-      }
-
+    if (response.ok) {
+      showSuccessMessage("User created successfully!");
       submitBtn.textContent = "Save";
-    } catch (error) {
-      console.error("Error creating user:", error);
-      showErrorMessage(
-        "An error occurred while creating the user. Please try again later."
-      );
+      submitBtn.disabled = false;
+      modal.style.display = "none";
+      event.target.reset();
+
+      const employee = result.data;
+
+      console.log("THE NEW EMPLOYEE:", employee);
+
+      activeEmployees.push(employee);
+      displayActiveMembers(currentPageForActive); // Default to page 1
+      setupPaginationActive();
+    } else {
+      showErrorMessage(`Error: ${result.message}`);
     }
-  });
+
+    submitBtn.textContent = "Save";
+  } catch (error) {
+    console.error("Error creating user:", error);
+    showErrorMessage(
+      "An error occurred while creating the user. Please try again later."
+    );
+  }
+});
+
+newAdminForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+
+  console.log("THE FORM DATA:", formData);
+
+  formData.append("isActive", true);
+  const userData = Object.fromEntries(formData.entries());
+
+  submitAdminBtn.textContent = "Creating Admin...";
+
+  try {
+    const response = await fetch("/arcms/api/v1/admin/create-admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showSuccessMessage("Admin created successfully!");
+      submitAdminBtn.textContent = "Save";
+      submitAdminBtn.disabled = false;
+      modal.style.display = "none";
+      event.target.reset();
+
+      const employee = result.data;
+
+      console.log("THE NEW ADMIN:", employee);
+    } else {
+      showErrorMessage(`Error: ${result.message}`);
+    }
+
+    submitAdminBtn.textContent = "Save";
+  } catch (error) {
+    console.error("Error creating user:", error);
+    showErrorMessage(
+      "An error occurred while creating the user. Please try again later."
+    );
+  }
+});
 
 // Call the function to populate the table when the page loads
 fetchAllActiveEmployee();
