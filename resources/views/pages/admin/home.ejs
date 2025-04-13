@@ -152,9 +152,10 @@
       }
       getCurrentAdmin().then((currentAdmin) => {
         console.log("Current Admin:", currentAdmin);
+
         adminName.textContent = currentAdmin.data.admin_name;
         adminRole.textContent = currentAdmin.data.email;
-        adminImage.src = currentAdmin.imageUrl;
+        adminImage.src = currentAdmin?.imageUrl;
         window.currentAvatar = currentAdmin.imageUrl;
       });
     </script>

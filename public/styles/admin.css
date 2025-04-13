@@ -46,7 +46,6 @@ body {
   height: 100vh;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
-  width: 250px;
 }
 
 .sidebar.collapsed {
@@ -1106,4 +1105,8 @@ header {
   border: none;
   color: white;
   font-size: 16px;
+}
+
+#newAdminForm {
+  display: none;
 }

@@ -22,9 +22,13 @@
 
   <div class="members-header">
     <h2>Members</h2>
-    <button class="add-member-btn" id="openModal">
-      <i class="fas fa-plus"></i> Add Member
-    </button>
+
+    <div>
+      <button class="add-member-btn" id="openModal">
+        <i class="fas fa-plus"></i> Add Member
+      </button>
+      <button class="add-admin-btn" id="openAdminModal">Add Admin</button>
+    </div>
   </div>
   <!-- <div class="members-actions">
     <div class="search-bar">
@@ -99,7 +103,7 @@
   <div id="userModal" class="modal">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
-      <h2>Create New User</h2>
+      <h2 id="create-modal-header">Create New User</h2>
       <form id="userForm">
         <div class="form-group">
           <label for="fname">First Name</label>
@@ -151,6 +155,34 @@
           />
         </div>
         <button type="submit" id="create-user-btn" class="btn btn-success">
+          Save
+        </button>
+      </form>
+
+      <form id="newAdminForm">
+        <div class="form-group">
+          <label for="new-admin-name">New Admin Name</label>
+          <input
+            type="text"
+            id="new-admin-name"
+            name="admin_name"
+            placeholder="Enter Admin Name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="new-admin-email">Email</label>
+          <input
+            type="email"
+            id="new-admin-email"
+            name="email"
+            placeholder="Enter email address"
+            required
+          />
+        </div>
+
+        <button type="submit" id="create-admin-btn" class="btn btn-success">
           Save
         </button>
       </form>
