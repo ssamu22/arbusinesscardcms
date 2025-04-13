@@ -138,6 +138,7 @@ exports.signup = async (req, res) => {
     image_id: 68, // Use default profile image_id
     date_created: new Date().toISOString(), // Automatically set the creation date
     isActive: req.body.isActive ? true : false,
+    honorifics: honorifics,
   };
 
   if (signupErrors.length > 0) {

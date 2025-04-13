@@ -12,12 +12,22 @@ if (registerForm) {
     registerBtn.textContent = "Registering...";
     const fname = document.getElementById("fname").value;
     const lname = document.getElementById("lname").value;
+    const mname = document.getElementById("mname").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const passwordConfirm = document.getElementById("passwordConfirm").value;
+    const honorifics = document.getElementById("honorifics").value;
 
     try {
-      await register({ fname, lname, email, password, passwordConfirm });
+      await register({
+        fname,
+        mname,
+        lname,
+        email,
+        password,
+        passwordConfirm,
+        honorifics,
+      });
     } catch (err) {
       console.log(err);
     } finally {
@@ -30,11 +40,11 @@ if (registerForm) {
 const register = async ({ ...userInput }) => {
   try {
     const response = await axios.post(
+      // "/arcms/api/v1/employees/signup",
       "https://arbusinesscardcms.onrender.com/arcms/api/v1/employees/signup",
       userInput
     );
-    console.log("THE RESPONSE DATA:", response.data);
-    console.log("RELOCATING...");
+
     window.location.assign("/success");
   } catch (err) {
     console.log("ERRORS:", err.response.data.errors);

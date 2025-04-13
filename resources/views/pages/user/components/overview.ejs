@@ -96,14 +96,32 @@
           </div>
           <div class="col-md-6 form-group">
             <label for="honorifics" class="form-label">Honorifics</label>
-            <input
-              type="text"
-              class="form-control"
-              name="honorifics"
-              id="honorifics"
-              value="<%= user.honorifics %>"
-              placeholder="Enter honorifics"
-            />
+            <select class="form-control" id="honorifics" name="honorifics">
+              <option value="">-- Select --</option>
+            
+              <option value="Mr." <%= user.honorifics === "Mr." ? "selected" : "" %>>Mr.</option>
+              <option value="Mrs." <%= user.honorifics === "Mrs." ? "selected" : "" %>>Mrs.</option>
+              <option value="Ms." <%= user.honorifics === "Ms." ? "selected" : "" %>>Ms.</option>
+              <option value="Miss" <%= user.honorifics === "Miss" ? "selected" : "" %>>Miss</option>
+              <option value="Mx." <%= user.honorifics === "Mx." ? "selected" : "" %>>Mx.</option>
+            
+              <option value="Dr." <%= user.honorifics === "Dr." ? "selected" : "" %>>Dr.</option>
+              <option value="Prof." <%= user.honorifics === "Prof." ? "selected" : "" %>>Prof.</option>
+              <option value="Assoc. Prof." <%= user.honorifics === "Assoc. Prof." ? "selected" : "" %>>Assoc. Prof.</option>
+              <option value="Asst. Prof." <%= user.honorifics === "Asst. Prof." ? "selected" : "" %>>Asst. Prof.</option>
+              <option value="PhD" <%= user.honorifics === "PhD" ? "selected" : "" %>>PhD</option>
+            
+              <option value="Engr." <%= user.honorifics === "Engr." ? "selected" : "" %>>Engr.</option>
+              <option value="Atty." <%= user.honorifics === "Atty." ? "selected" : "" %>>Atty.</option>
+              <option value="Arch." <%= user.honorifics === "Arch." ? "selected" : "" %>>Arch.</option>
+              <option value="CPA" <%= user.honorifics === "CPA" ? "selected" : "" %>>CPA</option>
+              <option value="Hon." <%= user.honorifics === "Hon." ? "selected" : "" %>>Hon.</option>
+              <option value="Capt." <%= user.honorifics === "Capt." ? "selected" : "" %>>Capt.</option>
+              <option value="Chief" <%= user.honorifics === "Chief" ? "selected" : "" %>>Chief</option>
+              <option value="Sr." <%= user.honorifics === "Sr." ? "selected" : "" %>>Sr.</option>
+              <option value="Jr." <%= user.honorifics === "Jr." ? "selected" : "" %>>Jr.</option>
+            </select>
+            
           </div>
         </div>
 

@@ -111,7 +111,6 @@
   background-color: var(--secondary-dark);
 }
 
-
 /* Improve the table layout */
 .members-table {
   width: 100%;
@@ -420,4 +419,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.new-honorifics-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.new-honorifics-input:hover {
+  border-color: #888;
+}
+
+.new-honorifics-input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }

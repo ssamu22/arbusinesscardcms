@@ -134,16 +134,7 @@
             required
           />
         </div>
-        <div class="form-group">
-          <label for="honorifics">Honorifics</label>
-          <input
-            type="text"
-            id="honorifics"
-            name="honorifics"
-            placeholder="Enter honorifics"
-            required
-          />
-        </div>
+
         <div class="form-group">
           <label for="email">Email</label>
           <input
@@ -153,6 +144,42 @@
             placeholder="Enter email address"
             required
           />
+        </div>
+
+        <div class="form-group">
+          <label for="honorifics">Honorifics</label>
+          <select
+            class="form-control new-honorifics-input"
+            id="honorifics"
+            name="honorifics"
+          >
+            <option value="">-- Select --</option>
+
+            <!-- Common Titles -->
+            <option value="Mr.">Mr.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Miss">Miss</option>
+            <option value="Mx.">Mx.</option>
+
+            <!-- Academic Titles -->
+            <option value="Dr.">Dr.</option>
+            <option value="Prof.">Prof.</option>
+            <option value="Assoc. Prof.">Assoc. Prof.</option>
+            <option value="Asst. Prof.">Asst. Prof.</option>
+            <option value="PhD">PhD</option>
+
+            <!-- Professional Titles -->
+            <option value="Engr.">Engr.</option>
+            <option value="Atty.">Atty.</option>
+            <option value="Arch.">Arch.</option>
+            <option value="CPA">CPA</option>
+            <option value="Hon.">Hon.</option>
+            <option value="Capt.">Capt.</option>
+            <option value="Chief">Chief</option>
+            <option value="Sr.">Sr.</option>
+            <option value="Jr.">Jr.</option>
+          </select>
         </div>
         <button type="submit" id="create-user-btn" class="btn btn-success">
           Save
