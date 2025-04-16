@@ -166,7 +166,6 @@
             document.getElementById("introduction").value = data.introduction;
             document.getElementById("position").value = data.position;
             document.getElementById("profile-picture").src = data.image_url;
-            
 
             let fieldsInput = document.getElementById("researchFields");
             tagify = new Tagify(fieldsInput, {
@@ -1163,6 +1162,7 @@
         function initializeContacts() {
           const editToggle = document.getElementById("edit-toggle");
           const contactForm = document.getElementById("contact-form");
+          const fbInput = document.getElementById("fb-input");
           const contactName = document.getElementById("contact-name");
           const contactTitle = document.getElementById("contact-title");
 
@@ -1179,6 +1179,10 @@
             email: "",
             socialMedia: [],
           };
+
+          contactForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+          });
 
           async function fetchContacts() {
             console.log("Fetching details");
@@ -1271,8 +1275,9 @@
                     social.platform.toLowerCase()
                   )}"]`
                 );
+
                 if (input) {
-                  input.value = social.url || ""; // Set the value from the database
+                  input.value = social.url || input.value; // Set the value from the database
                 }
               });
             }
@@ -1314,6 +1319,9 @@
 
           async function saveContactInfo() {
             // Gather data from contactInfo
+
+            console.log("THE CONTACT INFO:", contactInfo);
+
             const updatedContactInfo = {
               ...(contactInfo.contactId && {
                 contact_id: contactInfo.contactId,
@@ -1338,7 +1346,7 @@
             let errors = {};
 
             // console.log("New contact info: " + JSON.stringify(updatedSchedule));
-
+            console.log("THE UPDATED CONTACT INFO:", updatedContactInfo);
             try {
               // Send the updated data to the backend
               const contactResponse = await fetch("/arcms/api/v1/contacts", {
