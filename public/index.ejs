@@ -1425,7 +1425,8 @@
             "Saturday",
           ];
 
-          let editMode = false;
+          let conHoursEditMode = false;
+          let contTypeEditMode = false;
 
           let schedule = {
             consultationHours: daysOfWeek.map((day) => ({
@@ -1519,7 +1520,7 @@
                             hour.day
                           }"
                               ${hour.available ? "checked" : ""} ${
-                  !editMode ? "disabled" : ""
+                  !conHoursEditMode ? "disabled" : ""
                 }
                               data-index="${index}" data-field="available">
                           <label class="form-check-label" for="available-${
@@ -1533,13 +1534,21 @@
                             hour.start_time
                           }"
                               data-index="${index}" data-field="start_time"
-                              ${!editMode || !hour.available ? "disabled" : ""}>
+                              ${
+                                !conHoursEditMode || !hour.available
+                                  ? "disabled"
+                                  : ""
+                              }>
                           <span class="input-group-text">to</span>
                           <input type="time" class="form-control" value="${
                             hour.end_time
                           }"
                               data-index="${index}" data-field="end_time"
-                              ${!editMode || !hour.available ? "disabled" : ""}>
+                              ${
+                                !conHoursEditMode || !hour.available
+                                  ? "disabled"
+                                  : ""
+                              }>
                       </div>
                   </div>
                   <div class="col-5">
@@ -1551,7 +1560,7 @@
                             hour.day
                           }" value="${hour.location}"
                               data-index="${index}" data-field="location"
-                              ${!editMode ? "disabled" : ""}>
+                              ${!conHoursEditMode ? "disabled" : ""}>
                       </div>
                   </div>
               </div>
@@ -1612,17 +1621,19 @@
           }
 
           editConsultationTypes.addEventListener("click", async () => {
-            editMode = !editMode;
+            contTypeEditMode = !contTypeEditMode;
 
-            editConsultationTypes.textContent = editMode ? "Save" : "Edit";
+            editConsultationTypes.textContent = contTypeEditMode
+              ? "Save"
+              : "Edit";
 
             document
               .querySelectorAll("#consultation-types input")
               .forEach((input) => {
-                input.disabled = !editMode;
+                input.disabled = !contTypeEditMode;
               });
 
-            if (!editMode) {
+            if (!contTypeEditMode) {
               if (!confirm("Are you sure you want to save changes?")) return;
 
               editConsultationTypes.textContent = "Updating...";
@@ -1642,9 +1653,11 @@
           });
 
           editConsultationHours.addEventListener("click", async () => {
-            editMode = !editMode;
+            conHoursEditMode = !conHoursEditMode;
 
-            editConsultationHours.textContent = editMode ? "Save" : "Edit";
+            editConsultationHours.textContent = conHoursEditMode
+              ? "Save"
+              : "Edit";
 
             document
               .querySelectorAll("#consultation-hours .form-check-input")
@@ -1663,8 +1676,8 @@
                 );
 
                 // Enable/disable fields based on edit mode and checkbox state
-                const enableFields = editMode && checkbox.checked;
-                checkbox.disabled = !editMode; // Checkboxes are editable only in edit mode
+                const enableFields = conHoursEditMode && checkbox.checked;
+                checkbox.disabled = !conHoursEditMode; // Checkboxes are editable only in edit mode
                 startTimeInput.disabled = !enableFields;
                 endTimeInput.disabled = !enableFields;
                 locationInput.disabled = !enableFields;
@@ -1678,7 +1691,7 @@
                 });
               });
 
-            if (!editMode) {
+            if (!conHoursEditMode) {
               if (!confirm("Are you sure you want to save changes?")) {
                 return;
               }

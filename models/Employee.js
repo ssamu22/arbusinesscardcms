@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt"); // For password hashing
 class Employee {
   // Private properties
   #password;
-  #email;
+  email;
 
   constructor(employeeData) {
     // Public fields
@@ -23,12 +23,12 @@ class Employee {
     this.isActive = employeeData.isActive;
     // Private fields
     this.#password = employeeData.password;
-    this.#email = employeeData.email;
+    this.email = employeeData.email;
   }
 
   // Public Getter for email
   getEmail() {
-    return this.#email;
+    return this.email;
   }
 
   // Private Getter for password
