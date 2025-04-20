@@ -2,7 +2,7 @@
   <div class="bcard-section-content">
     <div class="bcard-section-canvas">
       <h2 class="section-title">Business Card Template</h2>
-      <input id="theText" type="text" />
+      <input id="theText" type="text" placeholder="Enter text here" />
       <button id="submit-new-text" class="draw-text-btn">
         Draw text on canvas
       </button>
@@ -124,3 +124,35 @@
 
   <!--  -->
 </section>
+
+<!-- Tutorial Button -->
+<button class="tutorial-start-btn" id="startTutorial">
+  <i class="bi bi-question-lg"></i>
+</button>
+
+<!-- Tutorial Overlay -->
+<div class="tutorial-overlay" id="tutorialOverlay"></div>
+
+<!-- Tutorial Spotlight (will be positioned dynamically) -->
+<div class="tutorial-spotlight" id="tutorialSpotlight"></div>
+
+<!-- Tutorial Tooltip (will be positioned dynamically) -->
+<div class="tutorial-tooltip" id="tutorialTooltip" style="display: none;">
+  <div class="tutorial-tooltip-header">
+    <h3 class="tutorial-tooltip-title">Title</h3>
+    <button class="tutorial-btn-skip" id="closeTutorial">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+  <div class="tutorial-tooltip-content">
+    Content goes here
+  </div>
+  <div class="tutorial-tooltip-footer">
+    <div class="tutorial-tooltip-progress">Step 1 of 7</div>
+    <div class="tutorial-tooltip-buttons">
+      <button class="tutorial-btn tutorial-btn-prev" id="prevStep">Previous</button>
+      <button class="tutorial-btn tutorial-btn-next" id="nextStep">Next</button>
+    </div>
+  </div>
+</div>
+

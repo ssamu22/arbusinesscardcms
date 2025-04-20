@@ -1060,3 +1060,388 @@ document.addEventListener("DOMContentLoaded", async () => {
 // STEPS FOR GENERATING/REPLACING BUSINESS CARDS
 // NOTE: THE CONTENT TYPE(name, email, etc...)  SHOULD ALREADY BE FIXED
 // CHANGE THE INPUT TO BUTTONS THAT YOU CAN TOGGLE TO HIDE OR SHOW THE PLACE HOLDER TEXTS
+
+// Initialize the tutorial when the business card section is active
+// Initialize the tutorial when the business card section is active
+// Initialize the tutorial when the business card section is active
+function initializeBCardTutorial() {
+  // Improved tutorial steps with better descriptions and step numbers
+  const tutorialSteps = [
+    {
+      element: '.bcard-bg-label',
+      title: 'Step 1: Upload Background',
+      content: 'Start by uploading a background image for your business card template. This will serve as the base design for all business cards.',
+      position: 'top'
+    },
+    {
+      element: '#theText',
+      title: 'Step 2: Add Placeholder Text',
+      content: 'Type placeholder text like "Name" or "Email". These placeholders will be replaced with actual user information when cards are generated.',
+      position: 'bottom'
+    },
+    {
+      element: '.draw-text-btn',
+      title: 'Step 3: Add Text to Canvas',
+      content: 'Click this button to add your placeholder text to the business card canvas.',
+      position: 'bottom'
+    },
+    {
+      element: '#canvas',
+      title: 'Step 4: Position Text',
+      content: 'Click and drag text elements to position them on the card. For example, place "Name" where you want each person\'s name to appear.',
+      position: 'left',
+      offsetX: -50
+    },
+    {
+      element: '.text-options',
+      title: 'Step 5: Style Text Elements',
+      content: 'Customize the appearance of each text element. Set the font, size, weight, and color to match your design.',
+      position: 'left',  // Changed from 'bottom' to 'left'
+      offsetX: -20       // Add offset to move it further left
+    },
+    {
+      element: '#generate-bcard-btn',
+      title: 'Step 6: Save Template',
+      content: 'When your design is complete, click here to save it as the official template. This will replace any existing template in the system.',
+      position: 'top'
+    },
+    {
+      element: '#download-bcard',
+      title: 'Step 7: Download Preview',
+      content: 'You can download a preview of the business card to see how it looks before finalizing.',
+      position: 'top'
+    }
+  ];
+
+  let currentStep = 0;
+  const overlay = document.getElementById('tutorialOverlay');
+  const spotlight = document.getElementById('tutorialSpotlight');
+  const tooltip = document.getElementById('tutorialTooltip');
+  const startBtn = document.getElementById('startTutorial');
+  const closeBtn = document.getElementById('closeTutorial');
+  const nextBtn = document.getElementById('nextStep');
+  const prevBtn = document.getElementById('prevStep');
+
+  // Only initialize if all elements exist
+  if (!overlay || !spotlight || !tooltip || !startBtn || !closeBtn || !nextBtn || !prevBtn) {
+    console.error('Tutorial elements not found');
+    return;
+  }
+
+  // Improved placeholder typewriting effect function with cycling examples
+  function typewritePlaceholder(element, text, speed = 100) {
+    if (!element) {
+      console.error('Element not found for typewriting');
+      return;
+    }
+    
+    // Clear the placeholder first
+    element.placeholder = '';
+    let i = 0;
+    
+    // Cancel any existing interval
+    if (element._typingInterval) {
+      clearInterval(element._typingInterval);
+    }
+    
+    // Use setInterval instead of recursive setTimeout for better control
+    element._typingInterval = setInterval(function() {
+      if (i < text.length) {
+        element.placeholder = text.substring(0, i + 1);
+        i++;
+      } else {
+        clearInterval(element._typingInterval);
+        element._typingInterval = null;
+      }
+    }, speed);
+  }
+
+  // Start tutorial
+  startBtn.addEventListener('click', function() {
+    currentStep = 0;
+    startTutorial();
+  });
+
+  // Close tutorial
+  closeBtn.addEventListener('click', function() {
+    endTutorial();
+  });
+
+  // Next step
+  nextBtn.addEventListener('click', function() {
+    if (currentStep < tutorialSteps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    } else {
+      endTutorial();
+    }
+  });
+
+  // Previous step
+  prevBtn.addEventListener('click', function() {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+
+  function startTutorial() {
+    overlay.style.display = 'block';
+    showStep(currentStep);
+  }
+
+  function endTutorial() {
+    // Hide overlay and tooltips
+    overlay.style.display = 'none';
+    tooltip.style.display = 'none';
+    spotlight.style.display = 'none';
+    
+    // Reset all elements to their original state
+    resetAllElements();
+    
+    // Reset the placeholder on the input field
+    const inputField = document.getElementById('theText');
+    if (inputField) {
+      inputField.placeholder = 'Enter text here';
+      // Clear any running typewriting interval
+      if (inputField._typingInterval) {
+        clearInterval(inputField._typingInterval);
+        inputField._typingInterval = null;
+      }
+    }
+  }
+
+  function resetAllElements() {
+    // Find all elements that might have been modified
+    document.querySelectorAll('*').forEach(el => {
+      // Reset z-index and position if they were set inline
+      if (el.style.zIndex === '10000') {
+        el.style.zIndex = '';
+      }
+      if (el.style.position === 'relative') {
+        el.style.position = '';
+      }
+    });
+  }
+
+  function showStep(stepIndex) {
+    const step = tutorialSteps[stepIndex];
+    const element = document.querySelector(step.element);
+    
+    if (!element) {
+      console.error(`Element ${step.element} not found`);
+      // Skip to next step if possible
+      if (currentStep < tutorialSteps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      } else {
+        endTutorial();
+      }
+      return;
+    }
+
+    console.log(`Found element for step ${stepIndex}:`, element);
+
+    // Reset all elements to their original state first
+    resetAllElements();
+
+    // Update tooltip content
+    document.querySelector('.tutorial-tooltip-title').textContent = step.title;
+    document.querySelector('.tutorial-tooltip-content').textContent = step.content;
+    document.querySelector('.tutorial-tooltip-progress').textContent = `Step ${stepIndex + 1} of ${tutorialSteps.length}`;
+
+    // Update buttons
+    if (stepIndex === 0) {
+      prevBtn.style.display = 'none';
+    } else {
+      prevBtn.style.display = 'block';
+    }
+
+    if (stepIndex === tutorialSteps.length - 1) {
+      nextBtn.textContent = 'Finish';
+      nextBtn.className = 'tutorial-btn tutorial-btn-finish';
+    } else {
+      nextBtn.textContent = 'Next';
+      nextBtn.className = 'tutorial-btn tutorial-btn-next';
+    }
+
+    // Position spotlight
+    const rect = element.getBoundingClientRect();
+    spotlight.style.display = 'block';
+    spotlight.style.top = `${rect.top}px`;
+    spotlight.style.left = `${rect.left}px`;
+    spotlight.style.width = `${rect.width}px`;
+    spotlight.style.height = `${rect.height}px`;
+
+    // Position tooltip
+    tooltip.style.display = 'block';
+    
+    const tooltipRect = tooltip.getBoundingClientRect();
+    let tooltipTop, tooltipLeft;
+    
+    // Apply any custom offsets
+    const offsetX = step.offsetX || 0;
+    const offsetY = step.offsetY || 0;
+
+    // Special case for text options to prevent it from being cut off
+    if (step.element === '.text-options') {
+      // Position the tooltip to the left of the text options
+      tooltipTop = rect.top + 50; // Position it a bit down from the top
+      tooltipLeft = rect.left - tooltipRect.width - 20; // 20px gap
+      
+      // If it would be cut off on the left, position it at the left edge with some padding
+      if (tooltipLeft < 10) {
+        tooltipLeft = 10;
+      }
+    } else {
+      // Normal positioning for other elements
+      switch(step.position) {
+        case 'top':
+          tooltipTop = rect.top - tooltipRect.height - 10 + offsetY;
+          tooltipLeft = rect.left + (rect.width / 2) - (tooltipRect.width / 2) + offsetX;
+          break;
+        case 'bottom':
+          tooltipTop = rect.bottom + 10 + offsetY;
+          tooltipLeft = rect.left + (rect.width / 2) - (tooltipRect.width / 2) + offsetX;
+          break;
+        case 'left':
+          tooltipTop = rect.top + (rect.height / 2) - (tooltipRect.height / 2) + offsetY;
+          tooltipLeft = rect.left - tooltipRect.width - 10 + offsetX;
+          break;
+        case 'right':
+          tooltipTop = rect.top + (rect.height / 2) - (tooltipRect.height / 2) + offsetY;
+          tooltipLeft = rect.right + 10 + offsetX;
+          break;
+        default:
+          tooltipTop = rect.bottom + 10 + offsetY;
+          tooltipLeft = rect.left + offsetX;
+      }
+    }
+
+    // Ensure tooltip stays within viewport
+    if (tooltipTop < 10) tooltipTop = 10;
+    if (tooltipLeft < 10) tooltipLeft = 10;
+    if (tooltipTop + tooltipRect.height > window.innerHeight - 10) {
+      tooltipTop = window.innerHeight - tooltipRect.height - 10;
+    }
+    if (tooltipLeft + tooltipRect.width > window.innerWidth - 10) {
+      tooltipLeft = window.innerWidth - tooltipRect.width - 10;
+    }
+
+    tooltip.style.top = `${tooltipTop}px`;
+    tooltip.style.left = `${tooltipLeft}px`;
+
+    // Highlight the current element
+    element.style.position = 'relative';
+    element.style.zIndex = '10000';
+    
+    // Add typewriting effect for the input field step with cycling examples
+    if (element.id === 'theText' && stepIndex === 1) {
+      // Show different placeholder examples based on clicks
+      const placeholders = ['Name', 'Email'];
+      const placeholderIndex = element._placeholderIndex || 0;
+      
+      setTimeout(() => {
+        typewritePlaceholder(element, placeholders[placeholderIndex], 150);
+      }, 500);
+      
+      // Update index for next time
+      element._placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+    }
+  }
+
+  // Handle window resize to reposition elements
+  window.addEventListener('resize', function() {
+    if (overlay.style.display === 'block') {
+      showStep(currentStep);
+    }
+  });
+}
+
+// Initialize the tutorial when the page loads or when the business card section is shown
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if we're on the business card section
+  const bcardsSection = document.getElementById('bcards-section');
+  const bcardsLink = document.getElementById('bcards-link');
+  
+  // Initialize tutorial when the business card section is shown
+  if (bcardsLink) {
+    bcardsLink.addEventListener('click', function() {
+      // Wait a bit for the section to be fully visible
+      setTimeout(initializeBCardTutorial, 500);
+    });
+  }
+  
+  // If the business card section is already visible on page load
+  if (bcardsSection && window.getComputedStyle(bcardsSection).display !== 'none') {
+    setTimeout(initializeBCardTutorial, 500);
+  }
+});
+
+
+// Add this code to your bcard-section.js file or create a new one
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Get tutorial elements
+  const tutorialButton = document.querySelector('.tutorial-start-btn');
+  const tutorialOverlay = document.getElementById('tutorialOverlay');
+  const tutorialSpotlight = document.getElementById('tutorialSpotlight');
+  const tutorialTooltip = document.getElementById('tutorialTooltip');
+  
+  // Get navigation links
+  const bcardsLink = document.getElementById('bcards-link');
+  const otherLinks = document.querySelectorAll('#members-link, #university-link, #university-management-link, #markers-link, #admin-account-link');
+  
+  // Get sections
+  const bcardsSection = document.getElementById('bcards-section');
+  
+  // Function to hide tutorial elements
+  function hideTutorialElements() {
+    if (tutorialButton) tutorialButton.style.display = 'none';
+    if (tutorialOverlay) tutorialOverlay.style.display = 'none';
+    if (tutorialSpotlight) tutorialSpotlight.style.display = 'none';
+    if (tutorialTooltip) tutorialTooltip.style.display = 'none';
+  }
+  
+  // Function to show tutorial button (only the button, not the overlay/tooltip)
+  function showTutorialButton() {
+    if (tutorialButton) tutorialButton.style.display = 'flex';
+  }
+  
+  // Initially hide tutorial elements if not on bcard section
+  if (!bcardsSection || bcardsSection.style.display === 'none') {
+    hideTutorialElements();
+  }
+  
+  // Show tutorial elements when bcard section is active
+  if (bcardsLink) {
+    bcardsLink.addEventListener('click', function() {
+      // Small delay to ensure section is visible first
+      setTimeout(showTutorialButton, 100);
+    });
+  }
+  
+  // Hide tutorial elements when other sections are active
+  otherLinks.forEach(link => {
+    if (link) {
+      link.addEventListener('click', function() {
+        hideTutorialElements();
+      });
+    }
+  });
+  
+  // Additional check: Hide tutorial elements if bcard section is not visible
+  function checkBcardSectionVisibility() {
+    if (bcardsSection && window.getComputedStyle(bcardsSection).display === 'none') {
+      hideTutorialElements();
+    } else if (bcardsSection && window.getComputedStyle(bcardsSection).display !== 'none') {
+      showTutorialButton();
+    }
+  }
+  
+  // Run the check on page load
+  checkBcardSectionVisibility();
+  
+  // Optional: Run the check periodically to ensure correct state
+  setInterval(checkBcardSectionVisibility, 1000);
+});
