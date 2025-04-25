@@ -48,8 +48,14 @@ let awardFilename = "";
 addFileInput.addEventListener("change", (event) => {
   awardFile = event.target.files[0]; // Get the uploaded file
   awardFilename = `award_${Date.now()}_${awardFile.name}`;
+  const allowedTypes = ["image/jpeg", "image/png"];
 
   if (awardFile) {
+    if (!allowedTypes.includes(awardFile.type)) {
+      showErrorMessage("Only JPG and PNG images are allowed.");
+      event.target.value = ""; // Clear the selected file
+      return;
+    }
     submitAwardImgBtn.disabled = false;
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -320,8 +326,15 @@ submitAwardImgBtn.addEventListener("click", (ev) => {
 uploadAwardImg.addEventListener("change", (event) => {
   awardFile = event.target.files[0]; // Get the uploaded file
   awardFilename = `award_${Date.now()}_${awardFile.name}`;
+  const allowedTypes = ["image/jpeg", "image/png"];
 
   if (awardFile) {
+    if (!allowedTypes.includes(awardFile.type)) {
+      showErrorMessage("Only JPG and PNG images are allowed.");
+      event.target.value = ""; // Clear the selected file
+      return;
+    }
+
     submitAwardImgBtn.disabled = false;
     const reader = new FileReader();
     reader.onload = function (e) {

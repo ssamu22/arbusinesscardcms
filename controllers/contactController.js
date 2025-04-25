@@ -68,7 +68,7 @@ exports.updateContacts = async (req, res) => {
         // If the contact exists and belongs to the current employee, update it
         contact.phone_number = phone_number;
         contact.landline = landline;
-        contact.email = req.session.user.email;
+        contact.email = email;
         contact.facebook_url = facebook_url;
         contact.instagram_url = instagram_url;
         contact.linkedin_url = linkedin_url;

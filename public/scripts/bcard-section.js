@@ -84,6 +84,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveBgBtn.style.display = "inline-block";
     fileToSave = fileInput.files[0];
 
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (!allowedTypes.includes(fileToSave.type)) {
+      showErrorMessage("Only JPG and PNG images are allowed.");
+      event.target.value = ""; // Clear the selected file
+      return;
+    }
+
     if (fileToSave) {
       const imageUrl = URL.createObjectURL(fileToSave);
       setBackgroundFromURL(imageUrl);

@@ -152,12 +152,14 @@ async function displayActiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const membersToDisplay = activeEmployees.slice(startIndex, endIndex);
+  membersToDisplay.sort((a, b) => a.employee_id - b.employee_id);
 
   tableBodyActive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
     const row = document.createElement("tr");
 
     console.log("the freaking member:", member);
+    // <td>${startIndex + index + 1}</td>
     const name =
       (member.honorifics || "") +
       " " +
@@ -167,7 +169,7 @@ async function displayActiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${startIndex + index + 1}</td>
+                <td>${member.employee_id}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -177,9 +179,7 @@ async function displayActiveMembers(pageNumber) {
                 </td>
                 <td>${member.date_created}</td>
                 <td>
-                  <a href="#" class="delete-btn" data-id="${
-                    member.employee_id
-                  }">Delete</a>
+                  <a href="#" class="delete-btn" data-id="${member.employee_id}">Delete</a>
                 </td>
             `;
 
@@ -214,6 +214,8 @@ async function displayActiveMembers(pageNumber) {
 // FOR INACTIVE EMPLOYEES
 
 approveAllBtn.addEventListener("click", (e) => {
+  approveAllBtn.disabled = true;
+  approveAllBtn.textContent = "Approving...";
   approveAll();
 });
 
@@ -328,6 +330,7 @@ async function displayInactiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const membersToDisplay = inactiveEmployees.slice(startIndex, endIndex);
+  membersToDisplay.sort((a, b) => a.employee_id - b.employee_id);
 
   tableBodyInactive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
@@ -341,7 +344,7 @@ async function displayInactiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${startIndex + index + 1}</td>
+                <td>${member.employee_id}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -351,13 +354,9 @@ async function displayInactiveMembers(pageNumber) {
                 </td>
                 <td>${member.date_created}</td>
                 <td>
-                  <a href="#" class="edit-btn-inactive" data-id="${
-                    member.employee_id
-                  }">Accept</a>
+                  <a href="#" class="edit-btn-inactive" data-id="${member.employee_id}">Accept</a>
                   &nbsp;|&nbsp;
-                  <a href="#" class="delete-btn" data-id="${
-                    member.employee_id
-                  }">Deny</a>
+                  <a href="#" class="delete-btn" data-id="${member.employee_id}">Deny</a>
                 </td>
             `;
     tableBodyInactive.appendChild(row);
@@ -384,32 +383,43 @@ async function displayInactiveMembers(pageNumber) {
 
 async function approveUser(employeeId) {
   try {
+    showSuccessMessage(`Approving user...`);
     const response = await fetch(`/arcms/api/v1/auth/approve/${employeeId}`, {
       method: "POST",
     });
 
-    showSuccessMessage(`Employee ${employeeId} is approved!`);
     const result = await response.json();
     const employee = result.data;
+
+    console.log("APRROVE USER RESULT:", result);
 
     activeEmployees.push(employee);
     displayActiveMembers(currentPageForActive); // Default to page 1
     setupPaginationActive();
+    showSuccessMessage(`Employee ${employeeId} is approved!`);
   } catch (err) {
     console.log(err);
   }
 }
 async function approveAll() {
   try {
-    showSuccessMessage(`All inactive employees are activated!`);
+    tableBodyInactive.innerHTML = "";
     const response = await fetch(`/arcms/api/v1/auth/approveAll`, {
       method: "POST",
     });
 
     const result = await response.json();
-    tableBodyInactive.innerHTML = "";
 
-    location.reload();
+    result.data.forEach((employee) => {
+      activeEmployees.push(employee);
+      displayActiveMembers(currentPageForActive);
+      setupPaginationActive();
+    });
+
+    approveAllBtn.disabled = false;
+    approveAllBtn.textContent = "Approve All";
+    showSuccessMessage(`All inactive employees are activated!`);
+    // location.reload();
   } catch (err) {
     console.log(err);
   }

@@ -261,13 +261,14 @@ exports.approveUser = async (req, res) => {
     .eq("employee_id", req.params.employeeId)
     .single();
 
-  console.log("THE APPROVED USER:", user);
+  const { password, password_reset_token, token_expiration_date, ...safeUser } =
+    user;
 
   // Send an email to the user
   try {
     const info = await transporter.sendMail({
       from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-      to: user.email, //  receivers
+      to: safeUser.email, //  receivers
       subject: "✔ Registration Approved ✔",
       text: `Registration Approved`,
       html: `<p>Your registration has been approved by the administrators. Please <a href= 'https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>`,
@@ -276,13 +277,13 @@ exports.approveUser = async (req, res) => {
     console.log(err);
   }
 
-  const image = await Image.getImageById(user.image_id);
-  user.image_url = image ? image.image_url : null;
+  const image = await Image.getImageById(safeUser.image_id);
+  safeUser.image_url = image ? image.image_url : null;
 
   res.status(200).json({
     status: "success",
     message: "User successfully approved!",
-    data: user,
+    data: safeUser,
   });
 };
 exports.approveAll = async (req, res) => {
@@ -290,21 +291,27 @@ exports.approveAll = async (req, res) => {
   const employees = await Employee.activateEmployees();
 
   console.log(employees);
-  // Send an email to the user
 
-  // const nodemailer = require("nodemailer");
+  const nodemailer = require("nodemailer");
 
-  // try {
-  //   const info = await transporter.sendMail({
-  //     from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-  //     to: "blueming972@gmail.com", //  receivers
-  //     subject: "✔ Registration Approved ✔",
-  //     text: "Registration Approved",
-  //     html: "<p>Your registration has been approved by the administrators. Please <a href= 'http://localhost:3000/login'>login</a> with your account to proceed.</p>",
-  //   });
-  // } catch (err) {
-  //   console.log(err);
-  // }
+  for (const employee of employees) {
+    try {
+      console.log("the employee:", employee);
+      const info = await transporter.sendMail({
+        from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`,
+        to: employee.email, // or your test email
+        subject: "✔ Registration Approved ✔",
+        text: "Registration Approved",
+        html: "<p>Your registration has been approved by the administrators. Please <a href='https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>",
+      });
+      console.log(`Email sent to ${employee.email}`);
+    } catch (err) {
+      console.error(`Failed to send email to ${employee.email}:`, err);
+    }
+
+    const image = await Image.getImageById(employee.image_id);
+    employee.image_url = image ? image.image_url : null;
+  }
 
   res.status(200).json({
     status: "success",

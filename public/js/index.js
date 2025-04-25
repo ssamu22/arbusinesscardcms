@@ -40,8 +40,8 @@ if (registerForm) {
 const register = async ({ ...userInput }) => {
   try {
     const response = await axios.post(
-      // "/arcms/api/v1/employees/signup",
-      "https://arbusinesscardcms.onrender.com/arcms/api/v1/employees/signup",
+      "/arcms/api/v1/employees/signup",
+      // "https://arbusinesscardcms.onrender.com/arcms/api/v1/employees/signup",
       userInput
     );
 

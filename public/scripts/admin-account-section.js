@@ -29,6 +29,14 @@ adminImageUpload.addEventListener("change", function (event) {
   console.log("THE IMAGE:", file);
   if (!file) return;
 
+  const allowedTypes = ["image/jpeg", "image/png"];
+
+  if (!allowedTypes.includes(file.type)) {
+    showErrorMessage("Only JPG and PNG images are allowed.");
+    e.target.value = ""; // Clear the selected file
+    return;
+  }
+
   const img = new Image();
   img.onload = function () {
     // Clear canvas before drawing new image
