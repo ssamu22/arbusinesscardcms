@@ -31,6 +31,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   eventImageInput.addEventListener("change", (e) => {
     console.log(e.target.value);
+
+    const file = e.target.files[0];
+
+    if (file) {
+      const allowedTypes = ["image/jpeg", "image/png"];
+
+      if (!allowedTypes.includes(file.type)) {
+        showErrorMessage("Only JPG and PNG images are allowed.");
+        e.target.value = ""; // Clear the selected file
+        return;
+      }
+    }
   });
 
   async function addEvent() {

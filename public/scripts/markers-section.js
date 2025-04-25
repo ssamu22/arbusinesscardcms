@@ -47,6 +47,14 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const file = e.target.files[0];
 
     if (file) {
+      const allowedTypes = ["image/jpeg", "image/png"];
+
+      if (!allowedTypes.includes(file.type)) {
+        showErrorMessage("Only JPG and PNG images are allowed.");
+        e.target.value = ""; // Clear the selected file
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       displayedCreateImage.src = imageUrl;
     }
@@ -112,6 +120,15 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const file = e.target.files[0];
 
     if (file) {
+      const allowedTypes = ["image/jpeg", "image/png"];
+
+      if (!allowedTypes.includes(file.type)) {
+        showErrorMessage("Only JPG and PNG images are allowed.");
+        e.target.value = ""; // Clear the selected file
+        return;
+      }
+      // File is valid — proceed with upload or preview
+
       const imageUrl = URL.createObjectURL(file);
       displayedTargetImage.src = imageUrl;
     }
@@ -228,7 +245,11 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       });
 
       if (!response.ok) {
+        showErrorMessage(
+          "The business card is still processing. Please try again later!"
+        );
         console.log(`Error: ${response.status} - ${response.statusText}`);
+        return;
       }
 
       if (response.status === 200) {

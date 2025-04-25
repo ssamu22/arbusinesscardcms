@@ -78,7 +78,11 @@
             </select>
           </div>
 
-          <input type="file" id="create-target-upload" accept="image/*" />
+          <input
+            type="file"
+            id="create-target-upload"
+            accept=".jpg, .jpeg, .png"
+          />
           <label for="create-target-upload" class="create-target-label">
             <i class="fas fa-cloud-upload-alt"></i> Add Image
           </label>
@@ -207,7 +211,12 @@
               <!-- The value will be the id of the users -->
             </select>
           </div>
-          <input type="file" id="new-target-upload" accept="image/*" disabled />
+          <input
+            type="file"
+            id="new-target-upload"
+            accept=".jpg, .jpeg, .png"
+            disabled
+          />
           <label for="new-target-upload" class="target-change-label">
             <i class="fas fa-cloud-upload-alt"></i> Change Target Image
           </label>
@@ -232,26 +241,4 @@
   <button class="add-target-btn">
     <i class="fas fa-cloud-upload-alt"></i> Add Business Card
   </button>
-  <!-- <label for="upload" class="file-upload-label">
-    <i class="fas fa-cloud-upload-alt"></i> Add a Business Card
-  </label>
-  <input type="file" id="upload" accept="image/*" /> -->
-  <!--
-
-  <div class="canvasDiv">
-    <canvas id="histoEqCanvas"></canvas>
-  </div>
-
-  <form
-    id="uploadForm"
-    action="../upload/businessCard"
-    enctype="multipart/form-data"
-    method="post"
-  >
-    <label for="marker-name">Marker Name</label>
-    <input type="text" name="name" id="marker-name" placeholder="Marker Name" />
-    <label for="marker-id">Employee ID</label>
-    <input type="number" id="marker-id" />
-    <button id="submitBCard" type="submit" disabled>Submit</button>
-  </form> -->
 </section>
