@@ -441,3 +441,317 @@
   border-color: var(--secondary-color);
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
+
+
+/* Add these responsive styles to your existing CSS */
+
+/* Media query for tablets and smaller devices */
+@media (max-width: 991px) {
+  .members-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .members-header > div {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .add-member-btn, 
+  .add-admin-btn,
+  .approve-member-btn {
+    flex: 1;
+    white-space: nowrap;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .modal-content {
+    width: 90%;
+    margin: 10% auto;
+    padding: 20px;
+  }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+  .members-section {
+    padding: 15px;
+    overflow-x: auto; /* Allow horizontal scrolling for tables */
+  }
+  
+  /* Table responsive styles */
+  .members-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .members-table th,
+  .members-table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  /* Pagination responsive styles */
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .pagination-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .number-buttons-active,
+  .number-buttons-inactive {
+    display: flex;
+    overflow-x: auto;
+    max-width: 60%;
+    padding-bottom: 5px;
+  }
+  
+  /* Modal responsive styles */
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+    padding: 15px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    font-size: 14px;
+  }
+  
+  /* Button styles for mobile */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  
+  /* Hide button text, show only icons on very small screens */
+  @media (max-width: 480px) {
+    .edit-btn-inactive::before,
+    .edit-btn-active::before,
+    .delete-btn::before {
+      margin-right: 0;
+    }
+    
+    .edit-btn-inactive span,
+    .edit-btn-active span,
+    .delete-btn span {
+      display: none;
+    }
+  }
+}
+
+/* Enhanced mobile responsiveness - add these to your CSS */
+
+/* Improved button styles for all screen sizes */
+.members-header > div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow buttons to wrap on very small screens */
+}
+
+.add-member-btn, 
+.add-admin-btn,
+.approve-member-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px; /* Ensure buttons have minimum width */
+  transition: all 0.3s ease;
+}
+
+/* Tablet responsiveness improvements */
+@media (max-width: 991px) {
+  .members-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .members-header > div {
+    width: 100%;
+  }
+}
+
+/* Mobile phone responsiveness improvements */
+@media (max-width: 767px) {
+  .members-section {
+    padding: 12px;
+  }
+  
+  .members-header h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .add-member-btn, 
+  .add-admin-btn,
+  .approve-member-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  /* Improve table scrolling experience */
+  .members-table {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+  
+  /* Adjust modal for better mobile experience */
+  .modal-content {
+    padding: 15px;
+    margin: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: auto;
+    left: 10px;
+    right: 10px;
+  }
+}
+
+/* Small mobile devices (under 480px) */
+@media (max-width: 480px) {
+  .members-header > div {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .add-member-btn, 
+  .add-admin-btn,
+  .approve-member-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  /* Make table more compact */
+  .members-table th,
+  .members-table td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+  
+  /* Optimize action buttons in table */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    padding: 6px;
+    margin: 2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .edit-btn-inactive::before,
+  .edit-btn-active::before,
+  .delete-btn::before {
+    margin: 0;
+  }
+  
+  .edit-btn-inactive span,
+  .edit-btn-active span,
+  .delete-btn span {
+    display: none;
+  }
+  
+  /* Improve form elements on small screens */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  /* Adjust pagination for very small screens */
+  .pagination {
+    padding: 10px;
+  }
+  
+  .pagination-info-active,
+  .pagination-info-inactive {
+    font-size: 12px;
+  }
+  
+  .pagination-buttons a {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  
+  .number-buttons-active,
+  .number-buttons-inactive {
+    max-width: 50%;
+  }
+}
+
+/* Extra small devices (under 360px) */
+@media (max-width: 360px) {
+  .members-header h2 {
+    font-size: 18px;
+  }
+  
+  /* Further optimize table for tiny screens */
+  .members-table th,
+  .members-table td {
+    padding: 6px 3px;
+    font-size: 12px;
+  }
+  
+  /* Make action buttons even more compact */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+  
+  /* Adjust modal content for tiny screens */
+  .modal-content {
+    padding: 10px;
+  }
+  
+  .modal-content h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .close-btn {
+    font-size: 24px;
+  }
+  
+  .btn-success {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

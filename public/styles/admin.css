@@ -1110,3 +1110,130 @@ header {
 #newAdminForm {
   display: none;
 }
+
+/* Mobile toggle button */
+.mobile-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 1050;
+  background: linear-gradient(180deg, #9b3838 0%, #6b1f1f 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  display: none; /* Hidden by default, shown on mobile */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Update sidebar styles for responsiveness */
+.sidebar {
+  width: 250px; /* Default width */
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 991.98px) {
+  /* Show mobile toggle button */
+  .mobile-toggle {
+    display: flex;
+  }
+  
+  /* Adjust sidebar for mobile */
+  .sidebar {
+    position: fixed;
+    left: -250px; /* Hide sidebar by default on mobile */
+    top: 0;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .sidebar.mobile-open {
+    left: 0; /* Show sidebar when mobile-open class is added */
+  }
+  
+  /* Adjust container for mobile */
+  .container {
+    display: block; /* Change from flex to block */
+  }
+  
+  main {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px;
+    padding-top: 60px; /* Add space for the mobile toggle button */
+  }
+  
+  /* Show overlay when sidebar is open */
+  .sidebar-overlay.active {
+    display: block;
+  }
+}
+
+/* Collapsed sidebar styles */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .user-info div,
+.sidebar.collapsed nav h3,
+.sidebar.collapsed nav a span,
+.sidebar.collapsed .logout-side span {
+  display: none;
+}
+
+.sidebar.collapsed nav a {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed nav a i {
+  margin-right: 0;
+}
+
+.sidebar.collapsed .logout {
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar.collapsed .logout a {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.sidebar.collapsed .logout-side {
+  display: flex;
+  justify-content: center;
+}
+
+/* Adjust sidebar toggle icon */
+.sidebar-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-toggle i {
+  transform: rotate(180deg);
+}
+

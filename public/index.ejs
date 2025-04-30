@@ -64,6 +64,7 @@
           <!-- Content Section -->
           <%- include('../resources/views/pages/user/components/overview.ejs')
           %>
+          
         </main>
       </div>
     </div>
@@ -2118,6 +2119,88 @@
 
         initializeOverview();
       });
+
+
+
+
+
+      // Responsive Sidebar JavaScript
+
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.querySelector('.main-content');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const mobileToggle = document.getElementById('mobileToggle');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  // Function to check if we're on mobile view
+  function isMobileView() {
+    return window.innerWidth < 768; // Bootstrap md breakpoint
+  }
+  
+  // Desktop sidebar toggle (collapse/expand)
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('expanded');
+      
+      // Update toggle icon
+      const icon = this.querySelector('i');
+      if (sidebar.classList.contains('collapsed')) {
+        icon.classList.remove('bi-chevron-left');
+        icon.classList.add('bi-chevron-right');
+      } else {
+        icon.classList.remove('bi-chevron-right');
+        icon.classList.add('bi-chevron-left');
+      }
+    });
+  }
+  
+  // Mobile sidebar toggle (show/hide)
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('active');
+      
+      // Prevent body scrolling when sidebar is open
+      if (sidebar.classList.contains('mobile-open')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    });
+  }
+  
+  // Close sidebar when clicking overlay
+  if (overlay) {
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  }
+  
+  // Close sidebar when clicking a nav link on mobile
+  const navLinks = document.querySelectorAll('.sidebar .nav-link');
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (isMobileView() && sidebar.classList.contains('mobile-open')) {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    if (!isMobileView() && sidebar.classList.contains('mobile-open')) {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
     </script>
   </body>
 </html>

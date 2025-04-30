@@ -611,6 +611,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   font-size: 0.875rem;
+
 }
 
 .edit-event {
@@ -619,7 +620,7 @@
 }
 
 .delete-event {
-  background-color: #dc3545;
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -628,7 +629,7 @@
 }
 
 .delete-event:hover {
-  background-color: #c82333;
+  background-color: #8f7501;
 }
 
 /* Modal Styles */

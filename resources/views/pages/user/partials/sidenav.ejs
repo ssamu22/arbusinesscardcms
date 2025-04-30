@@ -1,4 +1,9 @@
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
+  <!-- Mobile Toggle Button (Only visible on small screens) -->
+  <button class="mobile-toggle d-md-none" id="mobileToggle">
+    <i class="bi bi-list"></i>
+  </button>
+  
   <div class="sidebar-header">
     <div class="d-flex align-items-center">
       <img
@@ -9,9 +14,9 @@
       />
       <span class="sidebar-title">ARCMS</span>
     </div>
-    <!-- <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle d-none d-md-block" id="sidebarToggle">
       <i class="bi bi-chevron-left"></i>
-    </button> -->
+    </button>
   </div>
   <div class="position-sticky">
     <!-- General Section -->
@@ -97,3 +102,6 @@
     </div>
   </div>
 </nav>
+
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
