@@ -195,7 +195,6 @@ body {
   border-radius: 50%;
 }
 
-
 .logout .logout-side .fas {
   color: white !important;
   margin-right: 10px;
@@ -486,6 +485,49 @@ header {
 
 .university-tab-content.active {
   display: block;
+}
+
+#video-tab {
+  /* display: flex !important;
+  justify-content: center; */
+}
+
+.video-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.vid-btn-container {
+  display: flex;
+  gap: 5px;
+}
+
+.vid-btn {
+  /* color: #fff; */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  /* transition: background-color 0.3s; */
+}
+
+#update-vid-btn {
+  background: #af8e01;
+  color: white;
+}
+
+#delete-vid-btn {
+  background: #9b3838;
+  color: white;
+}
+
+#intro-video {
+  margin: 40px auto;
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .university-preview {
@@ -1155,7 +1197,7 @@ header {
   .mobile-toggle {
     display: flex;
   }
-  
+
   /* Adjust sidebar for mobile */
   .sidebar {
     position: fixed;
@@ -1164,23 +1206,23 @@ header {
     height: 100%;
     overflow-y: auto;
   }
-  
+
   .sidebar.mobile-open {
     left: 0; /* Show sidebar when mobile-open class is added */
   }
-  
+
   /* Adjust container for mobile */
   .container {
     display: block; /* Change from flex to block */
   }
-  
+
   main {
     margin-left: 0;
     width: 100%;
     padding: 15px;
     padding-top: 60px; /* Add space for the mobile toggle button */
   }
-  
+
   /* Show overlay when sidebar is open */
   .sidebar-overlay.active {
     display: block;
@@ -1236,4 +1278,3 @@ header {
 .sidebar.collapsed .sidebar-toggle i {
   transform: rotate(180deg);
 }
-

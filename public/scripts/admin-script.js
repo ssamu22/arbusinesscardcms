@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const universityManagementLink = document.getElementById(
     "university-management-link"
   );
+  const theIntroVideo = document.getElementById("intro-video");
 
   const adminAccountLink = document.getElementById("admin-account-link");
   const markersLink = document.getElementById("markers-link");
@@ -40,15 +41,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].forEach((link) => {
       link.classList.remove("sidebar-active");
     });
-    if (section === membersSection) membersLink.classList.add("sidebar-active");
+    if (section === membersSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
+      membersLink.classList.add("sidebar-active");
+    }
     if (section === universitySection)
       universityLink.classList.add("sidebar-active");
-    if (section === universityManagementSection)
+    if (section === universityManagementSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
       universityManagementLink.classList.add("sidebar-active");
-    if (section === markersSection) markersLink.classList.add("sidebar-active");
-    if (section === bCardsSection) bCardsLink.classList.add("sidebar-active");
-    if (section === adminAccountSection)
+    }
+    if (section === markersSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
+      markersLink.classList.add("sidebar-active");
+    }
+    if (section === bCardsSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
+      bCardsLink.classList.add("sidebar-active");
+    }
+    if (section === adminAccountSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
       adminAccountLink.classList.add("sidebar-active");
+    }
   }
 
   showSection(membersSection);
@@ -97,16 +116,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   // University Contents Tabs
   const tabs = document.querySelectorAll(".university-tab");
   const tabContents = document.querySelectorAll(".university-tab-content");
-
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       const tabId = tab.getAttribute("data-tab");
 
       tabs.forEach((t) => t.classList.remove("active"));
-      tabContents.forEach((content) => content.classList.remove("active"));
+      tabContents.forEach((content) => {
+        console.log("THE CONTENT ID:", content.id);
+        content.classList.remove("active");
+
+        if (content.id === "video-tab") {
+          theIntroVideo.pause();
+          theIntroVideo.currentTime = 0;
+        }
+      });
 
       tab.classList.add("active");
-      document.getElementById(`${tabId}-tab`).classList.add("active");
+
+      const theContentTab = document.getElementById(`${tabId}-tab`);
+      theContentTab.classList.add("active");
     });
   });
 
