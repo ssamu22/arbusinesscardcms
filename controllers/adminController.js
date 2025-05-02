@@ -62,6 +62,51 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.fetchAllAdmin = async (req, res) => {
+  //console.log("THE CURRENT SESSION:", req.session);
+  console.log("FETCHING ADMINS...");
+  try {
+    // Step 1: Fetch all admins
+    const admins = await Admin.listAll();
+
+    console.log("ALL ADMINS:", admins);
+
+    const currentAdminId = req.session.admin.admin_id;
+
+    // Step 2: Replace each admin's `image_id` with the corresponding `image_url`
+    const adminsWithDetails = admins.map(async (admin) => {
+      const adminData = { ...admin };
+
+      adminData.image_url = "";
+
+      // If image_id exists, fetch the corresponding image URL
+      if (admin.image_id) {
+        const image = await Image.getImageById(admin.image_id);
+        adminData.image_url = image ? image.image_url : null;
+      }
+
+      // Add email using the getEmail method
+      adminData.email = admin.getEmail();
+
+      // Add the isCurrentAdmin flag
+      adminData.isCurrentAdmin = admin.admin_id === currentAdminId;
+
+      // Remove `image_id` as it's no longer needed
+      delete adminData.image_id;
+
+      return adminData;
+    });
+
+    const resolvedAdmins = await Promise.all(adminsWithDetails);
+
+    // Step 3: Send the updated admins list
+    res.json({ adminsList: resolvedAdmins });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 // Handle logout
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
@@ -562,3 +607,22 @@ function generateRandomPassword(length = 8) {
     )
     .join("");
 }
+
+exports.deleteAdmin = async (req, res) => {
+  try {
+    const adminToDelete = await Admin.findById(req.params.id); // delete the admin
+
+    if (!adminToDelete) {
+      return res
+        .status(404)
+        .json({ error: "Admin not found or unauthorized" });
+    }
+
+    const deletedAdmin = await adminToDelete.delete(); // delete the admin
+
+    res.status(200).json(deletedAdmin); // Return the delete admin
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    res.status(500).json({ error: "Failed to delete admin" });
+  }
+};

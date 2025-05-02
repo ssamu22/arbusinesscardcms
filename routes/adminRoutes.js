@@ -39,6 +39,9 @@ router.route("/change-avatar").patch(
   adminController.changeAdminImage
 );
 
+router.get("/list-all", adminController.fetchAllAdmin);
+router.delete("/:id", adminController.deleteAdmin);
+
 router
   .route("/thisPassword")
   //ensureAuthenticated.ensureAdmin,

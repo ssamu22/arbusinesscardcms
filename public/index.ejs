@@ -323,9 +323,9 @@
               const response = await fetch("/arcms/api/v1/achievements");
               const data = await response.json();
               console.log(data);
-              achievements = data; // Store fetched entries
 
-              if (achievements.length > 0) {
+              if (data.length > 0) {
+                achievements = data; // Store fetched entries
                 renderAchievements(); // Render the fetched entries
               }
             } catch (error) {
@@ -588,6 +588,8 @@
                   );
                   achievements[index] = result;
                 } else {
+                  console.log("Current Achievements: "+ JSON.stringify(achievements));
+                  console.log("Result: "+JSON.stringify(result));
                   achievements.push(result);
                 }
 
