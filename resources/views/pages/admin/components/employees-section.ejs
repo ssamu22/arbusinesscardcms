@@ -41,14 +41,11 @@
     </div>
   </div>
 
-
   <div class="members-header">
     <h2>Members</h2>
 
     <div>
-      <button class="add-member-btn" id="openModal">
-        <i class="fas fa-plus"></i> Add Member
-      </button>
+      <button class="add-member-btn" id="openModal">Add Member</button>
       <button class="add-admin-btn" id="openAdminModal">Add Admin</button>
     </div>
   </div>
@@ -61,36 +58,36 @@
   </div> -->
 
   <div class="members-table-container">
-  <table class="members-table">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Members</th>
-        <th>Joined</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="activeMembersTableBody">
-      <!-- Dummy data will be inserted here by JavaScript -->
-    </tbody>
-  </table>
-  <div class="pagination">
-    <div class="pagination-info-active">
-      Showing <span></span> to <span></span> of <span></span> results
+    <table class="members-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Members</th>
+          <th>Joined</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="activeMembersTableBody">
+        <!-- Dummy data will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+    <div class="pagination">
+      <div class="pagination-info-active">
+        Showing <span></span> to <span></span> of <span></span> results
+      </div>
+      <div class="pagination-buttons">
+        <a href="#" class="prev-page-members"
+          ><i class="fas fa-chevron-left"></i
+        ></a>
+        <div class="number-buttons-active"></div>
+        <a href="#" class="next-page-members"
+          ><i class="fas fa-chevron-right"></i
+        ></a>
+      </div>
     </div>
-    <div class="pagination-buttons">
-      <a href="#" class="prev-page-members"
-        ><i class="fas fa-chevron-left"></i
-      ></a>
-      <div class="number-buttons-active"></div>
-      <a href="#" class="next-page-members"
-        ><i class="fas fa-chevron-right"></i
-      ></a>
-    </div>
-  </div>
 
-  <!-- INACTIVE MEMBERS SECTION -->
-    <div class="members-header" style="margin-top: 20pt;">
+    <!-- INACTIVE MEMBERS SECTION -->
+    <div class="members-header" style="margin-top: 20pt">
       <h2>For Approval</h2>
       <button class="approve-member-btn" id="openModal">
         <i></i> Approve All
@@ -121,8 +118,8 @@
       </div>
     </div>
 
-  <!-- ADMIN MEMBERS SECTION -->
-    <div class="members-header" style="margin-top: 20pt;">
+    <!-- ADMIN MEMBERS SECTION -->
+    <div class="members-header" style="margin-top: 20pt">
       <h2>Admins</h2>
       <!-- <button class="approve-member-btn" id="openModal">
         <i></i> Approve All
