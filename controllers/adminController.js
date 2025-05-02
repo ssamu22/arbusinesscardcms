@@ -419,7 +419,7 @@ exports.createEmployee = async (req, res) => {
         <h2>Welcome to ARCMS!</h2>
         <p>Dear User,</p>
         <p>We are excited to inform you that an account has been created for you by the admin. You can now log in to your account using the credentials below:</p>
-        <p><strong>Username:</strong> ${req.body.email}</p>
+        <p><strong>Email:</strong> ${req.body.email}</p>
         <p><strong>Password:</strong> ${randomPassword}</p> <!-- Assuming you store a temporary password -->
         <p>To get started, please log in at the following link:</p>
         <p><a href="https://arbusinesscardcms.onrender.com" style="color: #007bff; text-decoration: none;">Login to your account</a></p>
@@ -496,7 +496,7 @@ exports.createAdmin = async (req, res) => {
       <p>We’re excited to inform you that you’ve been invited to join <strong>ARCMS</strong> as an administrator. Your account has been successfully created and you can now access the admin dashboard using the credentials below:</p>
       
       <ul>
-        <li><strong>Username:</strong> ${req.body.email}</li>
+        <li><strong>Email:</strong> ${req.body.email}</li>
         <li><strong>Temporary Password:</strong> ${randomPassword}</li>
       </ul>
       
