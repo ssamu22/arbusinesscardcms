@@ -147,8 +147,41 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     } else {
       // This will trigger after the user saves the updated data
       await updateBusinessCardData();
+
       resetEditTargetInputs();
     }
+
+    const updatedTargetData = await Promise.all(
+      targets.map(async (target) =>
+        getBusinessCardData(
+          target.image_target,
+          target.date_created,
+          target.date_modified
+        )
+      )
+    );
+
+    targets = await getAllBusinessCards();
+    const updatedImageTargetEls = document.querySelectorAll(".image-target");
+
+    updatedImageTargetEls.forEach((el) => {
+      const imageTargetData = updatedTargetData.find(
+        (data) => data.target_id === el.id
+      );
+      const theTarget = targets.find((data) => data.image_target === el.id);
+
+      // Clear previous click handlers to prevent stacking
+      el.replaceWith(el.cloneNode(true));
+    });
+
+    document.querySelectorAll(".image-target").forEach((el) => {
+      const imageTargetData = updatedTargetData.find(
+        (data) => data.target_id === el.id
+      );
+      const theTarget = targets.find((data) => data.image_target === el.id);
+
+      showOverlayHandler(el, imageTargetData, el.id, theTarget);
+    });
   });
 
   function addMetadataOption(employee_id, fullname) {
@@ -264,6 +297,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         );
 
         markerNewImage.src = data.image_url;
+
+        associatedEmployee.image_url = data.image_url;
       }
 
       console.log("UPDATE RESPONSE:", data);
@@ -427,8 +462,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     }
   }
 
-  const targets = await getAllBusinessCards();
-  const employees = await getActiveEmployees();
+  let targets = await getAllBusinessCards();
+  let employees = await getActiveEmployees();
 
   // Add employee full name in metadata dropdown
   employees.forEach((employee) => {
