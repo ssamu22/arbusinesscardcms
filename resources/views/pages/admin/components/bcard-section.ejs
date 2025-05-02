@@ -43,7 +43,7 @@
           <button type="button" id="generate-bcard-btn">
             Generate & Replace
           </button>
-          <button type="button" id="download-bcard">
+          <button type="button" id="download-bcard" style="display: none">
             Download Business Card
           </button>
         </div>
@@ -139,22 +139,21 @@
 <div class="tutorial-spotlight" id="tutorialSpotlight"></div>
 
 <!-- Tutorial Tooltip (will be positioned dynamically) -->
-<div class="tutorial-tooltip" id="tutorialTooltip" style="display: none;">
+<div class="tutorial-tooltip" id="tutorialTooltip" style="display: none">
   <div class="tutorial-tooltip-header">
     <h3 class="tutorial-tooltip-title">Title</h3>
     <button class="tutorial-btn-skip" id="closeTutorial">
       <i class="bi bi-x"></i>
     </button>
   </div>
-  <div class="tutorial-tooltip-content">
-    Content goes here
-  </div>
+  <div class="tutorial-tooltip-content">Content goes here</div>
   <div class="tutorial-tooltip-footer">
     <div class="tutorial-tooltip-progress">Step 1 of 7</div>
     <div class="tutorial-tooltip-buttons">
-      <button class="tutorial-btn tutorial-btn-prev" id="prevStep">Previous</button>
+      <button class="tutorial-btn tutorial-btn-prev" id="prevStep">
+        Previous
+      </button>
       <button class="tutorial-btn tutorial-btn-next" id="nextStep">Next</button>
     </div>
   </div>
 </div>
-

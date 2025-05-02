@@ -1121,13 +1121,13 @@ function initializeBCardTutorial() {
         "When your design is complete, click here to save it as the official template. This will replace any existing template in the system.",
       position: "top",
     },
-    {
-      element: "#download-bcard",
-      title: "Step 7: Download Preview",
-      content:
-        "You can download a preview of the business card to see how it looks before finalizing.",
-      position: "top",
-    },
+    // {
+    //   element: "#download-bcard",
+    //   title: "Step 7: Download Preview",
+    //   content:
+    //     "You can download a preview of the business card to see how it looks before finalizing.",
+    //   position: "top",
+    // },
   ];
 
   let currentStep = 0;
