@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
       if (!response.ok) {
         showErrorMessage(
-          "The business card is still processing. Please try again later!"
+          "The business card image may be invalid or is still processing. Please try again later."
         );
         console.log(`Error: ${response.status} - ${response.statusText}`);
         return;
