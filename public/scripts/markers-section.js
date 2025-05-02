@@ -287,6 +287,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
       if (response.status === 200) {
         showSuccessMessage("Business card successfully updated!");
+        editTargetBtn.textContent = "Save";
       }
       const data = await response.json();
 
