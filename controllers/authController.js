@@ -41,6 +41,7 @@ exports.login = async (req, res) => {
     req.session.user = {
       employee_id: employee.employee_id,
       first_name: employee.first_name,
+      middle_name: employee.middle_name,
       last_name: employee.last_name,
       honorifics: employee.honorifics,
       email: employee.getEmail(),
