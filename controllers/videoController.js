@@ -193,7 +193,9 @@ exports.deleteVideo = async (req, res) => {
   try {
     const { error } = await supabase
       .from("video")
-      .delete()
+      .update({
+        video_filename: "",
+      })
       .eq("video_id", req.params.id);
 
     if (error) {
@@ -204,7 +206,7 @@ exports.deleteVideo = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    res.status(204).json({
       status: "success",
       message: "Video deleted successfully!",
     });

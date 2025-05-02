@@ -47,12 +47,16 @@ let awardFilename = "";
 
 const introVideo = document.getElementById("intro-video");
 const updateVideoBtn = document.getElementById("update-vid-btn");
+const deleteVideoBtn = document.getElementById("delete-vid-btn");
 const videoInput = document.getElementById("video-upload");
 
 getIntroVideo(1);
 
 videoInput.addEventListener("change", async (e) => {
   await updateIntroVideo(1);
+});
+deleteVideoBtn.addEventListener("click", async (e) => {
+  await deleteIntroVideo(1);
 });
 
 addFileInput.addEventListener("change", (event) => {
@@ -226,6 +230,9 @@ async function updateIntroVideo(id) {
 
         // Load the new video
         videoElement.load();
+        videoElement.play().catch((error) => {
+          console.warn("Autoplay prevented or failed to play:", error);
+        });
       } else {
         videoInput.disabled = false;
 
@@ -243,6 +250,44 @@ async function updateIntroVideo(id) {
   };
 
   video.src = URL.createObjectURL(file);
+}
+
+async function deleteIntroVideo(id) {
+  deleteVideoBtn.textContent = "Removing Video...";
+  videoInput.disabled = true;
+
+  try {
+    const response = await fetch(`/arcms/api/v1/videos/${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      deleteVideoBtn.textContent = "Remove Video";
+      videoInput.disabled = false;
+
+      showSuccessMessage("Video deleted successfully!");
+
+      // Clear the video player
+      const videoElement = document.getElementById("intro-video");
+
+      while (videoElement.firstChild) {
+        videoElement.removeChild(videoElement.firstChild);
+      }
+
+      videoElement.load(); // reload with no source
+    } else {
+      deleteVideoBtn.textContent = "Remove Video";
+      videoInput.disabled = false;
+
+      showErrorMessage("Failed to delete video! Please try again later.");
+    }
+  } catch (err) {
+    deleteVideoBtn.textContent = "Remove Video";
+    videoInput.disabled = false;
+
+    console.error(err);
+    showErrorMessage("An unexpected error occurred during deletion.");
+  }
 }
 
 async function getIntroVideo(id) {
