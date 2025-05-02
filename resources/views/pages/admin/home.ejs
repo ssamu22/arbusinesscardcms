@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/styles/admin/bcards-section.css" />
     <link rel="stylesheet" href="/styles/admin/admin-account-section.css" />
     <link rel="stylesheet" href="/styles/admin/markers-section.css" />
+    <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
 
     <link
       rel="stylesheet"
@@ -25,82 +26,83 @@
   <body>
     <div class="container">
       <!-- Mobile Toggle Button (Only visible on small screens) -->
-<button class="mobile-toggle d-md-none" id="mobileToggle">
-  <i class="fas fa-bars"></i>
-</button>
+      <button class="mobile-toggle d-md-none" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+      </button>
 
-<!-- Overlay for mobile -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+      <!-- Overlay for mobile -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="d-flex">
-      <img src="/images/temporary.jpg" alt="Logo" />
-      <span class="sidebar-title">ARCMS</span>
-    </div>
-    <button class="sidebar-toggle d-none d-md-block" id="sidebarToggle">
-      <i class="bi bi-chevron-left"></i>
-    </button>
-  </div>
-  <div class="user-info">
-    <img
-      src="/images/avatar.png"
-      alt="User Avatar"
-      class="avatar"
-      id="admin-image"
-    />
-    <div>
-      <div class="user-name" id="admin-name"></div>
-      <div class="user-role" id="admin-email"></div>
-    </div>
-  </div>
-  <nav>
-    <h3>Main Menu</h3>
-    <ul>
-      <li>
-        <a href="#" id="members-link" class="sidebar-active">
-          <i class="fas fa-users"></i> <span>Members</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" id="university-link">
-          <i class="fas fa-university"></i> <span>University Contents</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" id="university-management-link">
-          <i class="fas fa-cogs"></i> <span>University Management</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" id="markers-link">
-          <i class="fas fa-crosshairs"></i> <span>Markers</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" id="bcards-link">
-          <i class="fas fa-id-card"></i> <span>Business Cards</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" id="admin-account-link">
-          <i class="fas fa-gear"></i> <span>My Account</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
-  <div class="logout">
-    <a
-      class="btn btn-primary"
-      href="/arcms/api/v1/auth/admin/logout"
-      style="text-decoration: none"
-    >
-      <span class="logout-side text-white" style="color: white">
-        <i class="fas fa-sign-out-alt"></i> <span>Log out</span>
-      </span>
-    </a>
-  </div>
-</aside>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="d-flex">
+            <img src="/images/temporary.jpg" alt="Logo" />
+            <span class="sidebar-title">ARCMS</span>
+          </div>
+          <button class="sidebar-toggle d-none d-md-block" id="sidebarToggle">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+        </div>
+        <div class="user-info">
+          <img
+            src="/images/avatar.png"
+            alt="User Avatar"
+            class="avatar"
+            id="admin-image"
+          />
+          <div>
+            <div class="user-name" id="admin-name"></div>
+            <div class="user-role" id="admin-email"></div>
+          </div>
+        </div>
+        <nav>
+          <h3>Main Menu</h3>
+          <ul>
+            <li>
+              <a href="#" id="members-link" class="sidebar-active">
+                <i class="fas fa-users"></i> <span>Members</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" id="university-link">
+                <i class="fas fa-university"></i>
+                <span>University Contents</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" id="university-management-link">
+                <i class="fas fa-cogs"></i> <span>University Management</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" id="markers-link">
+                <i class="fas fa-crosshairs"></i> <span>Markers</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" id="bcards-link">
+                <i class="fas fa-id-card"></i> <span>Business Cards</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" id="admin-account-link">
+                <i class="fas fa-gear"></i> <span>My Account</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="logout">
+          <a
+            class="btn btn-primary"
+            href="/arcms/api/v1/auth/admin/logout"
+            style="text-decoration: none"
+          >
+            <span class="logout-side text-white" style="color: white">
+              <i class="fas fa-sign-out-alt"></i> <span>Log out</span>
+            </span>
+          </a>
+        </div>
+      </aside>
       <div class="message-div success-message">
         <p class="alert-message">Placeholder</p>
         <svg
@@ -163,85 +165,83 @@
       //Siebdar
       // Add this to your admin-script.js or create a new script file
 
-// Improved sidebar toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
-  // Get elements
-  const sidebar = document.getElementById('sidebar');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const mobileToggle = document.getElementById('mobileToggle');
-  const overlay = document.getElementById('sidebarOverlay');
-  
-  // Function to check if we're on mobile view
-  function isMobileView() {
-    return window.innerWidth < 992; // Bootstrap lg breakpoint
-  }
-  
-  // Desktop sidebar toggle (collapse/expand)
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('collapsed');
-      
-      // Update toggle icon
-      const icon = this.querySelector('i');
-      if (sidebar.classList.contains('collapsed')) {
-        icon.classList.remove('bi-chevron-left');
-        icon.classList.add('bi-chevron-right');
-      } else {
-        icon.classList.remove('bi-chevron-right');
-        icon.classList.add('bi-chevron-left');
-      }
-    });
-  }
-  
-  // Mobile sidebar toggle (show/hide)
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('mobile-open');
-      overlay.classList.toggle('active');
-      
-      // Prevent body scrolling when sidebar is open
-      if (sidebar.classList.contains('mobile-open')) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-    });
-  }
-  
-  // Close sidebar when clicking overlay
-  if (overlay) {
-    overlay.addEventListener('click', function() {
-      sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-  }
-  
-  // Close sidebar when clicking a nav link on mobile
-  const navLinks = document.querySelectorAll('.sidebar nav a');
-  navLinks.forEach(function(link) {
-    link.addEventListener('click', function() {
-      if (isMobileView() && sidebar.classList.contains('mobile-open')) {
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-  
-  // Handle window resize
-  window.addEventListener('resize', function() {
-    if (!isMobileView() && sidebar.classList.contains('mobile-open')) {
-      sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-});
+      // Improved sidebar toggle functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get elements
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const mobileToggle = document.getElementById("mobileToggle");
+        const overlay = document.getElementById("sidebarOverlay");
 
+        // Function to check if we're on mobile view
+        function isMobileView() {
+          return window.innerWidth < 992; // Bootstrap lg breakpoint
+        }
 
+        // Desktop sidebar toggle (collapse/expand)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
 
+            // Update toggle icon
+            const icon = this.querySelector("i");
+            if (sidebar.classList.contains("collapsed")) {
+              icon.classList.remove("bi-chevron-left");
+              icon.classList.add("bi-chevron-right");
+            } else {
+              icon.classList.remove("bi-chevron-right");
+              icon.classList.add("bi-chevron-left");
+            }
+          });
+        }
+
+        // Mobile sidebar toggle (show/hide)
+        if (mobileToggle) {
+          mobileToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("mobile-open");
+            overlay.classList.toggle("active");
+
+            // Prevent body scrolling when sidebar is open
+            if (sidebar.classList.contains("mobile-open")) {
+              document.body.style.overflow = "hidden";
+            } else {
+              document.body.style.overflow = "";
+            }
+          });
+        }
+
+        // Close sidebar when clicking overlay
+        if (overlay) {
+          overlay.addEventListener("click", function () {
+            sidebar.classList.remove("mobile-open");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
+          });
+        }
+
+        // Close sidebar when clicking a nav link on mobile
+        const navLinks = document.querySelectorAll(".sidebar nav a");
+        navLinks.forEach(function (link) {
+          link.addEventListener("click", function () {
+            if (isMobileView() && sidebar.classList.contains("mobile-open")) {
+              sidebar.classList.remove("mobile-open");
+              overlay.classList.remove("active");
+              document.body.style.overflow = "";
+            }
+          });
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", function () {
+          if (!isMobileView() && sidebar.classList.contains("mobile-open")) {
+            sidebar.classList.remove("mobile-open");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
+          }
+        });
+      });
     </script>
+    <script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
     <script src="/scripts/markers-section.js"></script>
     <script src="/scripts/bcard-section.js"></script>
     <script src="/scripts/admin-account-section.js"></script>
@@ -249,7 +249,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/scripts/university-section.js"></script>
     <script src="/scripts/events.js"></script>
     <script src="/scripts/admin-script.js"></script>
-
-    
   </body>
 </html>

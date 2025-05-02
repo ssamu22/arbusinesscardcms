@@ -21,7 +21,7 @@ const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
 const vuforiaRouter = require("./routes/vuforiaRoutes");
 const awardRouter = require("./routes/awardRoutes");
-
+const videoRouter = require("./routes/videoRoutes");
 const viewController = require("./controllers/viewController");
 
 // TRY TO IMPLEMENT REDIS
@@ -70,6 +70,7 @@ app.use("/upload", uploadRoutes);
 app.use("/lpu", lpuRoutes);
 app.use("/events", eventRoutes);
 
+app.use("/arcms/api/v1/videos", videoRouter);
 app.use("/arcms/api/v1/awards", awardRouter);
 app.use("/arcms/api/v1/vuforia", vuforiaRouter);
 app.use("/arcms/api/v1/admin", adminRoutes);

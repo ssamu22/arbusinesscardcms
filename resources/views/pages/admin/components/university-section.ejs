@@ -95,6 +95,7 @@
     <div class="university-tab active" data-tab="home">Principles</div>
     <div class="university-tab" data-tab="achievements">Awards</div>
     <div class="university-tab" data-tab="events">Events</div>
+    <div class="university-tab" data-tab="video">Video</div>
   </div>
   <div id="home-tab" class="university-tab-content active">
     <div class="university-form">
@@ -284,6 +285,40 @@ University Philosophy</textarea
           </div>
           <button type="submit" class="submit-btn">Save Event</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="video-tab" class="university-tab-content">
+    <div class="video-container">
+      <h2 style = "margin: 0;">Introductory Video</h2>
+      <video
+        id="intro-video"
+        class="video-js"
+        controls
+        preload="auto"
+        poster="MY_VIDEO_POSTER.jpg"
+        data-setup="{}"
+      >
+        <source src="MY_VIDEO.mp4" type="video/mp4" />
+        <source src="MY_VIDEO.webm" type="video/webm" />
+        <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to
+          a web browser that
+          <a href="https://videojs.com/html5-video-support/" target="_blank"
+            >supports HTML5 video</a
+          >
+        </p>
+      </video>
+      <div class="vid-btn-container">
+        <input
+          type="file"
+          id="video-upload"
+          accept="video/mp4"
+          style="display: none"
+        />
+        <label for="video-upload" id="update-vid-btn" class="vid-btn">Change Video</label>
+        <button id="delete-vid-btn" class="vid-btn">Remove Video</button>
       </div>
     </div>
   </div>

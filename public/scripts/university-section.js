@@ -45,6 +45,20 @@ const awardBucket = "assets/awardImages";
 let awardFile = null;
 let awardFilename = "";
 
+const introVideo = document.getElementById("intro-video");
+const updateVideoBtn = document.getElementById("update-vid-btn");
+const deleteVideoBtn = document.getElementById("delete-vid-btn");
+const videoInput = document.getElementById("video-upload");
+
+getIntroVideo(1);
+
+videoInput.addEventListener("change", async (e) => {
+  await updateIntroVideo(1);
+});
+deleteVideoBtn.addEventListener("click", async (e) => {
+  await deleteIntroVideo(1);
+});
+
 addFileInput.addEventListener("change", (event) => {
   awardFile = event.target.files[0]; // Get the uploaded file
   awardFilename = `award_${Date.now()}_${awardFile.name}`;
@@ -141,6 +155,171 @@ submitNewAwardbtn.addEventListener("click", () => {
   // Call the function to add the new award
   addNewAward(newAwardData);
 });
+
+async function updateIntroVideo(id) {
+  const file = videoInput.files[0];
+  updateVideoBtn.textContent = "Updating Video...";
+  videoInput.disabled = true;
+  if (!file) {
+    videoInput.disabled = false;
+
+    updateVideoBtn.textContent = "Change Video";
+    return showErrorMessage("Please select a video file.");
+  }
+
+  // 1. Check file type
+  if (file.type !== "video/mp4") {
+    videoInput.disabled = false;
+
+    updateVideoBtn.textContent = "Change Video";
+
+    return showErrorMessage("Only MP4 videos are allowed.");
+  }
+
+  // 2. Load video metadata to check duration
+  const video = document.createElement("video");
+  video.preload = "metadata";
+
+  video.onloadedmetadata = async () => {
+    window.URL.revokeObjectURL(video.src);
+    const duration = video.duration;
+
+    // 3. Check duration (3 minutes = 180 seconds)
+    if (duration > 180) {
+      videoInput.disabled = false;
+
+      updateVideoBtn.textContent = "Change Video";
+
+      return showErrorMessage(
+        "The maximum duration of a video is 3 minutes long."
+      );
+    }
+
+    // 4. Create form data
+    const formData = new FormData();
+    formData.append("video", file);
+
+    try {
+      const response = await fetch(`/arcms/api/v1/videos/${id}`, {
+        method: "PATCH",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        videoInput.disabled = false;
+
+        updateVideoBtn.textContent = "Change Video";
+        showSuccessMessage("Video updated successfully!");
+        console.log("VIDEO UPDATE RESULT:", result);
+
+        const videoUrl = result.data.public_url;
+        const videoElement = document.getElementById("intro-video");
+
+        // Remove existing sources
+        while (videoElement.firstChild) {
+          videoElement.removeChild(videoElement.firstChild);
+        }
+
+        // Create and append new source
+        const source = document.createElement("source");
+        source.src = videoUrl;
+        source.type = "video/mp4"; // or determine from filename if needed
+        videoElement.appendChild(source);
+
+        // Load the new video
+        videoElement.load();
+        videoElement.play().catch((error) => {
+          console.warn("Autoplay prevented or failed to play:", error);
+        });
+      } else {
+        videoInput.disabled = false;
+
+        updateVideoBtn.textContent = "Change Video";
+
+        showErrorMessage("Upload failed: " + result.message);
+      }
+    } catch (err) {
+      videoInput.disabled = false;
+      updateVideoBtn.textContent = "Change Video";
+
+      console.log(err);
+      showErrorMessage("An unexpected error occurred.");
+    }
+  };
+
+  video.src = URL.createObjectURL(file);
+}
+
+async function deleteIntroVideo(id) {
+  deleteVideoBtn.textContent = "Removing Video...";
+  videoInput.disabled = true;
+
+  try {
+    const response = await fetch(`/arcms/api/v1/videos/${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      deleteVideoBtn.textContent = "Remove Video";
+      videoInput.disabled = false;
+
+      showSuccessMessage("Video deleted successfully!");
+
+      // Clear the video player
+      const videoElement = document.getElementById("intro-video");
+
+      while (videoElement.firstChild) {
+        videoElement.removeChild(videoElement.firstChild);
+      }
+
+      videoElement.load(); // reload with no source
+    } else {
+      deleteVideoBtn.textContent = "Remove Video";
+      videoInput.disabled = false;
+
+      showErrorMessage("Failed to delete video! Please try again later.");
+    }
+  } catch (err) {
+    deleteVideoBtn.textContent = "Remove Video";
+    videoInput.disabled = false;
+
+    console.error(err);
+    showErrorMessage("An unexpected error occurred during deletion.");
+  }
+}
+
+async function getIntroVideo(id) {
+  try {
+    const response = await fetch(`/arcms/api/v1/videos/${id}`);
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Video retrieved:", result);
+
+      const videoUrl = result.data.public_url;
+      const videoElement = document.getElementById("intro-video");
+
+      // Remove existing sources
+      while (videoElement.firstChild) {
+        videoElement.removeChild(videoElement.firstChild);
+      }
+
+      // Create and append new source
+      const source = document.createElement("source");
+      source.src = videoUrl;
+      source.type = "video/mp4"; // or determine from filename if needed
+      videoElement.appendChild(source);
+
+      // Load the new video
+      videoElement.load();
+    } else {
+      console.error("Error:", response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
 
 async function addNewAward(formData) {
   try {
