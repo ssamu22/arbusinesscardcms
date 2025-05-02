@@ -18,7 +18,7 @@ forgotPwordForm.addEventListener("submit", (e) => {
 resendEmailBtn.addEventListener("click", resendEmail);
 
 async function sendTokenLink(email) {
-  sendEmailBtn.textContent = "Sending link...";
+  sendEmailBtn.textContent = "Sending Email...";
   fetch("/arcms/api/v1/admin/forgot-password", {
     method: "POST",
     headers: {
@@ -28,7 +28,7 @@ async function sendTokenLink(email) {
   })
     .then((response) => response.json())
     .then((data) => {
-      sendEmailBtn.textContent = "Sending Email";
+      sendEmailBtn.textContent = "Send Email";
 
       if (data.status == "failed") {
         showErrorMessage(data.message);

@@ -269,12 +269,12 @@ exports.approveUser = async (req, res) => {
     const info = await transporter.sendMail({
       from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
       to: safeUser.email, //  receivers
-      subject: "✔ Registration Approved ✔",
+      subject: "Your Registration Has Been Approved",
       text: `Registration Approved`,
       html: `<p>Your registration has been approved by the administrators. Please <a href= 'https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>`,
     });
   } catch (err) {
-    console.log(err);
+    console.log("FAILED TO SEND EMAIL", err);
   }
 
   const image = await Image.getImageById(safeUser.image_id);

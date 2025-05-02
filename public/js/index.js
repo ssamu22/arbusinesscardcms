@@ -47,7 +47,9 @@ const register = async ({ ...userInput }) => {
 
     window.location.assign("/success");
   } catch (err) {
+    const errorCount = document.querySelector(".error-count");
     console.log("ERRORS:", err.response.data.errors);
+    errorCount.textContent = err.response.data.errors.length;
     registerErrorsList.innerHTML = "";
     err.response.data.errors.forEach((error) => {
       const li = document.createElement("li");
