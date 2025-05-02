@@ -208,6 +208,10 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="module" src="/js/index.js"></script>
     <script>
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+      
       // Script to handle error display
       document.addEventListener("DOMContentLoaded", function () {
         // Close error box when clicking the close button

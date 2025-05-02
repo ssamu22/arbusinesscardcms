@@ -135,6 +135,10 @@
       const adminImage = document.getElementById("admin-image");
       window.adminImageElement = adminImage;
 
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+
       async function getCurrentAdmin() {
         try {
           const response = await fetch("/arcms/api/v1/admin/getMe");
