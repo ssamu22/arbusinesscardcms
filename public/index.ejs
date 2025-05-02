@@ -80,6 +80,10 @@
       const confirmYesBtn = document.getElementById("confirm-yes-btn");
       const confirmNoBtn = document.getElementById("confirm-no-btn");
 
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+
       function showOverlay(actionPrompt) {
         confirmOverlay.style.display = "flex";
         changeActionText(actionPrompt);

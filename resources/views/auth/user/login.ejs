@@ -234,6 +234,10 @@
     </div>
 
     <script>
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+      
       document
         .getElementById("login-form")
         .addEventListener("submit", async function (event) {
