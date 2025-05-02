@@ -197,7 +197,7 @@
 
 .target-change-label {
   display: inline-block;
-  padding: 10px 15px;
+  padding: 15px 15px;
   background-color: var(--secondary-color);
   color: #fff;
   border-radius: 4px;
@@ -205,7 +205,6 @@
   transition: background-color 0.3s;
   grid-column: 1 / -1;
   text-align: center;
-  margin-top: 10px;
 }
 .target-change-label:hover {
   background-color: #8f7501;

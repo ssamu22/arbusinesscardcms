@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     editTargetBtn.textContent = "Edit";
     targetNameInput.disabled = true;
     targetWidthInput.disabled = true;
-    targetActiveInput.disabled = true;
+    // targetActiveInput.disabled = true;
     targetMetadata.disabled = true;
     newTargetUpload.disabled = true;
     editing = false;
@@ -140,8 +140,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       e.target.textContent = "Save";
       targetNameInput.disabled = false;
       targetWidthInput.disabled = false;
-      targetActiveInput.disabled = false;
-      targetMetadata.disabled = false;
+      // targetActiveInput.disabled = false;
+      // targetMetadata.disabled = false;
       newTargetUpload.disabled = false;
       editing = true;
     } else {
@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       const formData = new FormData();
       formData.append("name", targetNameInput.value);
       formData.append("width", targetWidthInput.value);
-      formData.append("active_flag", targetActiveInput.checked);
+      // formData.append("active_flag", targetActiveInput.checked);
       formData.append("bucket", "assets/targetImages");
       formData.append("application_metadata", JSON.stringify(metadata));
 
