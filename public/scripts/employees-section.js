@@ -1,6 +1,8 @@
 let activeEmployees = [];
 let inactiveEmployees = [];
+let adminMembers = [];
 let currentPageForActive = 1;
+let currentPageForAdmin = 1;
 let currentPageForInactive = 1;
 const itemsPerPage = 5;
 
@@ -14,13 +16,23 @@ const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
 const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
 const approveAllBtn = document.querySelector(".approve-member-btn");
 
+const tableBodyAdmins = document.getElementById("adminMembersTableBody");
+const prevAdminBtn = document.querySelector(".prev-page-admin");
+const nextAdminBtn = document.querySelector(".next-page-admin");
+
 const deleteOverlay = document.getElementById("confirm-delete-overlay");
 const deleteYesBtn = document.getElementById("delete-yes-btn");
 const deleteNoBtn = document.getElementById("delete-no-btn");
 const closeDeleteOverlay = document.querySelector(".close-delete-overlay");
 
+const adminDeleteOverlay = document.getElementById("confirm-delete-overlay-admin");
+const adminDeleteYesBtn = document.getElementById("delete-yes-btn-admin");
+const adminDeleteNoBtn = document.getElementById("delete-no-btn-admin");
+const admincloseDeleteOverlay = document.querySelector(".close-delete-overlay-admin");
+
 let employeeToDelete = null;
 let unapprovedToDelete = null;
+let adminToDelete = null;
 
 // FOR ACTIVE EMPLOYEES
 
@@ -455,6 +467,210 @@ async function deleteUser(employee_id) {
   }
 }
 
+// FOR ADMINS
+
+function showDeleteAdminOverlay() {
+  adminDeleteOverlay.style.display = "flex";
+}
+
+adminDeleteYesBtn.addEventListener("click", (e) => {
+  deleteAdmin(adminToDelete);
+
+  hideDeleteAdminOverlay();
+});
+
+adminDeleteNoBtn.addEventListener("click", (e) => {
+  hideDeleteAdminOverlay();
+});
+
+admincloseDeleteOverlay.addEventListener("click", (e) => {
+  hideDeleteAdminOverlay();
+});
+
+function hideDeleteAdminOverlay() {
+  adminDeleteOverlay.style.display = "none";
+}
+
+async function fetchAllAdmins() {
+  try {
+    console.log("Fetching admins...");
+
+    const response = await fetch("/arcms/api/v1/admin/list-all");
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch admins: ${response.statusText}`);
+    }
+
+    const { adminsList } = await response.json();
+
+    adminMembers = adminsList;
+
+    console.log("Fetched Admins:", adminMembers);
+
+    displayAdminMembers(currentPageForAdmin); // Default to page 1
+    setupPaginationAdmin();
+  } catch (error) {
+    console.error("Error fetching admins:", error);
+  }
+}
+
+async function displayAdminMembers(pageNumber) {
+  const startIndex = (pageNumber - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const adminsToDisplay = adminMembers.slice(startIndex, endIndex);
+  adminsToDisplay.sort((a, b) => a.admin_id - b.admin_id);
+
+  tableBodyAdmins.innerHTML = ""; // Clear existing content
+  adminsToDisplay.forEach((member, index) => {
+    const row = document.createElement("tr");
+
+    const isCurrent = member.isCurrentAdmin;
+
+    const deleteButtonHTML = isCurrent
+    ? `<a href="#" class="delete-btn-admin disabled" style="pointer-events: none; color: gray;" title="You cannot delete your own account">Delete</a>`
+    : `<a href="#" class="delete-btn-admin" data-id="${member.admin_id}">Delete</a>`;
+
+    console.log("the freaking admin:", member);
+    // <td>${startIndex + index + 1}</td>
+    const name = (member.admin_name || "");
+    row.innerHTML = `
+                <td>${member.admin_id}</td>
+                <td class="member-info">
+                    <div>
+                        <img src="${member.image_url}" alt="${name}">
+                        <div class="member-name">${name}</div>
+                        <div class="member-email">${member.email}</div>
+                    </div>
+                </td>
+                <td>${member.date_created}</td>
+                <td>
+                  ${deleteButtonHTML}
+                </td>
+            `;
+
+    tableBodyAdmins.appendChild(row);
+  });
+
+  const deleteButtons = document.querySelectorAll(".delete-btn-admin");
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const adminId = event.target.getAttribute("data-id");
+
+      adminToDelete = adminId;
+      showDeleteAdminOverlay();
+    });
+  });
+}
+
+function setupPaginationAdmin() {
+  const totalPages = Math.ceil(adminMembers.length / itemsPerPage);
+  const paginationContainer = document.querySelector(".number-buttons-admin");
+
+  paginationContainer.innerHTML = ""; // Clear existing pagination buttons
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("a");
+    pageButton.href = "#";
+    pageButton.textContent = i;
+    pageButton.classList.add("page-btn");
+
+    pageButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      currentPageForAdmin = i;
+      displayAdminMembers(i);
+      updatePaginationStateForAdmin();
+      updateActivePageForAdmin(i);
+    });
+
+    if (i === currentPageForAdmin) {
+      pageButton.classList.add("active");
+    }
+
+    paginationContainer.appendChild(pageButton);
+  }
+
+  prevMembersBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForAdmin - 1 >= 1) {
+      currentPageForAdmin -= 1;
+      displayAdminMembers(currentPageForAdmin);
+      updatePaginationStateForAdmin();
+      updateActivePageForActive(currentPageForAdmin);
+    }
+  });
+  nextMembersBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPageForAdmin + 1 <= totalPages) {
+      currentPageForAdmin += 1;
+      console.log("CURRENT ACTIVE PAGE:", currentPageForAdmin);
+      displayAdminMembers(currentPageForAdmin);
+      updatePaginationStateForAdmin();
+      updateActivePageForActive(currentPageForAdmin);
+    }
+  });
+
+  updatePaginationStateForAdmin();
+}
+
+function updatePaginationStateForAdmin() {
+  const totalResults = adminMembers.length;
+  const startIndex = (currentPageForAdmin - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPageForAdmin * itemsPerPage, totalResults);
+
+  document.querySelector(
+    ".pagination-info-admin span:nth-child(1)"
+  ).textContent = startIndex;
+
+  document.querySelector(
+    ".pagination-info-admin span:nth-child(2)"
+  ).textContent = endIndex;
+  document.querySelector(
+    ".pagination-info-admin span:nth-child(3)"
+  ).textContent = totalResults;
+}
+
+function updateActivePageForAdmin(selectedPage) {
+  const pageButtons = document.querySelectorAll(".number-buttons-admin a");
+  pageButtons.forEach((btn) => {
+    btn.classList.remove("active"); // Remove active class from all buttons
+  });
+
+  const selectedButton = document.querySelector(
+    `.number-buttons-admin a:nth-child(${selectedPage})`
+  );
+  selectedButton.classList.add("active"); // Add active class to the clicked button
+}
+
+async function deleteAdmin(admin_id) {
+  admin_id = Number(admin_id);
+  try {
+    const response = await fetch(`/arcms/api/v1/admin/${admin_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showErrorMessage("Admin deleted successfully!");
+
+      // Remove the deleted employee from the admin array
+      adminMembers = adminMembers.filter(
+        (admin) => admin.admin_id !== admin_id
+      );
+
+      // Update the display and pagination
+      displayAdminMembers(currentPageForAdmin); // Use the current page or update as necessary
+      //setupPaginationAdmin();
+    } else {
+      showErrorMessage(`Error: ${result.error}`);
+    }
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    showErrorMessage("An error occurred while deleting the admin.");
+  }
+}
+
+
 // Get modal elements
 const modal = document.getElementById("userModal");
 const openModalBtn = document.getElementById("openModal");
@@ -588,3 +804,4 @@ newAdminForm.addEventListener("submit", async (event) => {
 // Call the function to populate the table when the page loads
 fetchAllActiveEmployee();
 fetchAllInactiveEmployee();
+fetchAllAdmins();

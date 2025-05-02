@@ -24,7 +24,8 @@
   z-index: 9999;
 }
 
-.close-delete-overlay {
+.close-delete-overlay,
+.close-delete-overlay-admin {
   position: absolute;
   top: 10px;
   right: 20px;
@@ -48,11 +49,13 @@
   cursor: pointer;
 }
 
-#delete-yes-btn {
+#delete-yes-btn,
+#delete-yes-btn-admin {
   background: var(--primary-color);
   color: white;
 }
-#delete-no-btn {
+#delete-no-btn,
+#delete-no-btn-admin {
   color: black;
 }
 
@@ -280,6 +283,7 @@
 .edit-btn-inactive,
 .edit-btn-active,
 .delete-btn,
+.delete-btn-admin,
 .edit-btn-dept,
 .edit-btn-ach,
 .delete-btn-dept,
@@ -317,6 +321,7 @@
 /* Styles specific to delete buttons */
 .delete-btn,
 .delete-btn-dept,
+.delete-btn-admin,
 .delete-btn-ach {
   background-color: var(--primary-color);
   color: #fff;
@@ -324,11 +329,13 @@
 
 .delete-btn:hover,
 .delete-btn-dept:hover,
+.delete-btn-admin:hover,
 .delete-btn-ach {
   background-color: var(--primary-dark);
 }
 
 .delete-btn-dept:disabled,
+.delete-btn-admin:disabled,
 .delete-btn-ach:disabled {
   background-color: var(--primary-diabled);
 }
@@ -337,6 +344,7 @@
 .edit-btn-inactive::before,
 .edit-btn-active::before,
 .delete-btn::before,
+.delete-btn-admin::before,
 .edit-btn-faq::before {
   font-family: "Font Awesome 5 Free";
   margin-right: 5px;
@@ -362,6 +370,7 @@
 }
 
 .delete-btn::before,
+.delete-btn-admin::before,
 .delete-btn-dept::before,
 .delete-btn-ach::before {
   content: "\f2ed"; /* Trash icon */
