@@ -10,12 +10,15 @@ const supabase = require("../utils/supabaseClient");
 const Image = require("../models/Image");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.office365.com",
   port: 587,
   secure: false, // true for port 465, false for other ports
   auth: {
-    user: process.env.GOOGLE_APP_EMAIL,
-    pass: process.env.GOOGLE_APP_PASS,
+    user: process.env.OUTLOOK_APP_EMAIL,
+    pass: process.env.OUTLOOK_APP_PASS,
+  },
+  tls: {
+    ciphers: "SSLv3",
   },
 });
 

@@ -10,12 +10,15 @@ const crypto = require("crypto");
 const supabase = require("../utils/supabaseClient");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.office365.com",
   port: 587,
   secure: false, // true for port 465, false for other ports
   auth: {
-    user: process.env.GOOGLE_APP_EMAIL,
-    pass: process.env.GOOGLE_APP_PASS,
+    user: process.env.OUTLOOK_APP_EMAIL,
+    pass: process.env.OUTLOOK_APP_PASS,
+  },
+  tls: {
+    ciphers: "SSLv3",
   },
 });
 
@@ -201,7 +204,7 @@ exports.forgotPassword = async (req, res) => {
     }`;
 
     const info = await transporter.sendMail({
-      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+      from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
       to: req.body.email, //  receivers
       subject: "Admin Password Reset Link",
       text: `Password Reset Link`,
@@ -410,7 +413,7 @@ exports.createEmployee = async (req, res) => {
 
   // Email the password to the user
   const info = await transporter.sendMail({
-    from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+    from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
     to: req.body.email, // recipient address
     subject: "Your Account Has Been Created for ARCMS",
     text: `Your account has been successfully created.`,
@@ -485,8 +488,8 @@ exports.createAdmin = async (req, res) => {
   // Email the password to the user
   // Email the password to the new admin
   const info = await transporter.sendMail({
-    from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-    to: req.body.email, // recipient address
+    from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
+    to: "johncarlo.sabenorio@lpunetwork.edu.ph", // recipient address
     subject: "You’ve Been Invited as an Admin on ARCMS",
     text: `Welcome to ARCMS! An admin account has been created for you. Username: ${req.body.email}, Temporary Password: ${randomPassword}. Please log in and change your password.`,
     html: `
@@ -613,9 +616,7 @@ exports.deleteAdmin = async (req, res) => {
     const adminToDelete = await Admin.findById(req.params.id); // delete the admin
 
     if (!adminToDelete) {
-      return res
-        .status(404)
-        .json({ error: "Admin not found or unauthorized" });
+      return res.status(404).json({ error: "Admin not found or unauthorized" });
     }
 
     const deletedAdmin = await adminToDelete.delete(); // delete the admin
