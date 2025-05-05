@@ -189,6 +189,12 @@ async function displayActiveMembers(pageNumber) {
                         <div class="member-email">${member.email}</div>
                     </div>
                 </td>
+                <td>
+                    <button class="edit-btn-active edit-position-btn"></button>
+                    <span class="position-text">${member.position}</span>
+                    <input type="text" class="position-input" value="${member.position}" style="display: none;" />
+                    
+                </td>
                 <td>${member.date_created}</td>
                 <td>
                   <a href="#" class="delete-btn" data-id="${member.employee_id}">Delete</a>
@@ -196,22 +202,36 @@ async function displayActiveMembers(pageNumber) {
             `;
 
     tableBodyActive.appendChild(row);
-  });
+    const editButton = row.querySelector(".edit-position-btn");
+    editButton.addEventListener("click", (event) => {
+      const textSpan = row.querySelector(".position-text");
+      const inputField = row.querySelector(".position-input");
 
-  /* 
-                    <a href="#" class="edit-btn-active" data-id="${
-                    member.employee_id
-                  }">Edit</a>
-  */
+      const isEditing = inputField.style.display === "inline-block";
 
-  const editButtons = document.querySelectorAll(".edit-btn-active");
-  const deleteButtons = document.querySelectorAll(".delete-btn");
-  editButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      const employeeId = event.target.getAttribute("data-id");
-      window.location.href = `/arcms/api/v1/employees/${employeeId}`;
+      if (isEditing) {
+        // Save logic
+        const newPosition = inputField.value.trim();
+        textSpan.textContent = newPosition;
+        textSpan.style.display = "inline";
+        inputField.style.display = "none";
+
+        editButton.classList.remove("active");
+
+        updateEmployeePosition(member.employee_id, newPosition);
+      } else {
+        // Edit logic
+        textSpan.style.display = "none";
+        inputField.style.display = "inline-block";
+        editButton.classList.add("active");
+      }
+      // window.location.href = `/arcms/api/v1/employees/${employeeId}`;
     });
+
   });
+  
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+  
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
@@ -221,6 +241,23 @@ async function displayActiveMembers(pageNumber) {
       showDeleteOverlay();
     });
   });
+}
+
+async function updateEmployeePosition(employee_id, newPosition){
+  try {
+    const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ position: newPosition }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "Update failed");
+
+    console.log("Position updated:", result);
+  } catch (error) {
+    alert("Failed to update position: " + error.message);
+  }
 }
 
 // FOR INACTIVE EMPLOYEES

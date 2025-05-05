@@ -140,6 +140,24 @@ class Employee {
     }
   }
 
+  static async updatePosition(employee_id, position) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({ position: position })
+        .eq("employee_id", employee_id);
+
+      if (error) {
+        throw new Error(`Failed to update employee position: ${error.message}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(error.message);
+      throw error;
+    }
+  }
+
   // Create a new employee
   static async create(employeeData) {
     try {

@@ -11,7 +11,7 @@ router
 
 router
   .route("/:id")
-  .patch(controller.editEmployee)
+  .put(controller.editEmployeePosition)
   .delete(controller.deleteEmployee);
 
 router.get("/active", controller.fetchAllActiveEmployee);
