@@ -18,6 +18,7 @@ class Employee {
     this.introduction = employeeData.introduction;
     this.image_id = employeeData.image_id;
     this.position = employeeData.position;
+    this.employee_number = employeeData.employee_number;
     this.department_id = employeeData.department_id;
     this.date_created = employeeData.date_created;
     this.isActive = employeeData.isActive;
@@ -182,7 +183,7 @@ class Employee {
       const { data, error } = await supabase
         .from("employee")
         .select(
-          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created"
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, employee_number"
         );
 
       if (error) {
@@ -200,9 +201,10 @@ class Employee {
       const { data, error } = await supabase
         .from("employee")
         .select(
-          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position"
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number"
         )
-        .eq("isActive", true);
+        .eq("isActive", true)
+        .order("employee_number", { ascending: true });
 
       console.log("ALL ACTIVE MEMBERS: ", data);
 
@@ -244,7 +246,7 @@ class Employee {
       const { data, error } = await supabase
         .from("employee")
         .select(
-          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive"
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, employee_number"
         )
         .eq("isActive", false);
 
@@ -273,6 +275,27 @@ class Employee {
       if (error) {
         throw new Error(
           `Failed to retrieve employee by email: ${error.message}`
+        );
+      }
+      return new Employee(data); // Return the Employee instance
+    } catch (err) {
+      console.error(err.message);
+      return null; // Return null if employee not found
+    }
+  }
+
+  // Find employee by email
+  static async findByEmployeeNumber(employee_number) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .select("*")
+        .eq("employee_number", employee_number)
+        .single(); // Ensure we get a single record
+
+      if (error) {
+        throw new Error(
+          `Failed to retrieve employee by employee_number: ${error.message}`
         );
       }
       return new Employee(data); // Return the Employee instance

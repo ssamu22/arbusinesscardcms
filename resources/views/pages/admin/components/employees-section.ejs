@@ -61,7 +61,8 @@
       <thead>
         <tr>
           <th>Employee Number</th>
-          <th>Faculty</th>
+          <th>Employee</th>
+          <th>Position</th>
           <th>Joined</th>
           <th>Action</th>
         </tr>
@@ -96,8 +97,8 @@
     <table class="members-table">
       <thead>
         <tr>
-          <th>No</th>
-          <th>Members</th>
+          <th>Employee Number</th>
+          <th>Employee</th>
           <th>Joined</th>
           <th>Action</th>
         </tr>
@@ -183,6 +184,17 @@
             id="lname"
             name="lname"
             placeholder="Enter last name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="employee_number">Employee Number</label>
+          <input
+            type="text"
+            id="employee_number"
+            name="employee_number"
+            placeholder="Enter employee number"
             required
           />
         </div>

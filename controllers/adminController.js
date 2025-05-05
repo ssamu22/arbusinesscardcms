@@ -375,6 +375,21 @@ exports.createEmployee = async (req, res) => {
     });
   }
 
+  // Check if the employee number already exists in the db
+  const existingEmployeeNumber = await supabase
+    .from("employee")
+    .select()
+    .eq("employee_number", req.body.employee_number)
+    .single();
+
+  if (existingEmployeeNumber.data) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "An existing account is already associated with the employee number! Please try another one.",
+    });
+  }
+
   // Generate an 8-charac random password
   const randomPassword = generateRandomPassword();
   console.log("RANDOM PASSWORD:", randomPassword); // Example output: "B3y$9jL2"
@@ -390,6 +405,7 @@ exports.createEmployee = async (req, res) => {
     last_name: req.body.lname,
     honorifics: req.body.honorifics,
     email: req.body.email,
+    employee_number: req.body.employee_number,
     isActive: true,
     password: hashedPassword,
     image_id: 68, // Use default profile image_id

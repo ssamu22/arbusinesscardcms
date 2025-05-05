@@ -236,6 +236,7 @@
           event.preventDefault();
           const loginBtn = document.querySelector(".btn-login");
           loginBtn.textContent = "Logging in...";
+          loginBtn.disabled = true;
           const errorElement = document.getElementById("error-message");
           errorElement.textContent = "";
           errorElement.classList.add("d-none");
@@ -268,6 +269,7 @@
             displayError("An error occurred. Please try again later.");
             console.error("Login error:", error);
           }
+          loginBtn.disabled = false;
         });
 
       function displayError(message) {

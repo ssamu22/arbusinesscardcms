@@ -164,7 +164,7 @@ async function displayActiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const membersToDisplay = activeEmployees.slice(startIndex, endIndex);
-  membersToDisplay.sort((a, b) => a.employee_id - b.employee_id);
+  membersToDisplay.sort((a, b) => a.employee_number - b.employee_number);
 
   tableBodyActive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
@@ -181,7 +181,7 @@ async function displayActiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${member.employee_id}</td>
+                <td>${member.employee_number}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -356,7 +356,7 @@ async function displayInactiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${member.employee_id}</td>
+                <td>${member.employee_number}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -716,10 +716,51 @@ newUserForm.addEventListener("submit", async (event) => {
 
   console.log("THE FORM DATA:", formData);
 
+
+
   formData.append("isActive", true);
-  const userData = Object.fromEntries(formData.entries());
+
+  const sanitizeName = (name) => {
+    const sanitized = name.replace(/[^a-zA-Z\s\-]/g, "").trim();
+    return sanitized
+      .split(/[\s\-]/)
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .replace(/(\b[A-Z][a-z]*)(?=\s|$)/g, match => match); // Keep spacing tidy
+  };
+
+  // Validate employee number
+  const isValidEmployeeNumber = (empNum) => {
+    return /^\d{4}-\d{1}-\d{5}$/.test(empNum);
+  };
+
+  // Extract and sanitize individual fields
+  const fname = sanitizeName(formData.get("fname"));
+  const mname = sanitizeName(formData.get("mname") || "");
+  const lname = sanitizeName(formData.get("lname"));
+  const email = formData.get("email").trim();
+  const honorifics = formData.get("honorifics") || "";
+  const employee_number = formData.get("employee_number").trim();
+
+  if (!isValidEmployeeNumber(employee_number)) {
+    showErrorMessage("Employee number must follow the format xxxx-x-xxxxx.");
+    return;
+  }
+
+  const userData = {
+    fname,
+    mname,
+    lname,
+    email,
+    honorifics,
+    employee_number,
+    isActive: true,
+  };
 
   submitBtn.textContent = "Creating User...";
+  submitBtn.disabled = true;
 
   try {
     const response = await fetch("/arcms/api/v1/admin/create-employee", {
@@ -755,6 +796,7 @@ newUserForm.addEventListener("submit", async (event) => {
       "An error occurred while creating the user. Please try again later."
     );
   }
+  submitBtn.disabled = false;
 });
 
 newAdminForm.addEventListener("submit", async (event) => {
