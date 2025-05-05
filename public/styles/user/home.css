@@ -523,22 +523,22 @@ body {
     height: 100%;
     overflow-y: auto;
   }
-  
+
   .sidebar.mobile-open {
     left: 0; /* Show sidebar when mobile-open class is added */
   }
-  
+
   .main-content {
     margin-left: 0 !important;
     width: 100% !important;
     padding: 15px !important;
   }
-  
+
   /* Show overlay when sidebar is open */
   .sidebar-overlay.active {
     display: block;
   }
-  
+
   /* Adjust sidebar header for mobile */
   .sidebar-header {
     padding-top: 20px;
@@ -554,4 +554,60 @@ body {
   padding: 4px;
 }
 
+.change-newpass-container {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.change-newpass-modal {
+  max-width: 800px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  padding-inline: 50px;
+}
+
+.change-newpass-form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#submit-changepass-btn {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  border: none;
+}
+
+.error-header {
+  display: flex;
+  width: 100%;
+}
+
+.register-errors {
+  margin-bottom: 0;
+  display: none;
+}
+#close-changepass-btn {
+  position: absolute;
+  top: 10;
+  right: 10px;
+}
+
+#logout-from-changepass {
+  cursor: pointer;
+}
 /* Rest of your existing sidebar CSS remains the same */

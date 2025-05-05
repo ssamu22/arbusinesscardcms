@@ -491,7 +491,7 @@ exports.createAdmin = async (req, res) => {
     from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
     to: "johncarlo.sabenorio@lpunetwork.edu.ph", // recipient address
     subject: "You’ve Been Invited as an Admin on ARCMS",
-    text: `Welcome to ARCMS! An admin account has been created for you. Username: ${req.body.email}, Temporary Password: ${randomPassword}. Please log in and change your password.`,
+    text: `Welcome to ARCMS! An admin account has been created for you. Email: ${req.body.email}, Temporary Password: ${randomPassword}. Please log in and change your password.`,
     html: `
     <body style="font-family: Arial, sans-serif; line-height: 1.6;">
       <h2 style="color: #333;">Welcome to ARCMS!</h2>
@@ -626,4 +626,23 @@ exports.deleteAdmin = async (req, res) => {
     console.error("Error deleting admin:", error);
     res.status(500).json({ error: "Failed to delete admin" });
   }
+};
+
+const createAccountActivationToken = () => {
+  const resetToken = crypto.randomBytes(64).toString("hex");
+
+  const accountActivationToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  const tokenExpirationDate = new Date(
+    Date.now() + 24 * 60 * 60 * 1000
+  ).toISOString(); // Expires in 24 hours
+
+  return {
+    resetToken,
+    accountActivationToken,
+    tokenExpirationDate,
+  };
 };
