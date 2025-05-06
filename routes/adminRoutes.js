@@ -53,4 +53,6 @@ router.post("/create-employee", adminController.createEmployee);
 
 router.post("/create-admin", adminController.createAdmin);
 
+router.get("/uses-temp", adminController.adminUsesTemp);
+
 module.exports = router;

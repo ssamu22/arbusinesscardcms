@@ -3,7 +3,7 @@
   <button class="mobile-toggle d-md-none" id="mobileToggle">
     <i class="bi bi-list"></i>
   </button>
-  
+
   <div class="sidebar-header">
     <div class="d-flex align-items-center">
       <img
@@ -89,10 +89,7 @@
             <span>&nbspBack</span>
           </a>
           <% } else { %>
-          <a
-            class="nav-link text-light logout"
-            href="/arcms/api/v1/auth/logout"
-          >
+          <a class="nav-link text-light logout" id="logout-nav-option" href="#">
             <i class="bi bi-box-arrow-right me-2"></i>
             <span>&nbspLogout</span>
           </a>
@@ -105,3 +102,26 @@
 
 <!-- Overlay for mobile -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script>
+  document
+    .getElementById("logout-nav-option")
+    .addEventListener("click", (e) => {
+      logout();
+    });
+  async function logout() {
+    try {
+      const response = await fetch("/arcms/api/v1/auth/logout", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+</script>

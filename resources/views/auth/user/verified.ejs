@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARCMS - Registration Successful</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Main styles from design.html */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .main-container {
+        min-height: 100vh;
+        background-image: url("/images/background.png");
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* Left side with welcome message */
+      .welcome-section {
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .welcome-content {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .brand-name {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .welcome-title {
+        font-size: 3rem;
+        font-weight: 300;
+        margin-bottom: 1.5rem;
+      }
+
+      .welcome-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      /* Form section styles */
+      .form-section {
+        background-color: rgba(255, 255, 255, 0.95);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .form-container {
+        width: 100%;
+        max-width: 450px;
+        padding: 2rem;
+      }
+
+      /* Success page specific styles */
+      .success-icon {
+        font-size: 5rem;
+        color: #28a745;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .success-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 1rem;
+      }
+
+      .success-message {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .back-to-login {
+        display: inline-block;
+        background-color: #dc3545;
+        color: white;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+      }
+
+      .back-to-login:hover {
+        background-color: #c82333;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+        color: white;
+      }
+
+      .back-to-login:active {
+        transform: translateY(-1px);
+      }
+
+      /* Preserve original classes */
+      .login-container {
+        width: 100%;
+        max-width: 100%;
+        background: none;
+        backdrop-filter: none;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        display: block;
+      }
+
+      .brand {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #a3202b, rgb(255, 63, 63));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .welcome-text {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: white;
+      }
+
+      .tagline {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.8;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .welcome-section {
+          min-height: auto;
+          padding: 2rem;
+        }
+
+        .form-section {
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid p-0 main-container">
+      <div class="row g-0">
+        <!-- Right side with visual confirmation -->
+        <div class="col-full form-section">
+          <div class="form-container text-center">
+            <i class="bi bi-check-circle-fill success-icon"></i>
+            <h2 class="success-title">Employee Account Verified</h2>
+            <p class="success-message">
+              Your employee account has been successfully verified. You can now
+              access the ARCMS to manage and update your content for PartnAR.
+            </p>
+            <div class="d-flex justify-content-center">
+              <a href="/" class="back-to-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Go to Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script></script>
+  </body>
+</html>
