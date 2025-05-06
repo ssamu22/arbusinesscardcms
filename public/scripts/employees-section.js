@@ -36,6 +36,8 @@ let adminToDelete = null;
 
 // FOR ACTIVE EMPLOYEES
 
+let departmentsList = [];
+
 function showDeleteOverlay() {
   deleteOverlay.style.display = "flex";
 }
@@ -191,9 +193,13 @@ async function displayActiveMembers(pageNumber) {
                 </td>
                 <td>
                     <button class="edit-btn-active edit-position-btn"></button>
-                    <span class="position-text">${member.position}</span>
-                    <input type="text" class="position-input" value="${member.position}" style="display: none;" />
-                    
+                    <span class="position-text">${member.position || "- - -"}</span>
+                    <input type="text" class="position-input" value="${member.position || ""}" style="display: none;" />
+                </td>
+                <td>
+                    <button class="edit-btn-active edit-dept-btn"></button>
+                    <span class="dept-text">${getDepartmentName(member.department_id)}</span>
+                    <input type="text" class="dept-input" value="${member.department_id || ""}" style="display: none;" />
                 </td>
                 <td>${member.date_created}</td>
                 <td>
@@ -202,8 +208,10 @@ async function displayActiveMembers(pageNumber) {
             `;
 
     tableBodyActive.appendChild(row);
-    const editButton = row.querySelector(".edit-position-btn");
-    editButton.addEventListener("click", (event) => {
+    const editButtonPosition = row.querySelector(".edit-position-btn");
+    const editButtonDept = row.querySelector(".edit-dept-btn");
+
+    editButtonPosition.addEventListener("click", (event) => {
       const textSpan = row.querySelector(".position-text");
       const inputField = row.querySelector(".position-input");
 
@@ -212,21 +220,70 @@ async function displayActiveMembers(pageNumber) {
       if (isEditing) {
         // Save logic
         const newPosition = inputField.value.trim();
-        textSpan.textContent = newPosition;
+        textSpan.textContent = newPosition ? newPosition : "- - -";
         textSpan.style.display = "inline";
         inputField.style.display = "none";
-
-        editButton.classList.remove("active");
+        editButtonPosition.classList.remove("active");
+        editButtonPosition.disabled = true;
 
         updateEmployeePosition(member.employee_id, newPosition);
+        editButtonPosition.disabled = false;
+
       } else {
         // Edit logic
         textSpan.style.display = "none";
         inputField.style.display = "inline-block";
-        editButton.classList.add("active");
+        editButtonPosition.classList.add("active");
       }
-      // window.location.href = `/arcms/api/v1/employees/${employeeId}`;
     });
+
+    const select = document.createElement("select");
+    select.className = "dept-select";
+    select.style.display = "none";
+
+    // Populate options
+    departmentsList.forEach((dept) => {
+      const option = document.createElement("option");
+      option.value = dept.department_id;
+      option.textContent = dept.department_name;
+      select.appendChild(option);
+    });
+
+    row.querySelector("td:nth-child(4)").appendChild(select);
+
+    editButtonDept.addEventListener("click", (event) => {
+      const deptText = row.querySelector(".dept-text");
+      const deptInput = row.querySelector(".dept-input");
+
+      const isEditing = select.style.display === "inline-block";
+
+      if (isEditing) {
+        const selectedId = select.value;
+        console.log("Dept ID: "+selectedId);
+        const selectedName = getDepartmentName(selectedId);
+
+        deptText.textContent = selectedName;
+        deptText.style.display = "inline";
+        select.style.display = "none";
+        editButtonDept.classList.remove("active");
+        editButtonDept.disabled = true;
+
+        updateEmployeeDepartment(member.employee_id, selectedId);
+        editButtonDept.disabled = false;
+      } else {
+        select.value = member.department_id;
+        deptText.style.display = "none";
+        select.style.display = "inline-block";
+        editButtonDept.classList.add("active");
+      }
+    });
+
+    function getDepartmentName(deptId) {
+      const dept = departmentsList.find((d) => d.department_id == deptId);
+      console.log("Depts: " + JSON.stringify(departmentsList));
+      console.log("Dept Name: "+dept);
+      return dept ? dept.department_name : "- - -";
+    }
 
   });
   
@@ -243,6 +300,24 @@ async function displayActiveMembers(pageNumber) {
   });
 }
 
+async function updateEmployeeDepartment(employee_id, departmentId) {
+  try {
+    const response = await fetch(`/arcms/api/v1/employees/department/${employee_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ department_id: departmentId }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "Update failed");
+
+    showSuccessMessage("Department updated successfully!");
+    console.log("Department updated:", result);
+  } catch (error) {
+    showErrorMessage("Failed to update department: " + error.message);
+  }
+}
+
 async function updateEmployeePosition(employee_id, newPosition){
   try {
     const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
@@ -254,10 +329,16 @@ async function updateEmployeePosition(employee_id, newPosition){
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || "Update failed");
 
+    showSuccessMessage("Employee position updated successfully!");
     console.log("Position updated:", result);
   } catch (error) {
-    alert("Failed to update position: " + error.message);
+    showErrorMessage("Failed to update position: " + error.message);
   }
+}
+
+async function fetchDepartments() {
+  const response = await fetch("/api/departments");
+  departmentsList = await response.json();
 }
 
 // FOR INACTIVE EMPLOYEES
@@ -882,5 +963,6 @@ newAdminForm.addEventListener("submit", async (event) => {
 
 // Call the function to populate the table when the page loads
 fetchAllActiveEmployee();
+fetchDepartments();
 fetchAllInactiveEmployee();
 fetchAllAdmins();

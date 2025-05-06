@@ -192,6 +192,27 @@ exports.createEmployee = async (req, res) => {
   }
 };
 
+exports.updateEmployeeDepartment = async (req, res) => {
+  try {
+    const { department_id } = req.body;
+    const employee_id = req.params.id;
+
+    const existingEmployee = await Employee.findById(employee_id);
+    if (!existingEmployee) {
+      return res.status(400).json({ error: "Could not found employee." });
+    }
+
+    const updatedDepartment = await Employee.updateDepartment(employee_id, department_id);
+
+    return res.status(201).json(updatedDepartment);
+
+  } catch (err) {
+    console.error("Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 exports.editEmployeePosition = async (req, res) => {
   try {
     const { position } = req.body;

@@ -158,6 +158,23 @@ class Employee {
     }
   }
 
+  static async updateDepartment(employee_id, department_id) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({ department_id: department_id })
+        .eq("employee_id", employee_id);
+
+      if (error) {
+        throw new Error(`Failed to update employee department: ${error.message}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(error.message);
+      throw error;
+    }
+  }
   // Create a new employee
   static async create(employeeData) {
     try {
@@ -219,7 +236,7 @@ class Employee {
       const { data, error } = await supabase
         .from("employee")
         .select(
-          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number"
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number, department_id"
         )
         .eq("isActive", true)
         .order("employee_number", { ascending: true });

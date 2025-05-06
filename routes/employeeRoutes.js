@@ -14,6 +14,8 @@ router
   .put(controller.editEmployeePosition)
   .delete(controller.deleteEmployee);
 
+router.put("/department/:id", controller.updateEmployeeDepartment);
+
 router.get("/active", controller.fetchAllActiveEmployee);
 router.get("/inactive", controller.fetchAllInactiveEmployee);
 
