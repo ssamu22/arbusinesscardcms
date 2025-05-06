@@ -71,14 +71,14 @@ exports.logout = (req, res) => {
 
 exports.signup = async (req, res) => {
   // Check if a required value are missing.
-  const { fname, mname, honorifics, lname, email, password, passwordConfirm } =
+  const { fname, mname, honorifics, lname, email, password, passwordConfirm, employee_number } =
     req.body;
 
   const signupErrors = [];
 
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
-  if (!fname || !lname || !email || !password || !passwordConfirm) {
+  if (!fname || !lname || !email || !password || !passwordConfirm || !employee_number) {
     return res.status(400).json({
       status: "failed",
       message: "Fill out all required inputs!",
@@ -98,6 +98,14 @@ exports.signup = async (req, res) => {
   if (existingEmployee) {
     signupErrors.push(
       "The email you used already exists! Please try another one."
+    );
+  }
+
+  // Check if employee number already exists
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
+  if (existingEmployeeNumber) {
+    signupErrors.push(
+      "The employee number you used already exists!"
     );
   }
 
@@ -136,6 +144,7 @@ exports.signup = async (req, res) => {
     honorifics: honorifics,
     middle_name: mname,
     last_name: lname,
+    employee_number: employee_number,
     email: email,
     password: hashedPassword, // Store the hashed password
     image_id: 68, // Use default profile image_id

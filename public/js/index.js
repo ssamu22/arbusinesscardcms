@@ -5,25 +5,85 @@ const registerBtn = document.getElementById("register-btn");
 const registerErrorsList = document.querySelector(".register-errors-list");
 const registerErrorsDiv = document.querySelector(".register-errors");
 // Delegation
+const sanitizeInput = (input) => {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+};
+
+const capitalizeWords = (str) => {
+  return str
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 if (registerForm) {
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     registerBtn.disabled = true;
     registerBtn.textContent = "Registering...";
-    const fname = document.getElementById("fname").value;
-    const lname = document.getElementById("lname").value;
-    const mname = document.getElementById("mname").value;
-    const email = document.getElementById("email").value;
+
+    const rawFname = document.getElementById("fname").value.trim();
+    const rawLname = document.getElementById("lname").value.trim();
+    const rawMname = document.getElementById("mname").value.trim();
+    const rawEmployeeNumber = document.getElementById("employee_number").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const passwordConfirm = document.getElementById("passwordConfirm").value;
-    const honorifics = document.getElementById("honorifics").value;
+    const honorifics = sanitizeInput(document.getElementById("honorifics").value);
+
+    // Validation rules
+    const nameRegex = /^[a-zA-Z .'-]+$/;
+    const employeeNumRegex = /^\d{4}-\d{1}-\d{5}$/;
+    const errors = [];
+
+    // Validate names
+    if (!nameRegex.test(rawFname)) errors.push("First name contains invalid characters.");
+    if (!nameRegex.test(rawLname)) errors.push("Last name contains invalid characters.");
+    if (rawMname && !nameRegex.test(rawMname)) errors.push("Middle name contains invalid characters.");
+
+    // Validate employee number
+    if (!employeeNumRegex.test(rawEmployeeNumber)) {
+      errors.push("Employee number must follow the format XXXX-X-XXXXX.");
+    }
+
+    // Validate password
+    if (password.length < 8 ||
+        !/[A-Z]/.test(password) ||
+        !/[a-z]/.test(password) ||
+        !/[0-9]/.test(password) ||
+        !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.push("Password does not meet complexity requirements.");
+    }
+
+    if (password !== passwordConfirm) {
+      errors.push("Passwords do not match.");
+    }
+
+    if (errors.length > 0) {
+      window.showRegisterErrors(errors);
+      registerBtn.disabled = false;
+      registerBtn.textContent = "Register";
+      return;
+    }
+
+    // Capitalize names
+    const fname = sanitizeInput(capitalizeWords(rawFname));
+    const lname = sanitizeInput(capitalizeWords(rawLname));
+    const mname = sanitizeInput(capitalizeWords(rawMname));
+    const employee_number = sanitizeInput(rawEmployeeNumber);
 
     try {
       await register({
         fname,
         mname,
         lname,
-        email,
+        email: sanitizeInput(email),
+        employee_number,
         password,
         passwordConfirm,
         honorifics,

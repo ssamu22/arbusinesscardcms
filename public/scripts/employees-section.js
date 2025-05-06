@@ -40,6 +40,8 @@ let adminToDelete = null;
 
 // FOR ACTIVE EMPLOYEES
 
+let departmentsList = [];
+
 function showDeleteOverlay() {
   deleteOverlay.style.display = "flex";
 }
@@ -168,7 +170,7 @@ async function displayActiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const membersToDisplay = activeEmployees.slice(startIndex, endIndex);
-  membersToDisplay.sort((a, b) => a.employee_id - b.employee_id);
+  membersToDisplay.sort((a, b) => a.employee_number - b.employee_number);
 
   tableBodyActive.innerHTML = ""; // Clear existing content
   membersToDisplay.forEach((member, index) => {
@@ -185,13 +187,23 @@ async function displayActiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${member.employee_id}</td>
+                <td>${member.employee_number}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
                         <div class="member-name">${name}</div>
                         <div class="member-email">${member.email}</div>
                     </div>
+                </td>
+                <td>
+                    <button class="edit-btn-active edit-position-btn"></button>
+                    <span class="position-text">${member.position || "- - -"}</span>
+                    <input type="text" class="position-input" value="${member.position || ""}" style="display: none;" />
+                </td>
+                <td>
+                    <button class="edit-btn-active edit-dept-btn"></button>
+                    <span class="dept-text">${getDepartmentName(member.department_id)}</span>
+                    <input type="text" class="dept-input" value="${member.department_id || ""}" style="display: none;" />
                 </td>
                 <td>${member.date_created}</td>
                 <td>
@@ -200,22 +212,87 @@ async function displayActiveMembers(pageNumber) {
             `;
 
     tableBodyActive.appendChild(row);
-  });
+    const editButtonPosition = row.querySelector(".edit-position-btn");
+    const editButtonDept = row.querySelector(".edit-dept-btn");
 
-  /* 
-                    <a href="#" class="edit-btn-active" data-id="${
-                    member.employee_id
-                  }">Edit</a>
-  */
+    editButtonPosition.addEventListener("click", (event) => {
+      const textSpan = row.querySelector(".position-text");
+      const inputField = row.querySelector(".position-input");
 
-  const editButtons = document.querySelectorAll(".edit-btn-active");
-  const deleteButtons = document.querySelectorAll(".delete-btn");
-  editButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      const employeeId = event.target.getAttribute("data-id");
-      window.location.href = `/arcms/api/v1/employees/${employeeId}`;
+      const isEditing = inputField.style.display === "inline-block";
+
+      if (isEditing) {
+        // Save logic
+        const newPosition = inputField.value.trim();
+        textSpan.textContent = newPosition ? newPosition : "- - -";
+        textSpan.style.display = "inline";
+        inputField.style.display = "none";
+        editButtonPosition.classList.remove("active");
+        editButtonPosition.disabled = true;
+
+        updateEmployeePosition(member.employee_id, newPosition);
+        editButtonPosition.disabled = false;
+
+      } else {
+        // Edit logic
+        textSpan.style.display = "none";
+        inputField.style.display = "inline-block";
+        editButtonPosition.classList.add("active");
+      }
     });
+
+    const select = document.createElement("select");
+    select.className = "dept-select";
+    select.style.display = "none";
+
+    // Populate options
+    departmentsList.forEach((dept) => {
+      const option = document.createElement("option");
+      option.value = dept.department_id;
+      option.textContent = dept.department_name;
+      select.appendChild(option);
+    });
+
+    row.querySelector("td:nth-child(4)").appendChild(select);
+
+    editButtonDept.addEventListener("click", (event) => {
+      const deptText = row.querySelector(".dept-text");
+      const deptInput = row.querySelector(".dept-input");
+
+      const isEditing = select.style.display === "inline-block";
+
+      if (isEditing) {
+        const selectedId = select.value;
+        console.log("Dept ID: "+selectedId);
+        const selectedName = getDepartmentName(selectedId);
+
+        deptText.textContent = selectedName;
+        deptText.style.display = "inline";
+        select.style.display = "none";
+        editButtonDept.classList.remove("active");
+        editButtonDept.disabled = true;
+
+        updateEmployeeDepartment(member.employee_id, selectedId);
+        editButtonDept.disabled = false;
+      } else {
+        select.value = member.department_id;
+        deptText.style.display = "none";
+        select.style.display = "inline-block";
+        editButtonDept.classList.add("active");
+      }
+    });
+
+    function getDepartmentName(deptId) {
+      const dept = departmentsList.find((d) => d.department_id == deptId);
+      console.log("Depts: " + JSON.stringify(departmentsList));
+      console.log("Dept Name: "+dept);
+      return dept ? dept.department_name : "- - -";
+    }
+
   });
+  
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+  
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
@@ -225,6 +302,47 @@ async function displayActiveMembers(pageNumber) {
       showDeleteOverlay();
     });
   });
+}
+
+async function updateEmployeeDepartment(employee_id, departmentId) {
+  try {
+    const response = await fetch(`/arcms/api/v1/employees/department/${employee_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ department_id: departmentId }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "Update failed");
+
+    showSuccessMessage("Department updated successfully!");
+    console.log("Department updated:", result);
+  } catch (error) {
+    showErrorMessage("Failed to update department: " + error.message);
+  }
+}
+
+async function updateEmployeePosition(employee_id, newPosition){
+  try {
+    const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ position: newPosition }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "Update failed");
+
+    showSuccessMessage("Employee position updated successfully!");
+    console.log("Position updated:", result);
+  } catch (error) {
+    showErrorMessage("Failed to update position: " + error.message);
+  }
+}
+
+async function fetchDepartments() {
+  const response = await fetch("/api/departments");
+  departmentsList = await response.json();
 }
 
 // FOR INACTIVE EMPLOYEES
@@ -360,7 +478,7 @@ async function displayInactiveMembers(pageNumber) {
       " " +
       member.last_name;
     row.innerHTML = `
-                <td>${member.employee_id}</td>
+                <td>${member.employee_number}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -728,10 +846,51 @@ newUserForm.addEventListener("submit", async (event) => {
 
   console.log("THE FORM DATA:", formData);
 
+
+
   formData.append("isActive", true);
-  const userData = Object.fromEntries(formData.entries());
+
+  const sanitizeName = (name) => {
+    const sanitized = name.replace(/[^a-zA-Z\s\-]/g, "").trim();
+    return sanitized
+      .split(/[\s\-]/)
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .replace(/(\b[A-Z][a-z]*)(?=\s|$)/g, match => match); // Keep spacing tidy
+  };
+
+  // Validate employee number
+  const isValidEmployeeNumber = (empNum) => {
+    return /^\d{4}-\d{1}-\d{5}$/.test(empNum);
+  };
+
+  // Extract and sanitize individual fields
+  const fname = sanitizeName(formData.get("fname"));
+  const mname = sanitizeName(formData.get("mname") || "");
+  const lname = sanitizeName(formData.get("lname"));
+  const email = formData.get("email").trim();
+  const honorifics = formData.get("honorifics") || "";
+  const employee_number = formData.get("employee_number").trim();
+
+  if (!isValidEmployeeNumber(employee_number)) {
+    showErrorMessage("Employee number must follow the format xxxx-x-xxxxx.");
+    return;
+  }
+
+  const userData = {
+    fname,
+    mname,
+    lname,
+    email,
+    honorifics,
+    employee_number,
+    isActive: true,
+  };
 
   submitBtn.textContent = "Creating User...";
+  submitBtn.disabled = true;
 
   try {
     const response = await fetch("/arcms/api/v1/admin/create-employee", {
@@ -772,6 +931,7 @@ newUserForm.addEventListener("submit", async (event) => {
       "An error occurred while creating the user. Please try again later."
     );
   }
+  submitBtn.disabled = false;
 });
 
 newAdminForm.addEventListener("submit", async (event) => {
@@ -827,5 +987,6 @@ newAdminForm.addEventListener("submit", async (event) => {
 
 // Call the function to populate the table when the page loads
 fetchAllActiveEmployee();
+fetchDepartments();
 fetchAllInactiveEmployee();
 fetchAllAdmins();

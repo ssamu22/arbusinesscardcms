@@ -192,34 +192,44 @@ exports.createEmployee = async (req, res) => {
   }
 };
 
-exports.editEmployee = async (req, res) => {
-  const admin = req.session.admin;
-  if (admin) {
-    // Fetch the employee data from DB (you can customize this to your needs)
-    Employee.findById(req.params.id)
-      .then((employee) => {
-        req.session.user = {
-          employee_id: employee.employee_id,
-          first_name: employee.first_name,
-          last_name: employee.last_name,
-          honorifics: employee.honorifics,
-          email: employee.getEmail(),
-          position: employee.position,
-          department_id: employee.department_id,
-        };
+exports.updateEmployeeDepartment = async (req, res) => {
+  try {
+    const { department_id } = req.body;
+    const employee_id = req.params.id;
 
-        // Render the home page for the selected employee
-        res.render(path.join(__dirname, "..", "public", "index.ejs"), {
-          user: employee,
-          isAdmin: true, // Indicating that the page is being rendered by an admin
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching employee details:", error);
-        res.status(500).json({ message: "Error fetching employee details" });
-      });
-  } else {
-    res.status(403).send("Unauthorized"); // If not an admin, deny access
+    const existingEmployee = await Employee.findById(employee_id);
+    if (!existingEmployee) {
+      return res.status(400).json({ error: "Could not found employee." });
+    }
+
+    const updatedDepartment = await Employee.updateDepartment(employee_id, department_id);
+
+    return res.status(201).json(updatedDepartment);
+
+  } catch (err) {
+    console.error("Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+exports.editEmployeePosition = async (req, res) => {
+  try {
+    const { position } = req.body;
+    const employee_id = req.params.id;
+
+    const existingEmployee = await Employee.findById(employee_id);
+    if (!existingEmployee) {
+      return res.status(400).json({ error: "Could not found employee." });
+    }
+
+    const updatedPosition = await Employee.updatePosition(employee_id, position);
+
+    return res.status(201).json(updatedPosition);
+
+  } catch (err) {
+    console.error("Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
