@@ -560,7 +560,7 @@ body {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
   z-index: 9999;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
 }
@@ -590,6 +590,7 @@ body {
   border-radius: 6px;
   width: 100%;
   border: none;
+  cursor: pointer;
 }
 
 .error-header {
@@ -607,7 +608,98 @@ body {
   right: 10px;
 }
 
-#logout-from-changepass {
+#require-logout-btn {
   cursor: pointer;
 }
+
+.changepass-input {
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 5px;
+}
+
+.register-errors.alert-danger {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border-left: 4px solid #dc3545;
+}
+
+.error-header {
+  background-color: #495057; /* Gray header as requested */
+  color: white;
+  padding: 12px 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.error-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.error-header i {
+  margin-right: 10px;
+  color: #ff8080; /* Light red icon for visibility */
+}
+
+.error-count {
+  background-color: #dc3545; /* Red badge for visibility */
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+.error-body {
+  padding: 15px;
+}
+
+.register-errors-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.register-errors-list li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  color: #343a40;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.register-errors-list li:last-child {
+  border-bottom: none;
+}
+
+.register-errors-list li::before {
+  content: "\F623"; /* Bootstrap icon code for x-circle */
+  font-family: "bootstrap-icons";
+  color: #dc3545; /* Red icons for visibility */
+  margin-right: 10px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.error-footer {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-top: 1px solid rgba(108, 117, 125, 0.2);
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-align: center;
+}
+
 /* Rest of your existing sidebar CSS remains the same */

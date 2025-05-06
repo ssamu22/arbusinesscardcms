@@ -35,10 +35,12 @@ exports.login = async (req, res) => {
 
     // Step 2: Retrieve admin by email
     const admin = await Admin.findByEmail(email); // Fetch admin from DB
-    console.log("THE ADMIN:", admin);
-    if (!admin) {
+
+    // Check if the account is not activated or does not exist
+    if (!admin || !admin.isActive) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+
     // Step 3: Validate the password using the public method
     const passwordMatch = await admin.validatePassword(password);
     console.log("DOES THE PASSWORD MATCH?", passwordMatch);
@@ -114,9 +116,10 @@ exports.fetchAllAdmin = async (req, res) => {
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error("Error during logout:", err);
+      return res.status(500).json({ message: "Logout Failed" });
     }
-    res.redirect("/admin");
+    res.clearCookie("connect.sid");
+    res.status(200).json({ redirect: "/admin" });
   });
 };
 
@@ -347,6 +350,7 @@ exports.changeAdminPassword = async (req, res) => {
       .from("admin")
       .update({
         password: hashedPassword,
+        password_is_temp: false,
       })
       .eq("email", req.session.admin.email);
     res.status(200).json({
@@ -383,6 +387,8 @@ exports.createEmployee = async (req, res) => {
   const hashedPassword = await bcrypt.hash(randomPassword, 10);
   console.log("HASHED PASSWORD:", hashedPassword); // Example output: "B3y$9jL2"
 
+  const activationData = createAccountActivationToken();
+
   // Create user data to store in the db
   const newUserData = {
     first_name: req.body.fname,
@@ -390,15 +396,19 @@ exports.createEmployee = async (req, res) => {
     last_name: req.body.lname,
     honorifics: req.body.honorifics,
     email: req.body.email,
-    isActive: true,
+    isActive: false,
+    password_is_temp: true,
     password: hashedPassword,
     image_id: 68, // Use default profile image_id
     date_created: new Date().toISOString(),
+    verification_expiration_date: activationData.tokenExpirationDate,
+    account_verification_token: activationData.accountVerificationToken,
   };
 
   // Create the user
   const { data, error } = await supabase.from("employee").insert(newUserData);
 
+  console.log("CREATED NEW ACCOUNT:", data);
   // Get the url of the image
 
   const image = await Image.getImageById(data[0].image_id);
@@ -412,27 +422,53 @@ exports.createEmployee = async (req, res) => {
   }
 
   // Email the password to the user
-  const info = await transporter.sendMail({
-    from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
-    to: req.body.email, // recipient address
-    subject: "Your Account Has Been Created for ARCMS",
-    text: `Your account has been successfully created.`,
-    html: `
-      <body>
-        <h2>Welcome to ARCMS!</h2>
-        <p>Dear User,</p>
-        <p>We are excited to inform you that an account has been created for you by the admin. You can now log in to your account using the credentials below:</p>
-        <p><strong>Email:</strong> ${req.body.email}</p>
-        <p><strong>Password:</strong> ${randomPassword}</p> <!-- Assuming you store a temporary password -->
-        <p>To get started, please log in at the following link:</p>
-        <p><a href="https://arbusinesscardcms.onrender.com" style="color: #007bff; text-decoration: none;">Login to your account</a></p>
-        <p><strong>Important:</strong> Please log in as soon as possible and change your password to something more secure after your first login.</p>
-        <p>If you have any questions or need further assistance, feel free to contact our support team.</p>
-        <p>Thank you for joining ARCMS!</p>
-        <p>Best regards,<br/>The ARCMS Team</p>
-      </body>
-    `,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
+      to: req.body.email, // recipient address
+      subject: "Action Required: Activate Your ARCMS Employee Account",
+      text: `Welcome to ARCMS! Your employee account has been created.\nEmail: ${
+        req.body.email
+      }\nTemporary Password: ${randomPassword}\nPlease verify your account to activate it: ${
+        req.protocol
+      }://${req.get("host")}/employee/verified/${
+        activationData.verificationToken
+      }\nBe sure to change your password after logging in.`,
+      html: `
+        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2 style="color: #333;">Welcome to ARCMS!</h2>
+          <p>Dear Employee,</p>
+          <p>Your ARCMS employee account has been created. To begin using the system, please verify your account and set a secure password.</p>
+          
+          <ul>
+            <li><strong>Email:</strong> ${req.body.email}</li>
+            <li><strong>Temporary Password:</strong> ${randomPassword}</li>
+          </ul>
+          
+          <p>Click the button below to verify and activate your employee account:</p>
+          <p>
+            <a href="${req.protocol}://${req.get("host")}/employee/verified/${
+        activationData.verificationToken
+      }" style="background-color: #007bff; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 4px;">Activate My Account</a>
+          </p>
+    
+          <p><strong>Important:</strong> Once activated, please log in and change your password immediately.</p>
+          
+          <p>If you have any questions or need help, don’t hesitate to reach out to our support team.</p>
+          
+          <p>We’re glad to have you on board!<br/>— The ARCMS Team</p>
+        </body>
+      `,
+    });
+
+    console.log("Email sent successfully:", info.messageId);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    // Optionally, you can respond with a status or log this to an error tracking service
+    res
+      .status(500)
+      .json({ message: "Failed to send email. Please try again later." });
+  }
 
   res.status(200).json({
     status: "success",
@@ -457,6 +493,8 @@ exports.createAdmin = async (req, res) => {
     });
   }
 
+  const activationData = createAccountActivationToken();
+
   // Generate an 8-charac random password
   const randomPassword = generateRandomPassword();
 
@@ -468,6 +506,9 @@ exports.createAdmin = async (req, res) => {
     admin_name: req.body.admin_name,
     email: req.body.email,
     password: hashedPassword,
+    password_is_temp: true,
+    verification_expiration_date: activationData.tokenExpirationDate,
+    account_verification_token: activationData.accountVerificationToken,
   };
 
   // Create the admin
@@ -489,32 +530,40 @@ exports.createAdmin = async (req, res) => {
   // Email the password to the new admin
   const info = await transporter.sendMail({
     from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
-    to: "johncarlo.sabenorio@lpunetwork.edu.ph", // recipient address
-    subject: "You’ve Been Invited as an Admin on ARCMS",
-    text: `Welcome to ARCMS! An admin account has been created for you. Email: ${req.body.email}, Temporary Password: ${randomPassword}. Please log in and change your password.`,
+    to: req.body.email, // recipient address
+    subject: "Action Required: Verify Your Admin Account on ARCMS",
+    text: `You’ve been invited as an admin on ARCMS. Please verify your account to activate it.\nEmail: ${
+      req.body.email
+    }\nTemporary Password: ${randomPassword}\nVerification Link: ${
+      req.protocol
+    }://${req.get("host")}/admin/verified${
+      activationData.verificationToken
+    }\nLog in and change your password after activation.`,
     html: `
-    <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-      <h2 style="color: #333;">Welcome to ARCMS!</h2>
-      <p>Dear Admin,</p>
-      <p>We’re excited to inform you that you’ve been invited to join <strong>ARCMS</strong> as an administrator. Your account has been successfully created and you can now access the admin dashboard using the credentials below:</p>
-      
-      <ul>
-        <li><strong>Email:</strong> ${req.body.email}</li>
-        <li><strong>Temporary Password:</strong> ${randomPassword}</li>
-      </ul>
-      
-      <p>To get started, please log in here:</p>
-      <p>
-        <a href="https://arbusinesscardcms.onrender.com/admin" style="background-color: #007bff; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 4px;">Login to ARCMS</a>
-      </p>
-      
-      <p><strong>Important:</strong> For security reasons, please log in as soon as possible and change your password after your first login.</p>
-      
-      <p>If you have any questions or need assistance, don’t hesitate to reach out to our support team.</p>
-      
-      <p>Welcome aboard!<br/>— The ARCMS Team</p>
-    </body>
-  `,
+      <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #333;">You’ve Been Invited to ARCMS as an Admin</h2>
+        <p>Dear Admin,</p>
+        <p>We’re excited to let you know that you’ve been invited to join <strong>ARCMS</strong> as an administrator. Before you can access the admin dashboard, you need to verify your account to activate it.</p>
+        
+        <ul>
+          <li><strong>Email:</strong> ${req.body.email}</li>
+          <li><strong>Temporary Password:</strong> ${randomPassword}</li>
+        </ul>
+        
+        <p>Please click the button below to verify and activate your admin account:</p>
+        <p>
+          <a href="${req.protocol}://${req.get("host")}/admin/verified/${
+      activationData.verificationToken
+    }" style="background-color: #007bff; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 4px;">Verify Account</a>
+        </p>
+  
+        <p><strong>Important:</strong> After verifying your account, log in immediately and change your password for security purposes.</p>
+        
+        <p>If you have any questions or need help getting started, feel free to contact our support team.</p>
+        
+        <p>Welcome aboard!<br/>— The ARCMS Team</p>
+      </body>
+    `,
   });
 
   res.status(200).json({
@@ -629,11 +678,11 @@ exports.deleteAdmin = async (req, res) => {
 };
 
 const createAccountActivationToken = () => {
-  const resetToken = crypto.randomBytes(64).toString("hex");
+  const verificationToken = crypto.randomBytes(64).toString("hex");
 
-  const accountActivationToken = crypto
+  const accountVerificationToken = crypto
     .createHash("sha256")
-    .update(resetToken)
+    .update(verificationToken)
     .digest("hex");
 
   const tokenExpirationDate = new Date(
@@ -641,8 +690,31 @@ const createAccountActivationToken = () => {
   ).toISOString(); // Expires in 24 hours
 
   return {
-    resetToken,
-    accountActivationToken,
+    verificationToken,
+    accountVerificationToken,
     tokenExpirationDate,
   };
+};
+
+exports.adminUsesTemp = async (req, res) => {
+  console.log("ADMIN SESSION:", req.session.admin);
+
+  const { data, error } = await supabase
+    .from("admin")
+    .select("password_is_temp")
+    .eq("admin_id", req.session.admin.admin_id);
+
+  console.log("THE ADMIN DATA:", data);
+
+  if (error) {
+    res.status(404).json({
+      status: "failed",
+      error,
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    password_is_temp: data[0].password_is_temp,
+  });
 };

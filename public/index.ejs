@@ -39,7 +39,7 @@
             viewBox="0 -960 960 960"
             width="40px"
             fill="#00000"
-            id="logout-from-changepass"
+            id="require-logout-btn"
           >
             <path
               d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"
@@ -51,12 +51,11 @@
           administrator. For your security, please create a new password to
           continue.
         </p>
-        <div class="register-errors alert alert-danger">
+        <div id="register-errors" class="register-errors alert alert-danger">
           <div class="error-header">
             <div class="error-header-left">
               <i class="bi bi-exclamation-triangle-fill"></i>
               Registration Failed!
-              <span class="error-count">3</span>
             </div>
             <button
               id="close-changepass-btn"
@@ -66,16 +65,13 @@
             ></button>
           </div>
           <div class="error-body">
-            <ul class="register-errors-list">
-              <li>Errror 1</li>
-              <li>Errror 2</li>
-              <li>Errror 3</li>
+            <ul id="register-errors-list" class="register-errors-list">
               <!-- Error items will be inserted here dynamically -->
             </ul>
           </div>
         </div>
         <div class="change-newpass-content">
-          <form class="change-newpass-form">
+          <form id="change-newpass-form" class="change-newpass-form">
             <label for="current-password">Current Password:</label>
             <input
               type="password"
@@ -85,7 +81,7 @@
             <label for="current-password">New Password:</label>
             <input type="password" id="new-password" />
             <label for="current-password">Confirm New Password:</label>
-            <input type="password" id="new-password" />
+            <input type="password" id="confirm-new-password" />
 
             <button id="submit-changepass-btn">Submit</button>
           </form>
@@ -141,10 +137,119 @@
       const actionText = document.getElementById("action-text");
       const confirmYesBtn = document.getElementById("confirm-yes-btn");
       const confirmNoBtn = document.getElementById("confirm-no-btn");
+      const requireLogoutBtn = document.getElementById("require-logout-btn");
+      const registerErrors = document.getElementById("register-errors");
+      const changeNewPassOverlay = document.querySelector(
+        ".change-newpass-container"
+      );
+      const registerErrorsList = document.getElementById(
+        "register-errors-list"
+      );
+      const closeChangepassBtn = document.getElementById(
+        "close-changepass-btn"
+      );
+      const requireChangepassForm = document.getElementById(
+        "change-newpass-form"
+      );
+      employeeUsesTemp();
+
+      closeChangepassBtn.addEventListener("click", (e) => {
+        registerErrors.style.display = "none";
+      });
+
+      requireChangepassForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        registerErrorsList.innerHTML = "";
+
+        const form = e.target;
+
+        // Get the inputs
+        const data = {
+          currentPassword: form["current-password"].value,
+          newPassword: form["new-password"].value,
+          passwordConfirm: form["confirm-new-password"].value,
+        };
+
+        // Send request
+        try {
+          const response = await fetch("/arcms/api/v1/auth/change-password", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          // Convert response to json
+          const responseData = await response.json();
+
+          // If failed, show the errors
+          if (!response.ok) {
+            registerErrors.style.display = "block";
+
+            responseData.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error;
+              registerErrorsList.appendChild(li);
+            });
+          }
+          // If successful, hide the overlay
+          else {
+            alert("Password successfully changed!");
+            changeNewPassOverlay.style.display = "none";
+          }
+        } catch (error) {
+          console.log("Error changing password:", error);
+        }
+
+        requireLogoutBtn.textContent = "Submit";
+      });
+
+      requireLogoutBtn.addEventListener("click", (e) => {
+        logout();
+      });
 
       document.addEventListener("contextmenu", function (e) {
         e.preventDefault();
       });
+
+      async function employeeUsesTemp() {
+        try {
+          const response = await fetch("/arcms/api/v1/employees/uses-temp");
+
+          if (!response.ok) {
+            console.error(
+              "Failed to fetch data:",
+              response.status,
+              response.statusText
+            );
+          } else {
+            const responseData = await response.json();
+            console.log("USES TEMP RESPONSE:", responseData);
+            if (responseData.password_is_temp) {
+              changeNewPassOverlay.style.display = "flex";
+            }
+          }
+        } catch (err) {
+          console.log("error:", err);
+        }
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch("/arcms/api/v1/auth/logout", {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      }
 
       function showOverlay(actionPrompt) {
         confirmOverlay.style.display = "flex";

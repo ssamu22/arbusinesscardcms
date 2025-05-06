@@ -13,6 +13,12 @@ class Admin {
     this.admin_name = adminData.admin_name;
     this.image_id = adminData.image_id;
     this.date_created = adminData.date_created;
+    this.verification_expiration_date = adminData.verification_expiration_date;
+    this.password_reset_token = adminData.password_reset_token;
+    this.token_expiration_date = adminData.token_expiration_date;
+    this.account_verification_token = adminData.account_verification_token;
+    this.isActive = adminData.isActive;
+
     // Private fields
     this.#password = adminData.password;
     this.#email = adminData.email;
@@ -62,9 +68,7 @@ class Admin {
     try {
       const { data, error } = await supabase
         .from("admin")
-        .select(
-          "admin_id, admin_name, email, image_id, date_created"
-        );
+        .select("admin_id, admin_name, email, image_id, date_created");
 
       if (error) {
         throw new Error(`Failed to list admins: ${error.message}`);
