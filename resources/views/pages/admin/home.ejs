@@ -24,6 +24,72 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   </head>
   <body>
+    <div class="change-newpass-container">
+      <div class="change-newpass-modal">
+        <div style="display: flex; justify-content: space-between">
+          <h1>Change your password</h1>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="40px"
+            viewBox="0 -960 960 960"
+            width="40px"
+            fill="#00000"
+            id="require-logout-btn"
+          >
+            <path
+              d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"
+            />
+          </svg>
+        </div>
+        <p>
+          Your account has been created with a temporary password by the
+          administrator. For your security, please create a new password to
+          continue.
+        </p>
+        <div id="register-errors" class="register-errors alert alert-danger">
+          <div class="error-header">
+            <div class="error-header-left">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Registration Failed!
+            </div>
+            <button
+              id="close-changepass-btn"
+              type="button"
+              class="btn-close btn-close-black btn-sm"
+              aria-label="Close"
+              style="display: none"
+            ></button>
+          </div>
+          <div class="error-body">
+            <ul id="register-errors-list" class="register-errors-list">
+              <!-- Error items will be inserted here dynamically -->
+            </ul>
+          </div>
+        </div>
+        <div class="change-newpass-content">
+          <form id="change-newpass-form" class="change-newpass-form">
+            <label for="current-password">Current Password:</label>
+            <input
+              type="password"
+              id="current-password"
+              name="current-password"
+              class="changepass-input"
+            />
+            <label for="current-password">New Password:</label>
+            <input type="password" id="new-password" class="changepass-input" />
+            <label for="current-password">Confirm New Password:</label>
+            <input
+              type="password"
+              id="confirm-new-password"
+              class="changepass-input"
+            />
+
+            <button id="submit-changepass-btn">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <!-- Mobile Toggle Button (Only visible on small screens) -->
       <button class="mobile-toggle d-md-none" id="mobileToggle">
@@ -109,7 +175,8 @@
         <div class="logout">
           <a
             class="btn btn-primary"
-            href="/arcms/api/v1/auth/admin/logout"
+            href="#"
+            id="admin-logout-btn"
             style="text-decoration: none"
           >
             <span class="logout-side text-white" style="color: white">
@@ -148,11 +215,141 @@
       const adminName = document.getElementById("admin-name");
       const adminRole = document.getElementById("admin-email");
       const adminImage = document.getElementById("admin-image");
+      const requireLogoutBtn = document.getElementById("require-logout-btn");
+      const adminLogoutBtn = document.getElementById("admin-logout-btn");
+      const registerErrors = document.getElementById("register-errors");
+      const changeNewPassOverlay = document.querySelector(
+        ".change-newpass-container"
+      );
+      const registerErrorsList = document.getElementById(
+        "register-errors-list"
+      );
+      const closeChangepassBtn = document.getElementById(
+        "close-changepass-btn"
+      );
+      const requireChangepassForm = document.getElementById(
+        "change-newpass-form"
+      );
+
+      const submitChangepassBtn = document.getElementById(
+        "submit-changepass-btn"
+      );
+
+      const changePassInputs = document.querySelectorAll(".changepass-input");
+
       window.adminImageElement = adminImage;
+
+      adminUsesTemp();
 
       document.addEventListener("contextmenu", function (e) {
         e.preventDefault();
       });
+
+      closeChangepassBtn.addEventListener("click", (e) => {
+        registerErrors.style.display = "none";
+      });
+
+      requireChangepassForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        registerErrorsList.innerHTML = "";
+        changePassInputs.forEach((input) => {
+          input.disabled = true;
+        });
+        const form = e.target;
+        submitChangepassBtn.textContent = "Changing Password...";
+        // Get the inputs
+        const data = {
+          currentPassword: form["current-password"].value,
+          newPassword: form["new-password"].value,
+          passwordConfirm: form["confirm-new-password"].value,
+        };
+
+        // Send request
+        try {
+          const response = await fetch("/arcms/api/v1/admin/thisPassword", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              currentPassword: form["current-password"].value,
+              newPassword: form["new-password"].value,
+              passwordConfirm: form["confirm-new-password"].value,
+            }),
+          });
+
+          // Convert response to json
+          const responseData = await response.json();
+
+          // If failed, show the errors
+          if (!response.ok) {
+            registerErrors.style.display = "block";
+
+            responseData.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error;
+              registerErrorsList.appendChild(li);
+            });
+          }
+          // If successful, hide the overlay
+          else {
+            alert("Password successfully changed!");
+            changeNewPassOverlay.style.display = "none";
+          }
+        } catch (error) {
+          console.log("Error changing password:", error);
+        }
+
+        submitChangepassBtn.textContent = "Submit";
+        changePassInputs.forEach((input) => {
+          input.disabled = false;
+        });
+      });
+
+      requireLogoutBtn.addEventListener("click", (e) => {
+        logout();
+      });
+      adminLogoutBtn.addEventListener("click", (e) => {
+        logout();
+      });
+
+      async function adminUsesTemp() {
+        try {
+          const response = await fetch("/arcms/api/v1/admin/uses-temp");
+
+          if (!response.ok) {
+            console.error(
+              "Failed to fetch data:",
+              response.status,
+              response.statusText
+            );
+          } else {
+            const responseData = await response.json();
+            console.log("USES TEMP RESPONSE:", responseData);
+            if (responseData.password_is_temp) {
+              changeNewPassOverlay.style.display = "flex";
+            }
+          }
+        } catch (err) {
+          console.log("error:", err);
+        }
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch("/arcms/api/v1/auth/admin/logout", {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      }
 
       async function getCurrentAdmin() {
         try {

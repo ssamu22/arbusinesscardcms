@@ -25,10 +25,14 @@ const deleteYesBtn = document.getElementById("delete-yes-btn");
 const deleteNoBtn = document.getElementById("delete-no-btn");
 const closeDeleteOverlay = document.querySelector(".close-delete-overlay");
 
-const adminDeleteOverlay = document.getElementById("confirm-delete-overlay-admin");
+const adminDeleteOverlay = document.getElementById(
+  "confirm-delete-overlay-admin"
+);
 const adminDeleteYesBtn = document.getElementById("delete-yes-btn-admin");
 const adminDeleteNoBtn = document.getElementById("delete-no-btn-admin");
-const admincloseDeleteOverlay = document.querySelector(".close-delete-overlay-admin");
+const admincloseDeleteOverlay = document.querySelector(
+  ".close-delete-overlay-admin"
+);
 
 let employeeToDelete = null;
 let unapprovedToDelete = null;
@@ -645,12 +649,12 @@ async function displayAdminMembers(pageNumber) {
     const isCurrent = member.isCurrentAdmin;
 
     const deleteButtonHTML = isCurrent
-    ? `<a href="#" class="delete-btn-admin disabled" style="pointer-events: none; color: gray;" title="You cannot delete your own account">Delete</a>`
-    : `<a href="#" class="delete-btn-admin" data-id="${member.admin_id}">Delete</a>`;
+      ? `<a href="#" class="delete-btn-admin disabled" style="pointer-events: none; color: gray;" title="You cannot delete your own account">Delete</a>`
+      : `<a href="#" class="delete-btn-admin" data-id="${member.admin_id}">Delete</a>`;
 
     console.log("the freaking admin:", member);
     // <td>${startIndex + index + 1}</td>
-    const name = (member.admin_name || "");
+    const name = member.admin_name || "";
     row.innerHTML = `
                 <td>${member.admin_id}</td>
                 <td class="member-info">
@@ -788,7 +792,6 @@ async function deleteAdmin(admin_id) {
   }
 }
 
-
 // Get modal elements
 const modal = document.getElementById("userModal");
 const openModalBtn = document.getElementById("openModal");
@@ -799,6 +802,9 @@ const submitAdminBtn = document.getElementById("create-admin-btn");
 const newUserForm = document.getElementById("userForm");
 const newAdminForm = document.getElementById("newAdminForm");
 const modalHeader = document.getElementById("create-modal-header");
+const newAdminInputs = document.querySelectorAll(".new-admin-input");
+const newUserInputs = document.querySelectorAll(".new-user-input");
+
 // Open the modal
 openModalBtn.addEventListener("click", () => {
   modalHeader.textContent = "Create New User";
@@ -830,7 +836,13 @@ window.addEventListener("click", (event) => {
 newUserForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  closeModalBtn.disabled = true;
+
   const formData = new FormData(event.target);
+  submitBtn.disabled = true;
+  newUserInputs.forEach((input) => {
+    input.disabled = true;
+  });
 
   console.log("THE FORM DATA:", formData);
 
@@ -908,6 +920,11 @@ newUserForm.addEventListener("submit", async (event) => {
     }
 
     submitBtn.textContent = "Save";
+    newUserInputs.forEach((input) => {
+      input.disabled = false;
+    });
+    submitBtn.disabled = false;
+    closeModalBtn.disabled = false;
   } catch (error) {
     console.error("Error creating user:", error);
     showErrorMessage(
@@ -919,9 +936,12 @@ newUserForm.addEventListener("submit", async (event) => {
 
 newAdminForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-
   const formData = new FormData(event.target);
+  closeModalBtn.disabled = true;
 
+  newAdminInputs.forEach((input) => {
+    input.disabled = true;
+  });
   console.log("THE FORM DATA:", formData);
 
   formData.append("isActive", true);
@@ -953,6 +973,10 @@ newAdminForm.addEventListener("submit", async (event) => {
     }
 
     submitAdminBtn.textContent = "Save";
+    newAdminInputs.forEach((input) => {
+      input.disabled = false;
+    });
+    closeModalBtn.disabled = false;
   } catch (error) {
     console.error("Error creating user:", error);
     showErrorMessage(

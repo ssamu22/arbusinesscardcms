@@ -21,6 +21,92 @@ exports.getSuccessPage = (req, res) => {
   res.status(200).render("auth/user/success");
 };
 
+exports.getVerifiedAdminPage = async (req, res) => {
+  console.log("TOKEN:", req.params.token);
+
+  const candidateToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  console.log("CANDIDATE TOKEN:", candidateToken);
+
+  const { data, error } = await supabase
+    .from("admin")
+    .select("*")
+    .eq("account_verification_token", candidateToken)
+    .single();
+
+  console.log("THE ADMIN:", data);
+  if (data == null) {
+    return res.redirect("auth/page404");
+  }
+
+  const now = new Date();
+
+  if (
+    !data.verification_expiration_date ||
+    new Date(data.verification_expiration_date) < now
+  ) {
+    return res.redirect("/auth/page404");
+  }
+
+  const { updated, theError } = await supabase
+    .from("admin")
+    .update({
+      isActive: true,
+      verification_expiration_date: null,
+      account_verification_token: null,
+    })
+    .eq("admin_id", data.admin_id)
+    .single();
+
+  console.log(updated);
+
+  res.status(200).render("auth/admin/verified");
+};
+
+exports.getVerifiedEmployeePage = async (req, res) => {
+  console.log("TOKEN:", req.params.token);
+
+  const candidateToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  console.log("CANDIDATE TOKEN:", candidateToken);
+
+  const { data, error } = await supabase
+    .from("employee")
+    .select("*")
+    .eq("account_verification_token", candidateToken)
+    .single();
+
+  console.log("THE EMPLOYEE:", data);
+  if (data == null) {
+    return res.redirect("auth/page404");
+  }
+
+  const now = new Date();
+
+  if (
+    !data.verification_expiration_date ||
+    new Date(data.verification_expiration_date) < now
+  ) {
+    return res.redirect("/auth/page404");
+  }
+
+  const { updated, theError } = await supabase
+    .from("employee")
+    .update({
+      isActive: true,
+      verification_expiration_date: null,
+      account_verification_token: null,
+    })
+    .eq("employee_id", data.employee_id)
+    .single();
+
+  res.status(200).render("auth/user/verified");
+};
+
 exports.getForgotPasswordPage = (req, res) => {
   try {
     res.status(200).render("auth/user/forgot-password");

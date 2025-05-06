@@ -29,6 +29,65 @@
     />
   </head>
   <body>
+    <div class="change-newpass-container">
+      <div class="change-newpass-modal">
+        <div style="display: flex; justify-content: space-between">
+          <h1>Change your password</h1>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="40px"
+            viewBox="0 -960 960 960"
+            width="40px"
+            fill="#00000"
+            id="require-logout-btn"
+          >
+            <path
+              d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"
+            />
+          </svg>
+        </div>
+        <p>
+          Your account has been created with a temporary password by the
+          administrator. For your security, please create a new password to
+          continue.
+        </p>
+        <div id="register-errors" class="register-errors alert alert-danger">
+          <div class="error-header">
+            <div class="error-header-left">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Registration Failed!
+            </div>
+            <button
+              id="close-changepass-btn"
+              type="button"
+              class="btn-close btn-close-black btn-sm"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="error-body">
+            <ul id="register-errors-list" class="register-errors-list">
+              <!-- Error items will be inserted here dynamically -->
+            </ul>
+          </div>
+        </div>
+        <div class="change-newpass-content">
+          <form id="change-newpass-form" class="change-newpass-form">
+            <label for="current-password">Current Password:</label>
+            <input
+              type="password"
+              id="current-password"
+              name="current-password"
+            />
+            <label for="current-password">New Password:</label>
+            <input type="password" id="new-password" />
+            <label for="current-password">Confirm New Password:</label>
+            <input type="password" id="confirm-new-password" />
+
+            <button id="submit-changepass-btn">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
     <div class="container-fluid">
       <div class="row">
         <!-- Sidebar -->
@@ -64,7 +123,6 @@
           <!-- Content Section -->
           <%- include('../resources/views/pages/user/components/overview.ejs')
           %>
-          
         </main>
       </div>
     </div>
@@ -79,10 +137,119 @@
       const actionText = document.getElementById("action-text");
       const confirmYesBtn = document.getElementById("confirm-yes-btn");
       const confirmNoBtn = document.getElementById("confirm-no-btn");
+      const requireLogoutBtn = document.getElementById("require-logout-btn");
+      const registerErrors = document.getElementById("register-errors");
+      const changeNewPassOverlay = document.querySelector(
+        ".change-newpass-container"
+      );
+      const registerErrorsList = document.getElementById(
+        "register-errors-list"
+      );
+      const closeChangepassBtn = document.getElementById(
+        "close-changepass-btn"
+      );
+      const requireChangepassForm = document.getElementById(
+        "change-newpass-form"
+      );
+      employeeUsesTemp();
+
+      closeChangepassBtn.addEventListener("click", (e) => {
+        registerErrors.style.display = "none";
+      });
+
+      requireChangepassForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        registerErrorsList.innerHTML = "";
+
+        const form = e.target;
+
+        // Get the inputs
+        const data = {
+          currentPassword: form["current-password"].value,
+          newPassword: form["new-password"].value,
+          passwordConfirm: form["confirm-new-password"].value,
+        };
+
+        // Send request
+        try {
+          const response = await fetch("/arcms/api/v1/auth/change-password", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          // Convert response to json
+          const responseData = await response.json();
+
+          // If failed, show the errors
+          if (!response.ok) {
+            registerErrors.style.display = "block";
+
+            responseData.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error;
+              registerErrorsList.appendChild(li);
+            });
+          }
+          // If successful, hide the overlay
+          else {
+            alert("Password successfully changed!");
+            changeNewPassOverlay.style.display = "none";
+          }
+        } catch (error) {
+          console.log("Error changing password:", error);
+        }
+
+        requireLogoutBtn.textContent = "Submit";
+      });
+
+      requireLogoutBtn.addEventListener("click", (e) => {
+        logout();
+      });
 
       document.addEventListener("contextmenu", function (e) {
         e.preventDefault();
       });
+
+      async function employeeUsesTemp() {
+        try {
+          const response = await fetch("/arcms/api/v1/employees/uses-temp");
+
+          if (!response.ok) {
+            console.error(
+              "Failed to fetch data:",
+              response.status,
+              response.statusText
+            );
+          } else {
+            const responseData = await response.json();
+            console.log("USES TEMP RESPONSE:", responseData);
+            if (responseData.password_is_temp) {
+              changeNewPassOverlay.style.display = "flex";
+            }
+          }
+        } catch (err) {
+          console.log("error:", err);
+        }
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch("/arcms/api/v1/auth/logout", {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      }
 
       function showOverlay(actionPrompt) {
         confirmOverlay.style.display = "flex";
@@ -592,8 +759,10 @@
                   );
                   achievements[index] = result;
                 } else {
-                  console.log("Current Achievements: "+ JSON.stringify(achievements));
-                  console.log("Result: "+JSON.stringify(result));
+                  console.log(
+                    "Current Achievements: " + JSON.stringify(achievements)
+                  );
+                  console.log("Result: " + JSON.stringify(result));
                   achievements.push(result);
                 }
 
@@ -2126,87 +2295,83 @@
         initializeOverview();
       });
 
-
-
-
-
       // Responsive Sidebar JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
-  const sidebar = document.getElementById('sidebar');
-  const mainContent = document.querySelector('.main-content');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const mobileToggle = document.getElementById('mobileToggle');
-  const overlay = document.getElementById('sidebarOverlay');
-  
-  // Function to check if we're on mobile view
-  function isMobileView() {
-    return window.innerWidth < 768; // Bootstrap md breakpoint
-  }
-  
-  // Desktop sidebar toggle (collapse/expand)
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('collapsed');
-      mainContent.classList.toggle('expanded');
-      
-      // Update toggle icon
-      const icon = this.querySelector('i');
-      if (sidebar.classList.contains('collapsed')) {
-        icon.classList.remove('bi-chevron-left');
-        icon.classList.add('bi-chevron-right');
-      } else {
-        icon.classList.remove('bi-chevron-right');
-        icon.classList.add('bi-chevron-left');
-      }
-    });
-  }
-  
-  // Mobile sidebar toggle (show/hide)
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('mobile-open');
-      overlay.classList.toggle('active');
-      
-      // Prevent body scrolling when sidebar is open
-      if (sidebar.classList.contains('mobile-open')) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-    });
-  }
-  
-  // Close sidebar when clicking overlay
-  if (overlay) {
-    overlay.addEventListener('click', function() {
-      sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-  }
-  
-  // Close sidebar when clicking a nav link on mobile
-  const navLinks = document.querySelectorAll('.sidebar .nav-link');
-  navLinks.forEach(function(link) {
-    link.addEventListener('click', function() {
-      if (isMobileView() && sidebar.classList.contains('mobile-open')) {
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-  
-  // Handle window resize
-  window.addEventListener('resize', function() {
-    if (!isMobileView() && sidebar.classList.contains('mobile-open')) {
-      sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-});
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.querySelector(".main-content");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const mobileToggle = document.getElementById("mobileToggle");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        // Function to check if we're on mobile view
+        function isMobileView() {
+          return window.innerWidth < 768; // Bootstrap md breakpoint
+        }
+
+        // Desktop sidebar toggle (collapse/expand)
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            mainContent.classList.toggle("expanded");
+
+            // Update toggle icon
+            const icon = this.querySelector("i");
+            if (sidebar.classList.contains("collapsed")) {
+              icon.classList.remove("bi-chevron-left");
+              icon.classList.add("bi-chevron-right");
+            } else {
+              icon.classList.remove("bi-chevron-right");
+              icon.classList.add("bi-chevron-left");
+            }
+          });
+        }
+
+        // Mobile sidebar toggle (show/hide)
+        if (mobileToggle) {
+          mobileToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("mobile-open");
+            overlay.classList.toggle("active");
+
+            // Prevent body scrolling when sidebar is open
+            if (sidebar.classList.contains("mobile-open")) {
+              document.body.style.overflow = "hidden";
+            } else {
+              document.body.style.overflow = "";
+            }
+          });
+        }
+
+        // Close sidebar when clicking overlay
+        if (overlay) {
+          overlay.addEventListener("click", function () {
+            sidebar.classList.remove("mobile-open");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
+          });
+        }
+
+        // Close sidebar when clicking a nav link on mobile
+        const navLinks = document.querySelectorAll(".sidebar .nav-link");
+        navLinks.forEach(function (link) {
+          link.addEventListener("click", function () {
+            if (isMobileView() && sidebar.classList.contains("mobile-open")) {
+              sidebar.classList.remove("mobile-open");
+              overlay.classList.remove("active");
+              document.body.style.overflow = "";
+            }
+          });
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", function () {
+          if (!isMobileView() && sidebar.classList.contains("mobile-open")) {
+            sidebar.classList.remove("mobile-open");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
+          }
+        });
+      });
     </script>
   </body>
 </html>

@@ -82,4 +82,7 @@ router.get("/admin/home", ensureAuthenticated.ensureAdmin, (req, res) => {
   res.render(path.join(__dirname, "..", adminPath, "home.ejs"), { admin });
 });
 
+router.get("/admin/verified/:token", viewController.getVerifiedAdminPage);
+router.get("/employee/verified/:token", viewController.getVerifiedEmployeePage);
+
 module.exports = router;

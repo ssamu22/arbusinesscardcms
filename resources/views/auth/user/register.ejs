@@ -35,19 +35,19 @@
             <!-- ERROR MESSAGE BOX WITH GRAY HEADER AND RED ACCENTS -->
             <div
               class="register-errors alert alert-danger"
-              style="display: none"
+              style="display: none; position: relative"
             >
+              <button
+                type="button"
+                class="btn-close btn-close-white btn-sm"
+                aria-label="Close"
+              ></button>
               <div class="error-header">
                 <div class="error-header-left">
                   <i class="bi bi-exclamation-triangle-fill"></i>
                   Registration Failed!
                   <span class="error-count">3</span>
                 </div>
-                <button
-                  type="button"
-                  class="btn-close btn-close-white btn-sm"
-                  aria-label="Close"
-                ></button>
               </div>
               <div class="error-body">
                 <ul class="register-errors-list">
@@ -222,7 +222,7 @@
       document.addEventListener("contextmenu", function (e) {
         e.preventDefault();
       });
-      
+
       // Script to handle error display
       document.addEventListener("DOMContentLoaded", function () {
         // Close error box when clicking the close button

@@ -35,9 +35,7 @@ exports.login = async (req, res) => {
 
     // Check if employee is inactive
     if (!employee.isActive) {
-      return res.status(401).json({
-        message: "Account is currently unavailable. Please try again.",
-      });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     // Step 3: Store employee data in session (excluding private info)
@@ -64,9 +62,10 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error("Error during logout:", err);
+      return res.status(500).json({ message: "Logout Failed" });
     }
-    res.redirect("/");
+    res.clearCookie("connect.sid");
+    res.status(200).json({ redirect: "/" });
   });
 };
 
@@ -343,6 +342,9 @@ exports.changePassword = async (req, res) => {
     passErrors.push("Please fill out all the required inputs!");
   }
 
+  console.log("CURRENT PASSWORD:", currentPassword);
+  console.log("NEW PASSWORD:", newPassword);
+  console.log("CONFIRM NEW PASSWORD:", passwordConfirm);
   // Get the current admin
   const employee = await Employee.findById(employee_id);
   const passwordMatch = await employee.validatePassword(

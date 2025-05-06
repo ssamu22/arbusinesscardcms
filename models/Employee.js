@@ -126,7 +126,7 @@ class Employee {
     try {
       const { data, error } = await supabase
         .from("employee")
-        .update({ password: newPassword })
+        .update({ password: newPassword, password_is_temp: false })
         .eq("employee_id", employee_id);
 
       if (error) {

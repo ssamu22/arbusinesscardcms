@@ -156,7 +156,9 @@
   <!-- Modal -->
   <div id="userModal" class="modal">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
+      <button class="close-btn" style="background: none; border: none">
+        &times;
+      </button>
       <h2 id="create-modal-header">Create New User</h2>
       <form id="userForm">
         <div class="form-group">
@@ -166,6 +168,7 @@
             id="fname"
             name="fname"
             placeholder="Enter first name"
+            class="new-user-input"
             required
           />
         </div>
@@ -176,6 +179,7 @@
             id="mname"
             name="mname"
             placeholder="Enter middle name"
+            class="new-user-input"
           />
         </div>
         <div class="form-group">
@@ -185,6 +189,7 @@
             id="lname"
             name="lname"
             placeholder="Enter last name"
+            class="new-user-input"
             required
           />
         </div>
@@ -207,6 +212,7 @@
             id="email"
             name="email"
             placeholder="Enter email address"
+            class="new-user-input"
             required
           />
         </div>
@@ -217,6 +223,7 @@
             class="form-control new-honorifics-input"
             id="honorifics"
             name="honorifics"
+            class="new-user-input"
           >
             <option value="">-- Select --</option>
 
@@ -259,6 +266,7 @@
             id="new-admin-name"
             name="admin_name"
             placeholder="Enter Admin Name"
+            class="new-admin-input"
             required
           />
         </div>
@@ -270,6 +278,7 @@
             id="new-admin-email"
             name="email"
             placeholder="Enter email address"
+            class="new-admin-input"
             required
           />
         </div>
