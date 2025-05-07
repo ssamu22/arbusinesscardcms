@@ -246,16 +246,46 @@ exports.updateProfile = async (req, res) => {
       department_id: department,
     };
 
-    console.log("THE UPDATED PROFILE DATA:", updatedProfileData);
     if (image_id) {
       updatedProfileData.image_id = image_id;
     }
 
-    console.log(updatedProfileData);
-
     // Update the user profile in the database here
     // Assuming you have a function in your model to handle this
-    await Employee.update(req.session.user.employee_id, updatedProfileData);
+
+    const { data: employeeData, error: employeeError } = await supabase
+      .from("employee")
+      .update(updatedProfileData)
+      .eq("employee_id", req.session.user.employee_id)
+      .select()
+      .single();
+
+    if (employeeError) {
+      console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
+      return res.status(400).json({ message: "Failed to update profile" });
+    }
+    console.log("NEW EMPLOYEE DATA:", employeeData);
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_PROFILE",
+        actor: employeeData.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: employeeData.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
+    // await supabase.from("log").insert({});
 
     // Update session with the new profile data, while preserving existing values
     if (req.session.admin) {
@@ -274,7 +304,9 @@ exports.updateProfile = async (req, res) => {
     };
 
     // Send a success response
-    res.status(200).json({ message: "Profile updated successfully!" });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully!", employeeData });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ message: "Failed to update profile" });
