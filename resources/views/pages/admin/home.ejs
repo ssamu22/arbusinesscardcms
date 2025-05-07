@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="icon" href="/images/temporary.jpg" />
+    <link rel="icon" href="/images/lpu_logo.png" />
     <link rel="stylesheet" href="/styles/admin.css" />
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
@@ -102,8 +102,8 @@
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
           <div class="d-flex">
-            <img src="/images/temporary.jpg" alt="Logo" />
-            <span class="sidebar-title">ARCMS</span>
+            <img src="/images/lpu_logo_horizontal.png" height="76" id="sidebarLogo" alt="Logo" />
+            <span class="sidebar-title"></span>
           </div>
           <button class="sidebar-toggle d-none d-md-block" id="sidebarToggle">
             <i class="bi bi-chevron-left"></i>
@@ -407,6 +407,16 @@
             } else {
               icon.classList.remove("bi-chevron-right");
               icon.classList.add("bi-chevron-left");
+            }
+
+            // Toggle sidebar logo
+            const logo = document.getElementById("sidebarLogo");
+            if (sidebar.classList.contains("collapsed")) {
+              logo.src = "/images/lpu_logo_icon.png"; // smaller or square logo
+              logo.height = 35; 
+            } else {
+              logo.src = "/images/lpu_logo_horizontal.png"; // original horizontal logo
+              logo.height = 76; // restore size
             }
           });
         }
