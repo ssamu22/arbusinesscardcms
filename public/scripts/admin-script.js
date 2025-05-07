@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const markersLink = document.getElementById("markers-link");
   const bCardsLink = document.getElementById("bcards-link");
   const membersSection = document.getElementById("members-section");
+  const logsLink = document.getElementById("logs-link");
+  const logsSection = document.getElementById("logs-section");
   const universitySection = document.getElementById("university-section");
   const universityManagementSection = document.getElementById(
     "university-management-section"
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function showSection(section) {
     membersSection.style.display = "none";
+    logsSection.style.display = "none";
     universitySection.style.display = "none";
     universityManagementSection.style.display = "none";
     markersSection.style.display = "none";
@@ -33,6 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Update sidebar active state
     [
       membersLink,
+      logsLink,
       universityLink,
       universityManagementLink,
       markersLink,
@@ -45,25 +49,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       theIntroVideo.pause();
       theIntroVideo.currentTime = 0;
       membersLink.classList.add("sidebar-active");
-    }
-    if (section === universitySection)
+    } else if (section === logsSection) {
+      theIntroVideo.pause();
+      theIntroVideo.currentTime = 0;
+      logsLink.classList.add("sidebar-active");
+    } else if (section === universitySection)
       universityLink.classList.add("sidebar-active");
-    if (section === universityManagementSection) {
+    else if (section === universityManagementSection) {
       theIntroVideo.pause();
       theIntroVideo.currentTime = 0;
       universityManagementLink.classList.add("sidebar-active");
-    }
-    if (section === markersSection) {
+    } else if (section === markersSection) {
       theIntroVideo.pause();
       theIntroVideo.currentTime = 0;
       markersLink.classList.add("sidebar-active");
-    }
-    if (section === bCardsSection) {
+    } else if (section === bCardsSection) {
       theIntroVideo.pause();
       theIntroVideo.currentTime = 0;
       bCardsLink.classList.add("sidebar-active");
-    }
-    if (section === adminAccountSection) {
+    } else if (section === adminAccountSection) {
       theIntroVideo.pause();
       theIntroVideo.currentTime = 0;
       adminAccountLink.classList.add("sidebar-active");
@@ -76,6 +80,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     errorPasswordTooltip.style.display = "none";
     e.preventDefault();
     showSection(membersSection);
+  });
+  logsLink.addEventListener("click", function (e) {
+    errorPasswordTooltip.style.display = "none";
+    e.preventDefault();
+    showSection(logsSection);
   });
 
   universityLink.addEventListener("click", function (e) {

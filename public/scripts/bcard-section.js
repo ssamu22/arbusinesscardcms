@@ -618,11 +618,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const { employeesList } = await response.json();
 
-      activeEmployees = employeesList;
+      logs = employeesList;
 
-      console.log("ALL ACTIVE EMPLOYEES IN THE SYSTEM:", activeEmployees);
+      console.log("ALL ACTIVE EMPLOYEES IN THE SYSTEM:", logs);
 
-      return activeEmployees;
+      return logs;
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
@@ -1425,7 +1425,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get navigation links
   const bcardsLink = document.getElementById("bcards-link");
   const otherLinks = document.querySelectorAll(
-    "#members-link, #university-link, #university-management-link, #markers-link, #admin-account-link"
+    "#members-link, #logs-link, #university-link, #university-management-link, #markers-link, #admin-account-link"
   );
 
   // Get sections

@@ -1,0 +1,50 @@
+<section id="logs-section" class="logs-section">
+  <div class="logs-header">
+    <h2>Logs</h2>
+
+    <div>
+      <button id="refresh-logs" class="refresh-logs-btn" id="openModal">
+        Refresh Logs
+      </button>
+    </div>
+  </div>
+  <!-- <div class="members-actions">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search members..." />
+      </div>
+      <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+    </div> -->
+
+  <div class="logs-container">
+    <table class="logs-table">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Actor</th>
+          <th>Position</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>ID</th>
+        </tr>
+      </thead>
+      <tbody id="logsTableBody">
+        <!-- Dummy data will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+    <div class="pagination">
+      <div class="pagination-info-active">
+        Showing <span></span> to <span></span> of <span></span> results
+      </div>
+      <div class="pagination-buttons">
+        <a href="#" class="prev-page-logs"
+          ><i class="fas fa-chevron-left"></i
+        ></a>
+        <div class="number-buttons-logs"></div>
+        <a href="#" class="next-page-logs"
+          ><i class="fas fa-chevron-right"></i
+        ></a>
+      </div>
+    </div>
+  </div>
+</section>

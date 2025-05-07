@@ -22,6 +22,7 @@ class Employee {
     this.department_id = employeeData.department_id;
     this.date_created = employeeData.date_created;
     this.isActive = employeeData.isActive;
+    this.isApproved = employeeData.isApproved;
     // Private fields
     this.#password = employeeData.password;
     this.email = employeeData.email;
@@ -166,7 +167,9 @@ class Employee {
         .eq("employee_id", employee_id);
 
       if (error) {
-        throw new Error(`Failed to update employee department: ${error.message}`);
+        throw new Error(
+          `Failed to update employee department: ${error.message}`
+        );
       }
 
       return data;
@@ -238,7 +241,7 @@ class Employee {
         .select(
           "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number, department_id"
         )
-        .eq("isActive", true)
+        .eq("isApproved", true)
         .order("employee_number", { ascending: true });
 
       console.log("ALL ACTIVE MEMBERS: ", data);
@@ -283,7 +286,7 @@ class Employee {
         .select(
           "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, employee_number"
         )
-        .eq("isActive", false);
+        .eq("isApproved", false);
 
       console.log("ALL ACTIVE MEMBERS: ", data);
 

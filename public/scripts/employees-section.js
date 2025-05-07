@@ -197,17 +197,27 @@ async function displayActiveMembers(pageNumber) {
                 </td>
                 <td>
                     <button class="edit-btn-active edit-position-btn"></button>
-                    <span class="position-text">${member.position || "- - -"}</span>
-                    <input type="text" class="position-input" value="${member.position || ""}" style="display: none;" />
+                    <span class="position-text">${
+                      member.position || "- - -"
+                    }</span>
+                    <input type="text" class="position-input" value="${
+                      member.position || ""
+                    }" style="display: none;" />
                 </td>
                 <td>
                     <button class="edit-btn-active edit-dept-btn"></button>
-                    <span class="dept-text">${getDepartmentName(member.department_id)}</span>
-                    <input type="text" class="dept-input" value="${member.department_id || ""}" style="display: none;" />
+                    <span class="dept-text">${getDepartmentName(
+                      member.department_id
+                    )}</span>
+                    <input type="text" class="dept-input" value="${
+                      member.department_id || ""
+                    }" style="display: none;" />
                 </td>
                 <td>${member.date_created}</td>
                 <td>
-                  <a href="#" class="delete-btn" data-id="${member.employee_id}">Delete</a>
+                  <a href="#" class="delete-btn" data-id="${
+                    member.employee_id
+                  }">Delete</a>
                 </td>
             `;
 
@@ -232,7 +242,6 @@ async function displayActiveMembers(pageNumber) {
 
         updateEmployeePosition(member.employee_id, newPosition);
         editButtonPosition.disabled = false;
-
       } else {
         // Edit logic
         textSpan.style.display = "none";
@@ -263,7 +272,7 @@ async function displayActiveMembers(pageNumber) {
 
       if (isEditing) {
         const selectedId = select.value;
-        console.log("Dept ID: "+selectedId);
+        console.log("Dept ID: " + selectedId);
         const selectedName = getDepartmentName(selectedId);
 
         deptText.textContent = selectedName;
@@ -285,14 +294,13 @@ async function displayActiveMembers(pageNumber) {
     function getDepartmentName(deptId) {
       const dept = departmentsList.find((d) => d.department_id == deptId);
       console.log("Depts: " + JSON.stringify(departmentsList));
-      console.log("Dept Name: "+dept);
+      console.log("Dept Name: " + dept);
       return dept ? dept.department_name : "- - -";
     }
-
   });
-  
+
   const deleteButtons = document.querySelectorAll(".delete-btn");
-  
+
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
@@ -306,11 +314,14 @@ async function displayActiveMembers(pageNumber) {
 
 async function updateEmployeeDepartment(employee_id, departmentId) {
   try {
-    const response = await fetch(`/arcms/api/v1/employees/department/${employee_id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ department_id: departmentId }),
-    });
+    const response = await fetch(
+      `/arcms/api/v1/employees/department/${employee_id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ department_id: departmentId }),
+      }
+    );
 
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || "Update failed");
@@ -322,7 +333,7 @@ async function updateEmployeeDepartment(employee_id, departmentId) {
   }
 }
 
-async function updateEmployeePosition(employee_id, newPosition){
+async function updateEmployeePosition(employee_id, newPosition) {
   try {
     const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
       method: "PUT",
@@ -517,24 +528,36 @@ async function displayInactiveMembers(pageNumber) {
 
 async function approveUser(employeeId) {
   try {
-    showSuccessMessage(`Approving user...`);
     const response = await fetch(`/arcms/api/v1/auth/approve/${employeeId}`, {
       method: "POST",
     });
 
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      errorData.message ||
+        `Failed to approve employee (Status: ${response.status})`;
+      showErrorMessage(errorMessage);
+      console.error("Approve User API Error:", errorData);
+      return;
+    }
+
     const result = await response.json();
     const employee = result.data;
 
-    console.log("APRROVE USER RESULT:", result);
+    console.log("APPROVE USER RESULT:", result);
 
     activeEmployees.push(employee);
-    displayActiveMembers(currentPageForActive); // Default to page 1
+    displayActiveMembers(currentPageForActive);
     setupPaginationActive();
     showSuccessMessage(`Employee ${employeeId} is approved!`);
   } catch (err) {
-    console.log(err);
+    console.error("Network or unexpected error approving user:", err);
+    showErrorMessage(
+      "An unexpected error occurred while approving the user. Please try again later."
+    );
   }
 }
+
 async function approveAll() {
   try {
     tableBodyInactive.innerHTML = "";
@@ -846,8 +869,6 @@ newUserForm.addEventListener("submit", async (event) => {
 
   console.log("THE FORM DATA:", formData);
 
-
-
   formData.append("isActive", true);
 
   const sanitizeName = (name) => {
@@ -855,10 +876,10 @@ newUserForm.addEventListener("submit", async (event) => {
     return sanitized
       .split(/[\s\-]/)
       .filter(Boolean)
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
       .join(" ")
       .replace(/\s+/g, " ")
-      .replace(/(\b[A-Z][a-z]*)(?=\s|$)/g, match => match); // Keep spacing tidy
+      .replace(/(\b[A-Z][a-z]*)(?=\s|$)/g, (match) => match); // Keep spacing tidy
   };
 
   // Validate employee number

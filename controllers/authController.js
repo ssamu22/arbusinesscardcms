@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
     }
 
     // Check if employee is inactive
-    if (!employee.isActive) {
+    if (!employee.isActive || !employee.isApproved) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
@@ -71,14 +71,29 @@ exports.logout = (req, res) => {
 
 exports.signup = async (req, res) => {
   // Check if a required value are missing.
-  const { fname, mname, honorifics, lname, email, password, passwordConfirm, employee_number } =
-    req.body;
+  const {
+    fname,
+    mname,
+    honorifics,
+    lname,
+    email,
+    password,
+    passwordConfirm,
+    employee_number,
+  } = req.body;
 
   const signupErrors = [];
 
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
-  if (!fname || !lname || !email || !password || !passwordConfirm || !employee_number) {
+  if (
+    !fname ||
+    !lname ||
+    !email ||
+    !password ||
+    !passwordConfirm ||
+    !employee_number
+  ) {
     return res.status(400).json({
       status: "failed",
       message: "Fill out all required inputs!",
@@ -102,11 +117,11 @@ exports.signup = async (req, res) => {
   }
 
   // Check if employee number already exists
-  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(
+    employee_number
+  );
   if (existingEmployeeNumber) {
-    signupErrors.push(
-      "The employee number you used already exists!"
-    );
+    signupErrors.push("The employee number you used already exists!");
   }
 
   console.log("CARRY ON ");
@@ -149,7 +164,8 @@ exports.signup = async (req, res) => {
     password: hashedPassword, // Store the hashed password
     image_id: 68, // Use default profile image_id
     date_created: new Date().toISOString(), // Automatically set the creation date
-    isActive: req.body.isActive ? true : false,
+    isActive: false,
+    isApproved: false,
     honorifics: honorifics,
   };
 
@@ -266,27 +282,74 @@ exports.updateProfile = async (req, res) => {
 };
 
 exports.approveUser = async (req, res) => {
-  // Change the status of the user from inactive to active
+  // Create activation token
+  const activationData = createAccountActivationToken();
+
   const { data: user, error } = await supabase
     .from("employee")
-    .update({ isActive: true })
+    .update({
+      isApproved: true,
+      verification_expiration_date: activationData.tokenExpirationDate,
+      account_verification_token: activationData.accountVerificationToken,
+    })
     .eq("employee_id", req.params.employeeId)
     .single();
 
   const { password, password_reset_token, token_expiration_date, ...safeUser } =
     user;
 
-  // Send an email to the user
   try {
-    const info = await transporter.sendMail({
-      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-      to: safeUser.email, //  receivers
-      subject: "Your Registration Has Been Approved",
-      text: `Registration Approved`,
-      html: `<p>Your registration has been approved by the administrators. Please <a href= 'https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>`,
-    });
-  } catch (err) {
-    console.log("FAILED TO SEND EMAIL", err);
+    const info = transporter
+      .sendMail({
+        from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`,
+        to: safeUser.email,
+        subject: "Welcome to ARCMS – Please Activate Your Employee Account",
+        text: `Welcome to ARCMS! Your employee account has been approved.
+    
+    Please verify your account using the link below:
+    ${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }
+    
+    After logging in, be sure to change your password.`,
+
+        html: `
+        <h2>Welcome to ARCMS!</h2>
+        <p>Your employee account has been approved.</p>
+        <p>
+          Please verify your account:
+          <a href="${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }">
+            Activate My Account
+          </a>
+        </p>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p><a href="${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }">
+          ${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }
+        </a></p>
+        <p>We're excited to have you on board!<br>— The ARCMS Team</p>
+      `,
+      })
+      .then((info) => {
+        console.log("Email sent successfully:", info.messageId);
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        // Optionally log error to external service
+      });
+
+    console.log("Email sent successfully:", info.messageId);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    // Optionally, you can respond with a status or log this to an error tracking service
+    res
+      .status(500)
+      .json({ message: "Failed to send email. Please try again later." });
   }
 
   const image = await Image.getImageById(safeUser.image_id);
@@ -541,6 +604,25 @@ const createPasswordResetToken = () => {
   return {
     resetToken,
     passwordResetToken,
+    tokenExpirationDate,
+  };
+};
+
+const createAccountActivationToken = () => {
+  const verificationToken = crypto.randomBytes(64).toString("hex");
+
+  const accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  const tokenExpirationDate = new Date(
+    Date.now() + 24 * 60 * 60 * 1000
+  ).toISOString(); // Expires in 24 hours
+
+  return {
+    verificationToken,
+    accountVerificationToken,
     tokenExpirationDate,
   };
 };
