@@ -46,6 +46,7 @@ body {
   height: 100vh;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 .sidebar.collapsed {
@@ -58,13 +59,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.sidebar-header img {
-  width: 40px;
-  height: 40px;
-  border-radius: 2rem;
-  display: block; /* Prevent any unwanted spacing */
 }
 
 .sidebar-header .d-flex {
@@ -725,6 +719,7 @@ header {
 }
 
 #departments-list li .buttons,
+#colleges-list li .buttons,
 #achievement-list li .buttons {
   display: flex;
   gap: 3px;

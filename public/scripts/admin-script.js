@@ -309,45 +309,119 @@ async function fetchDepartments() {
   });
 
   function toggleEditMode(departmentId, nameContainer, editBtn, deleteBtn) {
-    const isEditing = nameContainer.querySelector("input");
-
-    if (isEditing) {
+    const input = nameContainer.querySelector("input");
+  
+    if (input) {
       // Save mode
-      const input = nameContainer.querySelector("input");
       const newName = input.value;
-
-      // Replace input with text content
-      nameContainer.textContent = newName;
-
-      // Revert button to Edit
+  
       editBtn.className = "edit-btn-dept";
-
-      // Re-enable delete button
       deleteBtn.disabled = false;
-
-      saveDepartmentName(departmentId, newName);
+  
+      const originalName = nameContainer.dataset.originalName;
+      saveDepartmentName(departmentId, newName, originalName, nameContainer);
     } else {
       // Edit mode
-      const currentName = nameContainer.textContent;
-
-      // Replace text content with an input field
+      const currentName = nameContainer.textContent.trim();
+  
+      // Store original name as data attribute
+      nameContainer.dataset.originalName = currentName;
+  
       const input = document.createElement("input");
       input.type = "text";
       input.value = currentName;
       input.className = "edit-input";
-
-      editBtn.classList.add("active");
-
+  
       nameContainer.textContent = ""; // Clear current text
       nameContainer.appendChild(input);
-
-      // Disable delete button
+  
+      editBtn.classList.add("active");
       deleteBtn.disabled = true;
     }
   }
 }
 
-async function saveDepartmentName(departmentId, newName) {
+async function fetchColleges() {
+  const response = await fetch("/api/colleges");
+  const colleges = await response.json();
+
+  const container = document.getElementById("colleges-list");
+  container.innerHTML = "";
+
+  colleges.forEach((college) => {
+    const li = document.createElement("li");
+    li.value = college.college_id;
+
+    const nameContainer = document.createElement("span");
+    nameContainer.textContent = college.name;
+    nameContainer.className = "college-name";
+
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "buttons";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn-college";
+    deleteBtn.onclick = function (e) {
+      e.preventDefault();
+      if (confirm("Are you sure you want to delete this college?")) {
+        deleteCollege(college.college_id);
+      }
+    };
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn-college";
+    editBtn.onclick = function (e) {
+      e.preventDefault();
+      toggleEditMode(
+        college.college_id,
+        nameContainer,
+        editBtn,
+        deleteBtn
+      );
+    };
+
+    buttonsContainer.appendChild(editBtn);
+    buttonsContainer.appendChild(deleteBtn);
+
+    li.appendChild(nameContainer);
+    li.appendChild(buttonsContainer);
+    container.appendChild(li);
+  });
+
+  function toggleEditMode(collegeId, nameContainer, editBtn, deleteBtn) {
+    const input = nameContainer.querySelector("input");
+  
+    if (input) {
+      // Save mode
+      const newName = input.value;
+  
+      editBtn.className = "edit-btn-college";
+      deleteBtn.disabled = false;
+  
+      const originalName = nameContainer.dataset.originalName;
+      saveCollegeName(collegeId, newName, originalName, nameContainer);
+    } else {
+      // Edit mode
+      const currentName = nameContainer.textContent.trim();
+  
+      // Store original name as data attribute
+      nameContainer.dataset.originalName = currentName;
+  
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentName;
+      input.className = "edit-input";
+  
+      nameContainer.textContent = ""; // Clear current text
+      nameContainer.appendChild(input);
+  
+      editBtn.classList.add("active");
+      deleteBtn.disabled = true;
+    }
+  }
+}
+
+async function saveDepartmentName(departmentId, newName, originalName, nameContainer) {
   try {
     const response = await fetch(`/arcms/api/v1/departments/${departmentId}`, {
       method: "PATCH",
@@ -358,12 +432,51 @@ async function saveDepartmentName(departmentId, newName) {
     });
 
     if (!response.ok) {
-      showErrorMessage("Failed to save department name");
+      const errorData = await response.json();
+      if (errorData?.error === "Department already exists") {
+        showErrorMessage("Department already exists");
+      } else {
+        showErrorMessage("Failed to save department name");
+      }
+
+      nameContainer.textContent = originalName;
       throw new Error("Failed to save department name.");
     }
 
-    console.log("Department name updated successfully.");
+    nameContainer.textContent = newName;
     showSuccessMessage("Department name updated successfully.");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function saveCollegeName(collegeId, newName, originalName, nameContainer) {
+  try {
+    const response = await fetch(`/arcms/api/v1/colleges/${collegeId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: newName }),
+    });
+
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData?.error === "College already exists") {
+        showErrorMessage("College already exists");
+      } else {
+        showErrorMessage("Failed to save college name");
+      }
+
+      nameContainer.textContent = originalName;
+      throw new Error("Failed to save college name.");
+    }
+
+    nameContainer.textContent = newName;
+
+    console.log("Colleges name updated successfully.");
+    showSuccessMessage("Colleges name updated successfully.");
   } catch (error) {
     console.error(error);
   }
@@ -379,13 +492,47 @@ async function createDepartment(name) {
       body: JSON.stringify({ department_name: name }),
     });
 
+    const result = await response.json(); // Parse the JSON body
+
     if (!response.ok) {
-      showErrorMessage("Failed to create new department");
-      throw new Error("Failed to create new department.");
+      if (result.error === "Department already exists") {
+        showErrorMessage("Department already exists");
+      } else {
+        showErrorMessage("Failed to create new department");
+      }
+      throw new Error(result.error || "Failed to create new department.");
     }
 
     showSuccessMessage("New department created successfully.");
     fetchDepartments();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function createCollege(name) {
+  try {
+    const response = await fetch("/arcms/api/v1/colleges", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: name }),
+    });
+
+    const result = await response.json(); // Parse the JSON body
+
+    if (!response.ok) {
+      if (result.error === "College already exists") {
+        showErrorMessage("College already exists");
+      } else {
+        showErrorMessage("Failed to create new college");
+      }
+      throw new Error(result.error || "Failed to create new college.");
+    }
+
+    showSuccessMessage("New college created successfully.");
+    fetchColleges();
   } catch (error) {
     console.error(error);
   }
@@ -404,6 +551,22 @@ async function deleteDepartment(departmentId) {
     fetchDepartments();
   } catch (error) {
     console.error("Failed to delete department: ", error);
+  }
+}
+
+async function deleteCollege(collegeId) {
+  try {
+    const response = await fetch(`/arcms/api/v1/colleges/${collegeId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      showErrorMessage("Failed to delete college");
+      throw new Error("Failed to delete college.");
+    }
+    showErrorMessage("College deleted.");
+    fetchColleges();
+  } catch (error) {
+    console.error("Failed to delete college: ", error);
   }
 }
 
@@ -751,9 +914,8 @@ function openModal(type) {
           const icon = `<i class="${iconSelect.value}"></i>`;
           createAchievementType(name, icon);
           break;
-        case "consultation":
-          consultationTypes.push(name);
-          populateList("consultation-types-list", consultationTypes);
+        case "college":
+          createCollege(name);
           break;
       }
       closeModal();
@@ -772,6 +934,7 @@ function closeModal() {
 document.addEventListener("DOMContentLoaded", function () {
   fetchDepartments();
   fetchAchievementTypes();
+  fetchColleges();
   fetchFaqs();
 });
 
