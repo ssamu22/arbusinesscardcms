@@ -719,6 +719,7 @@ header {
 }
 
 #departments-list li .buttons,
+#colleges-list li .buttons,
 #achievement-list li .buttons {
   display: flex;
   gap: 3px;
