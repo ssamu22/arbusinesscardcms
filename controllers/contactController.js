@@ -75,6 +75,39 @@ exports.updateContacts = async (req, res) => {
 
         const updatedContact = await contact.save();
         console.log(JSON.stringify(updatedContact));
+
+        console.log("UPDATED CONTACT:", updatedContact);
+
+        const { data: employeeData, error: employeeError } = await supabase
+          .from("employee")
+          .select("*")
+          .eq("employee_id", req.session.user.employee_id)
+          .single();
+
+        if (employeeError) {
+          console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
+          return res.status(400).json({ message: "Failed to find employee" });
+        }
+        console.log("GET EMP DATA:", employeeData);
+        const { data: newLog, error: logError } = await supabase
+          .from("log")
+          .insert({
+            action: "UPDATE_CONTACT",
+            actor: employeeData.email,
+            is_admin: false,
+            status: "requested",
+            employee_number: employeeData.employee_number,
+          })
+          .select()
+          .single();
+
+        if (logError) {
+          console.log("Error in adding new log:", logError);
+          return res.status(400).json({ message: "Error adding log" });
+        }
+
+        console.log("New log added:", newLog);
+
         return res.status(200).json(updatedContact); // Return updated contact
       } else {
         console.error(`Contact with ID ${contact_id} not found`);
@@ -101,6 +134,8 @@ exports.updateContacts = async (req, res) => {
       );
 
       const createdContact = await newContact.save(); // Call a create method to insert a new contact
+
+      console.log("CREATED CONTACT:", createdContact);
       console.log(JSON.stringify(createdContact));
       return res.status(201).json(createdContact); // Return the newly created contact
     }

@@ -285,8 +285,6 @@ exports.updateProfile = async (req, res) => {
 
     console.log("New log added:", newLog);
 
-    // await supabase.from("log").insert({});
-
     // Update session with the new profile data, while preserving existing values
     if (req.session.admin) {
       const adminSession = req.session.admin; // Store admin session data temporarily
