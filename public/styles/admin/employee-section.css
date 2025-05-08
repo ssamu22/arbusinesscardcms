@@ -201,8 +201,9 @@
   color: var(--text-color);
 }
 
-.form-group input {
-  width: 100%;
+.form-group input,
+.form-group select
+ {
   padding: 7px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -210,7 +211,9 @@
   transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus
+ {
   outline: none;
   border-color: var(--secondary-color);
 }
@@ -285,8 +288,10 @@
 .delete-btn,
 .delete-btn-admin,
 .edit-btn-dept,
+.edit-btn-college,
 .edit-btn-ach,
 .delete-btn-dept,
+.delete-btn-college,
 .delete-btn-ach,
 .edit-btn-faq {
   cursor: pointer;
@@ -306,7 +311,8 @@
 .edit-btn-inactive,
 .edit-btn-active,
 .edit-btn-ach,
-.edit-btn-dept {
+.edit-btn-dept,
+.edit-btn-college {
   background-color: var(--secondary-color);
   color: #fff;
 }
@@ -314,13 +320,15 @@
 .edit-btn-inactive:hover,
 .edit-btn-active:hover,
 .edit-btn-ach:hover,
-.edit-btn-dept:hover {
+.edit-btn-dept:hover 
+.edit-btn-college:hover {
   background-color: #8f7501;
 }
 
 /* Styles specific to delete buttons */
 .delete-btn,
 .delete-btn-dept,
+.delete-btn-college,
 .delete-btn-admin,
 .delete-btn-ach {
   background-color: var(--primary-color);
@@ -329,12 +337,14 @@
 
 .delete-btn:hover,
 .delete-btn-dept:hover,
+.delete-btn-college:hover,
 .delete-btn-admin:hover,
 .delete-btn-ach {
   background-color: var(--primary-dark);
 }
 
 .delete-btn-dept:disabled,
+.delete-btn-college:disabled,
 .delete-btn-admin:disabled,
 .delete-btn-ach:disabled {
   background-color: var(--primary-diabled);
@@ -352,26 +362,31 @@
 .delete-btn-ach::before,
 .edit-btn-ach::before,
 .edit-btn-dept::before,
-.delete-btn-dept::before {
+.edit-btn-college::before,
+.delete-btn-dept::before, 
+.delete-btn-college::before {
   font-family: "Font Awesome 5 Free";
 }
 
 .edit-btn-active::before,
 .edit-btn-ach::before,
-.edit-btn-dept::before {
+.edit-btn-dept::before,
+.edit-btn-college::before {
   content: "\f044"; /* Edit icon */
 }
 
 .edit-btn-inactive::before,
 .edit-btn-active.active::before,
 .edit-btn-ach.active::before,
-.edit-btn-dept.active::before {
+.edit-btn-dept.active::before,
+.edit-btn-college.active::before {
   content: "\f00c"; /* Check icon */
 }
 
 .delete-btn::before,
 .delete-btn-admin::before,
 .delete-btn-dept::before,
+.delete-btn-college::before,
 .delete-btn-ach::before {
   content: "\f2ed"; /* Trash icon */
 }

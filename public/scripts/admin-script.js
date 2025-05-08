@@ -1,40 +1,37 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // const dashboardLink = document.getElementById('dashboard-link');
+  const adminType = window.adminType;
+
+  console.log("admin type: "+adminType);
+  console.log(adminType === "center_for_public_affairs");
+
   const membersLink = document.getElementById("members-link");
-  // const analyticsLink = document.getElementById('analytics-link');
   const universityLink = document.getElementById("university-link");
-  const universityManagementLink = document.getElementById(
-    "university-management-link"
-  );
+  const universityManagementLink = document.getElementById("university-management-link");
   const theIntroVideo = document.getElementById("intro-video");
 
   const adminAccountLink = document.getElementById("admin-account-link");
   const markersLink = document.getElementById("markers-link");
   const bCardsLink = document.getElementById("bcards-link");
+
   const membersSection = document.getElementById("members-section");
   const logsLink = document.getElementById("logs-link");
   const logsSection = document.getElementById("logs-section");
   const universitySection = document.getElementById("university-section");
-  const universityManagementSection = document.getElementById(
-    "university-management-section"
-  );
+  const universityManagementSection = document.getElementById("university-management-section");
   const markersSection = document.getElementById("markers-section");
   const bCardsSection = document.getElementById("bcards-section");
   const adminAccountSection = document.getElementById("admin-account-section");
   const errorPasswordTooltip = document.querySelector(".tooltip-error-pass");
 
   function showSection(section) {
-    membersSection.style.display = "none";
-    logsSection.style.display = "none";
-    universitySection.style.display = "none";
-    universityManagementSection.style.display = "none";
-    markersSection.style.display = "none";
-    bCardsSection.style.display = "none";
-    adminAccountSection.style.display = "none";
-    section.style.display = "block";
 
-    // Update sidebar active state
-    [
+    [membersSection, logsSection, universitySection, universityManagementSection, markersSection, bCardsSection, adminAccountSection].forEach(s => {
+      if (s) s.style.display = "none";
+    });
+
+    if (section) section.style.display = "block";
+
+    const sidebarLinks = [
       membersLink,
       logsLink,
       universityLink,
@@ -42,85 +39,105 @@ document.addEventListener("DOMContentLoaded", async () => {
       markersLink,
       bCardsLink,
       adminAccountLink,
-    ].forEach((link) => {
-      link.classList.remove("sidebar-active");
+    ];
+    sidebarLinks.forEach((link) => {
+      if (link) link.classList.remove("sidebar-active");
     });
+
     if (section === membersSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      membersLink.classList.add("sidebar-active");
-    } else if (section === logsSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      logsLink.classList.add("sidebar-active");
-    } else if (section === universitySection)
-      universityLink.classList.add("sidebar-active");
-    else if (section === universityManagementSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      universityManagementLink.classList.add("sidebar-active");
-    } else if (section === markersSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      markersLink.classList.add("sidebar-active");
-    } else if (section === bCardsSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      bCardsLink.classList.add("sidebar-active");
-    } else if (section === adminAccountSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      adminAccountLink.classList.add("sidebar-active");
+
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (membersLink) membersLink.classList.add("sidebar-active");
+    }
+    if (section === universitySection) {
+      if (universityLink) universityLink.classList.add("sidebar-active");
+    }
+    if (section === universityManagementSection) {
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (universityManagementLink) universityManagementLink.classList.add("sidebar-active");
+    }
+    if (section === markersSection) {
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (markersLink) markersLink.classList.add("sidebar-active");
+    }
+    if (section === bCardsSection) {
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (bCardsLink) bCardsLink.classList.add("sidebar-active");
+    }
+    if (section === adminAccountSection) {
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (adminAccountLink) adminAccountLink.classList.add("sidebar-active");
     }
   }
 
-  showSection(membersSection);
-
-  membersLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
-    e.preventDefault();
-    showSection(membersSection);
-  });
-  logsLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
-    e.preventDefault();
-    showSection(logsSection);
-  });
-
-  universityLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
-
-    e.preventDefault();
+  if (adminType === "center_for_public_affairs") {
     showSection(universitySection);
-  });
+  } else {
+    showSection(membersSection);
+  }
 
-  universityManagementLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
+  if (membersLink) {
+    membersLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(membersSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(universityManagementSection);
-  });
+  if (universityLink) {
+    universityLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(universitySection);
+    });
+  }
 
-  markersLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
+  if (universityManagementLink) {
+    universityManagementLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(universityManagementSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(markersSection);
-  });
+  if (markersLink) {
+    markersLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(markersSection);
+    });
+  }
 
-  bCardsLink.addEventListener("click", (e) => {
-    errorPasswordTooltip.style.display = "none";
+  if (bCardsLink) {
+    bCardsLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(bCardsSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(bCardsSection);
-  });
-
-  adminAccountLink.addEventListener("click", (e) => {
-    errorPasswordTooltip.style.display = "none";
-
-    e.preventDefault();
-    showSection(adminAccountSection);
-  });
+  if (adminAccountLink) {
+    adminAccountLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(adminAccountSection);
+    });
+  }
 
   // University Contents Tabs
   const tabs = document.querySelectorAll(".university-tab");
@@ -131,19 +148,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       tabs.forEach((t) => t.classList.remove("active"));
       tabContents.forEach((content) => {
-        console.log("THE CONTENT ID:", content.id);
-        content.classList.remove("active");
-
-        if (content.id === "video-tab") {
-          theIntroVideo.pause();
-          theIntroVideo.currentTime = 0;
+        if (content) {
+          content.classList.remove("active");
+          if (content.id === "video-tab" && theIntroVideo) {
+            theIntroVideo.pause();
+            theIntroVideo.currentTime = 0;
+          }
         }
       });
 
       tab.classList.add("active");
-
       const theContentTab = document.getElementById(`${tabId}-tab`);
-      theContentTab.classList.add("active");
+      if (theContentTab) theContentTab.classList.add("active");
     });
   });
 
@@ -163,13 +179,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     universityForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      previewTitle.textContent = document.getElementById("title").value;
-      previewText.textContent = document.getElementById("content-text").value;
-      previewButton.textContent = document.getElementById("button-text").value;
+      if (previewTitle) previewTitle.textContent = document.getElementById("title").value;
+      if (previewText) previewText.textContent = document.getElementById("content-text").value;
+      if (previewButton) previewButton.textContent = document.getElementById("button-text").value;
 
-      const newBackground =
-        document.getElementById("background-image").files[0];
-      if (newBackground) {
+      const newBackground = document.getElementById("background-image").files[0];
+      if (newBackground && previewBackground) {
         const reader = new FileReader();
         reader.onload = function (e) {
           previewBackground.src = e.target.result;
@@ -178,9 +193,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       for (let i = 0; i < 3; i++) {
-        const newImage = document.getElementById(`carousel-image-${i + 1}`)
-          .files[0];
-        if (newImage) {
+        const newImage = document.getElementById(`carousel-image-${i + 1}`).files[0];
+        if (newImage && previewImages[i]) {
           const reader = new FileReader();
           reader.onload = function (e) {
             previewImages[i].src = e.target.result;
@@ -202,24 +216,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
 
       const newImage = document.getElementById("achievement-image").files[0];
-      const description = document.getElementById(
-        "achievement-description"
-      ).value;
+      const description = document.getElementById("achievement-description").value;
 
-      if (newImage && description) {
+      if (newImage && description && achievementsList) {
         const reader = new FileReader();
         reader.onload = function (e) {
           const achievementItem = document.createElement("div");
           achievementItem.className = "achievement-item";
           achievementItem.innerHTML = `
-                        <img src="${e.target.result}" alt="Achievement">
-                        <p>${description}</p>
-                    `;
+            <img src="${e.target.result}" alt="Achievement">
+            <p>${description}</p>
+          `;
           achievementsList.appendChild(achievementItem);
         };
         reader.readAsDataURL(newImage);
 
-        // Clear form
         document.getElementById("achievement-image").value = "";
         document.getElementById("achievement-description").value = "";
 
@@ -230,6 +241,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 });
+
 
 // Functions for University management page
 const availableIcons = [
@@ -318,45 +330,119 @@ async function fetchDepartments() {
   });
 
   function toggleEditMode(departmentId, nameContainer, editBtn, deleteBtn) {
-    const isEditing = nameContainer.querySelector("input");
-
-    if (isEditing) {
+    const input = nameContainer.querySelector("input");
+  
+    if (input) {
       // Save mode
-      const input = nameContainer.querySelector("input");
       const newName = input.value;
-
-      // Replace input with text content
-      nameContainer.textContent = newName;
-
-      // Revert button to Edit
+  
       editBtn.className = "edit-btn-dept";
-
-      // Re-enable delete button
       deleteBtn.disabled = false;
-
-      saveDepartmentName(departmentId, newName);
+  
+      const originalName = nameContainer.dataset.originalName;
+      saveDepartmentName(departmentId, newName, originalName, nameContainer);
     } else {
       // Edit mode
-      const currentName = nameContainer.textContent;
-
-      // Replace text content with an input field
+      const currentName = nameContainer.textContent.trim();
+  
+      // Store original name as data attribute
+      nameContainer.dataset.originalName = currentName;
+  
       const input = document.createElement("input");
       input.type = "text";
       input.value = currentName;
       input.className = "edit-input";
-
-      editBtn.classList.add("active");
-
+  
       nameContainer.textContent = ""; // Clear current text
       nameContainer.appendChild(input);
-
-      // Disable delete button
+  
+      editBtn.classList.add("active");
       deleteBtn.disabled = true;
     }
   }
 }
 
-async function saveDepartmentName(departmentId, newName) {
+async function fetchColleges() {
+  const response = await fetch("/api/colleges");
+  const colleges = await response.json();
+
+  const container = document.getElementById("colleges-list");
+  container.innerHTML = "";
+
+  colleges.forEach((college) => {
+    const li = document.createElement("li");
+    li.value = college.college_id;
+
+    const nameContainer = document.createElement("span");
+    nameContainer.textContent = college.name;
+    nameContainer.className = "college-name";
+
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "buttons";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn-college";
+    deleteBtn.onclick = function (e) {
+      e.preventDefault();
+      if (confirm("Are you sure you want to delete this college?")) {
+        deleteCollege(college.college_id);
+      }
+    };
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn-college";
+    editBtn.onclick = function (e) {
+      e.preventDefault();
+      toggleEditMode(
+        college.college_id,
+        nameContainer,
+        editBtn,
+        deleteBtn
+      );
+    };
+
+    buttonsContainer.appendChild(editBtn);
+    buttonsContainer.appendChild(deleteBtn);
+
+    li.appendChild(nameContainer);
+    li.appendChild(buttonsContainer);
+    container.appendChild(li);
+  });
+
+  function toggleEditMode(collegeId, nameContainer, editBtn, deleteBtn) {
+    const input = nameContainer.querySelector("input");
+  
+    if (input) {
+      // Save mode
+      const newName = input.value;
+  
+      editBtn.className = "edit-btn-college";
+      deleteBtn.disabled = false;
+  
+      const originalName = nameContainer.dataset.originalName;
+      saveCollegeName(collegeId, newName, originalName, nameContainer);
+    } else {
+      // Edit mode
+      const currentName = nameContainer.textContent.trim();
+  
+      // Store original name as data attribute
+      nameContainer.dataset.originalName = currentName;
+  
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentName;
+      input.className = "edit-input";
+  
+      nameContainer.textContent = ""; // Clear current text
+      nameContainer.appendChild(input);
+  
+      editBtn.classList.add("active");
+      deleteBtn.disabled = true;
+    }
+  }
+}
+
+async function saveDepartmentName(departmentId, newName, originalName, nameContainer) {
   try {
     const response = await fetch(`/arcms/api/v1/departments/${departmentId}`, {
       method: "PATCH",
@@ -367,12 +453,51 @@ async function saveDepartmentName(departmentId, newName) {
     });
 
     if (!response.ok) {
-      showErrorMessage("Failed to save department name");
+      const errorData = await response.json();
+      if (errorData?.error === "Department already exists") {
+        showErrorMessage("Department already exists");
+      } else {
+        showErrorMessage("Failed to save department name");
+      }
+
+      nameContainer.textContent = originalName;
       throw new Error("Failed to save department name.");
     }
 
-    console.log("Department name updated successfully.");
+    nameContainer.textContent = newName;
     showSuccessMessage("Department name updated successfully.");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function saveCollegeName(collegeId, newName, originalName, nameContainer) {
+  try {
+    const response = await fetch(`/arcms/api/v1/colleges/${collegeId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: newName }),
+    });
+
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData?.error === "College already exists") {
+        showErrorMessage("College already exists");
+      } else {
+        showErrorMessage("Failed to save college name");
+      }
+
+      nameContainer.textContent = originalName;
+      throw new Error("Failed to save college name.");
+    }
+
+    nameContainer.textContent = newName;
+
+    console.log("Colleges name updated successfully.");
+    showSuccessMessage("Colleges name updated successfully.");
   } catch (error) {
     console.error(error);
   }
@@ -388,13 +513,47 @@ async function createDepartment(name) {
       body: JSON.stringify({ department_name: name }),
     });
 
+    const result = await response.json(); // Parse the JSON body
+
     if (!response.ok) {
-      showErrorMessage("Failed to create new department");
-      throw new Error("Failed to create new department.");
+      if (result.error === "Department already exists") {
+        showErrorMessage("Department already exists");
+      } else {
+        showErrorMessage("Failed to create new department");
+      }
+      throw new Error(result.error || "Failed to create new department.");
     }
 
     showSuccessMessage("New department created successfully.");
     fetchDepartments();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function createCollege(name) {
+  try {
+    const response = await fetch("/arcms/api/v1/colleges", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: name }),
+    });
+
+    const result = await response.json(); // Parse the JSON body
+
+    if (!response.ok) {
+      if (result.error === "College already exists") {
+        showErrorMessage("College already exists");
+      } else {
+        showErrorMessage("Failed to create new college");
+      }
+      throw new Error(result.error || "Failed to create new college.");
+    }
+
+    showSuccessMessage("New college created successfully.");
+    fetchColleges();
   } catch (error) {
     console.error(error);
   }
@@ -413,6 +572,22 @@ async function deleteDepartment(departmentId) {
     fetchDepartments();
   } catch (error) {
     console.error("Failed to delete department: ", error);
+  }
+}
+
+async function deleteCollege(collegeId) {
+  try {
+    const response = await fetch(`/arcms/api/v1/colleges/${collegeId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      showErrorMessage("Failed to delete college");
+      throw new Error("Failed to delete college.");
+    }
+    showErrorMessage("College deleted.");
+    fetchColleges();
+  } catch (error) {
+    console.error("Failed to delete college: ", error);
   }
 }
 
@@ -760,9 +935,8 @@ function openModal(type) {
           const icon = `<i class="${iconSelect.value}"></i>`;
           createAchievementType(name, icon);
           break;
-        case "consultation":
-          consultationTypes.push(name);
-          populateList("consultation-types-list", consultationTypes);
+        case "college":
+          createCollege(name);
           break;
       }
       closeModal();
@@ -781,6 +955,7 @@ function closeModal() {
 document.addEventListener("DOMContentLoaded", function () {
   fetchDepartments();
   fetchAchievementTypes();
+  fetchColleges();
   fetchFaqs();
 });
 

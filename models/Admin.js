@@ -18,7 +18,10 @@ class Admin {
     this.token_expiration_date = adminData.token_expiration_date;
     this.account_verification_token = adminData.account_verification_token;
     this.isActive = adminData.isActive;
+
+    this.admin_type = adminData.admin_type;
     this.employee_number = adminData.employee_number;
+
     // Private fields
     this.#password = adminData.password;
     this.#email = adminData.email;
@@ -68,7 +71,7 @@ class Admin {
     try {
       const { data, error } = await supabase
         .from("admin")
-        .select("admin_id, admin_name, email, image_id, date_created");
+        .select("admin_id, admin_name, email, image_id, date_created, admin_type, employee_number");
 
       if (error) {
         throw new Error(`Failed to list admins: ${error.message}`);
@@ -96,6 +99,27 @@ class Admin {
     } catch (err) {
       console.error(err.message);
       return null; // Return null if admin not found
+    }
+  }
+
+  // Find admin by employee number
+  static async findByEmployeeNumber(employee_number) {
+    try {
+      const { data, error } = await supabase
+        .from("admin")
+        .select("*")
+        .eq("employee_number", employee_number)
+        .single(); // Ensure we get a single record
+
+      if (error) {
+        throw new Error(
+          `Failed to retrieve admin by employee_number: ${error.message}`
+        );
+      }
+      return new Admin(data); // Return the Employee instance
+    } catch (err) {
+      console.error(err.message);
+      return null; // Return null if employee not found
     }
   }
 

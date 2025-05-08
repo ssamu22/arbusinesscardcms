@@ -322,7 +322,7 @@ class Employee {
     }
   }
 
-  // Find employee by email
+  // Find employee by employee number
   static async findByEmployeeNumber(employee_number) {
     try {
       const { data, error } = await supabase

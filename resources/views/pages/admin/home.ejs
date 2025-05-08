@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="icon" href="/images/temporary.jpg" />
+    <link rel="icon" href="/images/lpu_logo_icon.png" />
     <link rel="stylesheet" href="/styles/admin.css" />
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
@@ -103,8 +103,8 @@
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
           <div class="d-flex">
-            <img src="/images/temporary.jpg" alt="Logo" />
-            <span class="sidebar-title">ARCMS</span>
+            <img src="/images/lpu_logo_horizontal.jpg" height="76" id="sidebarLogo" alt="Logo" />
+            <span class="sidebar-title"></span>
           </div>
           <button class="sidebar-toggle d-none d-md-block" id="sidebarToggle">
             <i class="bi bi-chevron-left"></i>
@@ -125,47 +125,51 @@
         <nav>
           <h3>Main Menu</h3>
           <ul>
-            <!-- Employee Tab -->
-            <li>
-              <a href="#" id="members-link" class="sidebar-active">
-                <i class="fas fa-users"></i> <span>Faculty</span>
-              </a>
-            </li>
 
-            <!-- Logs Tab -->
-            <li>
-              <a href="#" id="logs-link">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Logs</span>
-              </a>
-            </li>
+            <% if (admin.admin_type === "center_for_public_affairs") { %>
+              <!-- University Content Tab -->
+              <li>
+                <a href="#" id="university-link" class="<%= admin.admin_type === 'center_for_public_affairs' ? 'sidebar-active' : '' %>">
+                  <i class="fas fa-university"></i>
+                  <span>University Contents</span>
+                </a>
+              </li>
 
-            <!-- University Content Tab -->
-            <li>
-              <a href="#" id="university-link">
-                <i class="fas fa-university"></i>
-                <span>University Contents</span>
-              </a>
-            </li>
+              <!-- University Management Tab -->
+              <li>
+                <a href="#" id="university-management-link">
+                  <i class="fas fa-cogs"></i> <span>University Management</span>
+                </a>
+              </li>
+            <% } else { %>
+              <!-- Employee Tab -->
+              <li>
+                <a href="#" id="members-link" class="<%= admin.admin_type === 'human_resources' ? 'sidebar-active' : '' %>">
+                  <i class="fas fa-users"></i> <span>Faculty</span>
+                </a>
+              </li>
 
-            <!-- University Management Tab -->
-            <li>
-              <a href="#" id="university-management-link">
-                <i class="fas fa-cogs"></i> <span>University Management</span>
-              </a>
-            </li>
+              <!-- Logs Tab -->
+              <li>
+                <a href="#" id="logs-link">
+                  <i class="fas fa-clipboard-list"></i>
+                  <span>Logs</span>
+                </a>
+              </li>
 
-            <!-- Business Cards Tab -->
-            <li>
-              <a href="#" id="markers-link">
-                <i class="fas fa-id-card"></i> <span>Business Cards</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" id="bcards-link">
-                <i class="fas fa-bolt"></i> <span>Generate Business Cards</span>
-              </a>
-            </li>
+              <!-- Business Cards Tab -->
+              <li>
+                <a href="#" id="markers-link">
+                  <i class="fas fa-id-card"></i> <span>Business Cards</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" id="bcards-link">
+                  <i class="fas fa-bolt"></i> <span>Generate Business Cards</span>
+                </a>
+              </li>
+            <% } %>
+
             <li>
               <a href="#" id="admin-account-link">
                 <i class="fas fa-gear"></i> <span>My Account</span>
@@ -214,6 +218,7 @@
     </div>
 
     <script>
+      window.adminType = "<%= admin.admin_type %>";
       const adminName = document.getElementById("admin-name");
       const adminRole = document.getElementById("admin-email");
       const adminImage = document.getElementById("admin-image");
@@ -409,6 +414,16 @@
             } else {
               icon.classList.remove("bi-chevron-right");
               icon.classList.add("bi-chevron-left");
+            }
+
+            // Toggle sidebar logo
+            const logo = document.getElementById("sidebarLogo");
+            if (sidebar.classList.contains("collapsed")) {
+              logo.src = "/images/lpu_logo_icon.png"; // smaller or square logo
+              logo.height = 35; 
+            } else {
+              logo.src = "/images/lpu_logo_horizontal.jpg"; // original horizontal logo
+              logo.height = 76; // restore size
             }
           });
         }

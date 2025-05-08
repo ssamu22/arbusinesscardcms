@@ -1,6 +1,5 @@
 const path = require("path");
 const supabase = require("../utils/supabaseClient");
-const Employee = require("../models/Department");
 const Department = require("../models/Department");
 
 // Fetch all departments
@@ -60,7 +59,12 @@ exports.updateDepartment = async (req, res) => {
     res.status(200).json(updatedDepartment);
   } catch (error) {
     console.error("Error updating department:", error);
-    res.status(500).json({ error: "Failed to update department" });
+    if (error.code === "23505") {
+      return res.status(500).json({ error: "Department already exists" });
+    } else {
+      res.status(500).json({ error: "Failed to update department" });
+    }
+    
   }
 };
 
@@ -97,7 +101,12 @@ exports.createDepartment = async (req, res) => {
     res.status(201).json(createdDepartment);
   } catch (error) {
     console.error("Error creating department:", error);
-    res.status(500).json({ error: "Failed to create department" });
+    if (error.code === "23505") {
+      return res.status(500).json({ error: "Department already exists" });
+    } else {
+      res.status(500).json({ error: "Failed to create department" });
+    }
+    
   }
 };
 
