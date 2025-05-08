@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bCardsLink = document.getElementById("bcards-link");
 
   const membersSection = document.getElementById("members-section");
+  const logsLink = document.getElementById("logs-link");
+  const logsSection = document.getElementById("logs-section");
   const universitySection = document.getElementById("university-section");
   const universityManagementSection = document.getElementById("university-management-section");
   const markersSection = document.getElementById("markers-section");
@@ -22,7 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const errorPasswordTooltip = document.querySelector(".tooltip-error-pass");
 
   function showSection(section) {
-    [membersSection, universitySection, universityManagementSection, markersSection, bCardsSection, adminAccountSection].forEach(s => {
+
+    [membersSection, logsSection, universitySection, universityManagementSection, markersSection, bCardsSection, adminAccountSection].forEach(s => {
       if (s) s.style.display = "none";
     });
 
@@ -30,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const sidebarLinks = [
       membersLink,
+      logsLink,
       universityLink,
       universityManagementLink,
       markersLink,
@@ -41,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     if (section === membersSection) {
+
       if (theIntroVideo) {
         theIntroVideo.pause();
         theIntroVideo.currentTime = 0;

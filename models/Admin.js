@@ -18,6 +18,7 @@ class Admin {
     this.token_expiration_date = adminData.token_expiration_date;
     this.account_verification_token = adminData.account_verification_token;
     this.isActive = adminData.isActive;
+
     this.admin_type = adminData.admin_type;
     this.employee_number = adminData.employee_number;
 

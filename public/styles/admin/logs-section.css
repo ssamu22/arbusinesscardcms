@@ -1,0 +1,754 @@
+/* Update the color scheme */
+:root {
+  --primary-color: #9b3838;
+  --primary-dark: #6b1f1f;
+  --primary-diabled: #f07d7d;
+  --secondary-color: #af8e01;
+  --tertiary-color: #808080;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #ddd;
+}
+
+.confirm-delete-overlay {
+  position: fixed; /* <-- THIS makes it stick to the screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.42);
+  /* display: flex; */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.close-delete-overlay,
+.close-delete-overlay-admin {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.delete-employee-div {
+  animation: slideIn 0.3s ease;
+  padding: 20px;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+.confirm-delete-btn {
+  padding: 10px;
+  padding-inline: 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+#delete-yes-btn,
+#delete-yes-btn-admin {
+  background: var(--primary-color);
+  color: white;
+}
+#delete-no-btn,
+#delete-no-btn-admin {
+  color: black;
+}
+
+/* Improve the members section layout */
+.logs-section {
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-y: scroll;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logs-header h2 {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin: 0;
+}
+
+.refresh-logs-btn {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.refresh-logs-btn:hover {
+  color: black;
+  background-color: var(--secondary-dark);
+}
+
+.add-admin-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-admin-btn:hover {
+  color: black;
+  background-color: var(--secondary-dark);
+}
+
+/* Improve the table layout */
+.logs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logs-table th,
+.logs-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logs-table th {
+  background-color: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.logs-table tr:last-child td {
+  border-bottom: none;
+}
+
+.logs-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+.close-btn {
+  color: var(--tertiary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: var(--primary-color);
+}
+
+.modal-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.btn-success {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-success:hover {
+  background-color: #8f7501;
+}
+
+/* Improve pagination design */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-info {
+  color: var(--tertiary-color);
+  font-size: 14px;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-buttons a {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  margin: 0 5px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.3s;
+  border-radius: 4px;
+}
+
+.pagination-buttons a.active {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.pagination-buttons a:hover:not(.active) {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border-color: var(--secondary-color);
+}
+
+.faq-question-labels {
+  padding-bottom: 10px;
+}
+
+/* Base styles for both buttons */
+.edit-btn-inactive,
+.edit-btn-active,
+.delete-btn,
+.delete-btn-admin,
+.edit-btn-dept,
+.edit-btn-ach,
+.delete-btn-dept,
+.delete-btn-ach,
+.edit-btn-faq {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: none;
+  color: white;
+  background: var(--primary-color);
+  text-align: center;
+}
+
+/* Styles specific to edit buttons */
+.edit-btn-inactive,
+.edit-btn-active,
+.edit-btn-ach,
+.edit-btn-dept {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.edit-btn-inactive:hover,
+.edit-btn-active:hover,
+.edit-btn-ach:hover,
+.edit-btn-dept:hover {
+  background-color: #8f7501;
+}
+
+/* Styles specific to delete buttons */
+.delete-btn,
+.delete-btn-dept,
+.delete-btn-admin,
+.delete-btn-ach {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.delete-btn:hover,
+.delete-btn-dept:hover,
+.delete-btn-admin:hover,
+.delete-btn-ach {
+  background-color: var(--primary-dark);
+}
+
+.delete-btn-dept:disabled,
+.delete-btn-admin:disabled,
+.delete-btn-ach:disabled {
+  background-color: var(--primary-diabled);
+}
+
+/* Add icons to buttons */
+.edit-btn-inactive::before,
+.edit-btn-active::before,
+.delete-btn::before,
+.delete-btn-admin::before,
+.edit-btn-faq::before {
+  font-family: "Font Awesome 5 Free";
+  margin-right: 5px;
+}
+.delete-btn-ach::before,
+.edit-btn-ach::before,
+.edit-btn-dept::before,
+.delete-btn-dept::before {
+  font-family: "Font Awesome 5 Free";
+}
+
+.edit-btn-active::before,
+.edit-btn-ach::before,
+.edit-btn-dept::before {
+  content: "\f044"; /* Edit icon */
+}
+
+.edit-btn-inactive::before,
+.edit-btn-active.active::before,
+.edit-btn-ach.active::before,
+.edit-btn-dept.active::before {
+  content: "\f00c"; /* Check icon */
+}
+
+.delete-btn::before,
+.delete-btn-admin::before,
+.delete-btn-dept::before,
+.delete-btn-ach::before {
+  content: "\f2ed"; /* Trash icon */
+}
+
+.department-name {
+  width: 70%;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 200px;
+}
+
+.dropdown-menu li {
+  padding: 8px;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.new-honorifics-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.new-honorifics-input:hover {
+  border-color: #888;
+}
+
+.new-honorifics-input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+/* Add these responsive styles to your existing CSS */
+
+/* Media query for tablets and smaller devices */
+@media (max-width: 991px) {
+  .logs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .logs-header > div {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .refresh-logs-btn,
+  .add-admin-btn,
+  .approve-member-btn {
+    flex: 1;
+    white-space: nowrap;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .modal-content {
+    width: 90%;
+    margin: 10% auto;
+    padding: 20px;
+  }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+  .logs-section {
+    padding: 15px;
+    overflow-x: auto; /* Allow horizontal scrolling for tables */
+  }
+
+  /* Table responsive styles */
+  .logs-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Pagination responsive styles */
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .pagination-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .number-buttons-active,
+  .number-buttons-inactive {
+    display: flex;
+    overflow-x: auto;
+    max-width: 60%;
+    padding-bottom: 5px;
+  }
+
+  /* Modal responsive styles */
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+    padding: 15px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 14px;
+  }
+
+  /* Button styles for mobile */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  /* Hide button text, show only icons on very small screens */
+  @media (max-width: 480px) {
+    .edit-btn-inactive::before,
+    .edit-btn-active::before,
+    .delete-btn::before {
+      margin-right: 0;
+    }
+
+    .edit-btn-inactive span,
+    .edit-btn-active span,
+    .delete-btn span {
+      display: none;
+    }
+  }
+}
+
+/* Enhanced mobile responsiveness - add these to your CSS */
+
+/* Improved button styles for all screen sizes */
+.logs-header > div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow buttons to wrap on very small screens */
+}
+
+.refresh-logs-btn,
+.add-admin-btn,
+.approve-member-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px; /* Ensure buttons have minimum width */
+  transition: all 0.3s ease;
+}
+
+/* Tablet responsiveness improvements */
+@media (max-width: 991px) {
+  .logs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 15px;
+  }
+
+  .logs-header > div {
+    width: 100%;
+  }
+}
+
+/* Mobile phone responsiveness improvements */
+@media (max-width: 767px) {
+  .logs-section {
+    padding: 12px;
+  }
+
+  .logs-header h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .refresh-logs-btn,
+  .add-admin-btn,
+  .approve-member-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  /* Improve table scrolling experience */
+  .logs-table {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  /* Adjust modal for better mobile experience */
+  .modal-content {
+    padding: 15px;
+    margin: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: auto;
+    left: 10px;
+    right: 10px;
+  }
+}
+
+/* Small mobile devices (under 480px) */
+@media (max-width: 480px) {
+  .logs-header > div {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .refresh-logs-btn,
+  .add-admin-btn,
+  .approve-member-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Make table more compact */
+  .logs-table th,
+  .logs-table td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+
+  /* Optimize action buttons in table */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    padding: 6px;
+    margin: 2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+  }
+
+  .edit-btn-inactive::before,
+  .edit-btn-active::before,
+  .delete-btn::before {
+    margin: 0;
+  }
+
+  .edit-btn-inactive span,
+  .edit-btn-active span,
+  .delete-btn span {
+    display: none;
+  }
+
+  /* Improve form elements on small screens */
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  /* Adjust pagination for very small screens */
+  .pagination {
+    padding: 10px;
+  }
+
+  .pagination-info-active,
+  .pagination-info-inactive {
+    font-size: 12px;
+  }
+
+  .pagination-buttons a {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .number-buttons-active,
+  .number-buttons-inactive {
+    max-width: 50%;
+  }
+}
+
+/* Extra small devices (under 360px) */
+@media (max-width: 360px) {
+  .logs-header h2 {
+    font-size: 18px;
+  }
+
+  /* Further optimize table for tiny screens */
+  .logs-table th,
+  .logs-table td {
+    padding: 6px 3px;
+    font-size: 12px;
+  }
+
+  /* Make action buttons even more compact */
+  .edit-btn-inactive,
+  .edit-btn-active,
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+
+  /* Adjust modal content for tiny screens */
+  .modal-content {
+    padding: 10px;
+  }
+
+  .modal-content h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .close-btn {
+    font-size: 24px;
+  }
+
+  .btn-success {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

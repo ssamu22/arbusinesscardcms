@@ -32,6 +32,8 @@ async function sendTokenLink(email) {
 
       if (data.status == "failed") {
         showErrorMessage(data.message);
+        sendEmailBtn.textContent = "Send Email";
+
         return;
       }
       forgotPwordForm.style.display = "none";

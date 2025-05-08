@@ -42,6 +42,27 @@ exports.addEvent = async (req, res) => {
   }
 
   const newEvent = await Event.addEvent(newData);
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: `ADD_LPU_EVENT`,
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
+
   res.status(200).json({
     status: "success",
     message: "successfully added an lpu award!",
@@ -72,6 +93,26 @@ exports.updateEvent = async (req, res) => {
 
   const newEvent = await Event.updateEvent(req.params.eventId, newData);
 
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: `UPDATE_LPU_EVENT`,
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
+
   console.log("UPDATED EVENT:", newEvent);
   res.status(200).json({
     status: "success",
@@ -82,6 +123,26 @@ exports.updateEvent = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
   await Event.deleteEvent(req.params.eventId);
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: `DELETE_LPU_EVENT`,
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   res.status(204).json({
     status: "success",

@@ -53,6 +53,7 @@ exports.login = async (req, res) => {
     req.session.admin = {
       admin_id: admin.admin_id,
       admin_name: admin.admin_name,
+      employee_number: admin.employee_number,
       email: admin.getEmail(),
       admin_type: admin.admin_type,
     };
@@ -60,6 +61,27 @@ exports.login = async (req, res) => {
     req.session.save((err) => {
       if (err) console.error("Session save error:", err);
     });
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "LOGIN",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     // Step 4: Redirect to the home page or return a success message
     res.redirect("/admin/home"); // You can customize the redirection route as needed
@@ -115,7 +137,27 @@ exports.fetchAllAdmin = async (req, res) => {
 };
 
 // Handle logout
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "LOGOUT",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
+
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Logout Failed" });
@@ -170,6 +212,19 @@ exports.updateMe = async (req, res) => {
     });
   }
 
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "UPDATE_ADMIN",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
   res.status(200).json({
     status: "success",
     message: "Admin data successfully updated!",
@@ -182,9 +237,10 @@ exports.forgotPassword = async (req, res) => {
   const { data, error } = await supabase
     .from("admin")
     .select("*")
-    .eq("email", req.body.email);
+    .eq("email", req.body.email)
+    .single();
 
-  if (data.length === 0) {
+  if (data === null) {
     return res.status(404).json({
       status: "failed",
       message: "There is no existing admin associated with this email address!",
@@ -200,7 +256,7 @@ exports.forgotPassword = async (req, res) => {
       password_reset_token: resetData.passwordResetToken,
       token_expiration_date: resetData.tokenExpirationDate,
     })
-    .eq("admin_id", data[0].admin_id);
+    .eq("admin_id", data.admin_id);
 
   // 3. Send the reset link to the email of the admin
   try {
@@ -222,6 +278,19 @@ exports.forgotPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "FORGOT_PASSWORD",
+      actor: req.body.email,
+      is_admin: true,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
   res.status(200).json({
     status: "success",
@@ -279,16 +348,27 @@ exports.resetPassword = async (req, res) => {
       password_reset_token: null,
       token_expiration_date: null,
     })
-    .eq("admin_id", req.params.id);
+    .eq("admin_id", req.params.id)
+    .select()
+    .single();
 
-  console.log(req.params.id);
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "RESET_PASSWORD",
+      actor: data.email,
+      is_admin: true,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
-  console.log(data);
   // Return response
   res.status(200).json({
     status: "success",
     message: "Passsword successfully reset!",
-    data,
   });
 };
 
@@ -355,6 +435,20 @@ exports.changeAdminPassword = async (req, res) => {
         password_is_temp: false,
       })
       .eq("email", req.session.admin.email);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CHANGE_PASSWORD",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
     res.status(200).json({
       status: "success",
       message: "Password successfully updated!",
@@ -412,6 +506,7 @@ exports.createEmployee = async (req, res) => {
     email: req.body.email,
     employee_number: req.body.employee_number,
     isActive: false,
+    isApproved: true,
     password_is_temp: true,
     password: hashedPassword,
     image_id: 68, // Use default profile image_id
@@ -435,6 +530,26 @@ exports.createEmployee = async (req, res) => {
       message: `Failed to create new user: ${error}`,
     });
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "CREATE_EMPLOYEE",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   // Email the password to the user
   try {
@@ -537,6 +652,7 @@ exports.createAdmin = async (req, res) => {
     admin_name: req.body.admin_name,
     email: req.body.email,
     employee_number: req.body.employee_number,
+
     admin_type: req.body.admin_type,
     password: hashedPassword,
     password_is_temp: true,
@@ -558,6 +674,26 @@ exports.createAdmin = async (req, res) => {
       message: `Failed to create new user: ${error}`,
     });
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "CREATE_ADMIN",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   // Email the password to the user
   // Email the password to the new admin
@@ -656,6 +792,27 @@ exports.changeAdminImage = async (req, res) => {
     });
   }
 
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "CHANGE_ADMIN_IMAGE",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
+
   // Return the response containg the image url
   res.status(200).json({
     status: "success",
@@ -702,6 +859,27 @@ exports.deleteAdmin = async (req, res) => {
     }
 
     const deletedAdmin = await adminToDelete.delete(); // delete the admin
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "DELETE_ADMIN",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(200).json(deletedAdmin); // Return the delete admin
   } catch (error) {

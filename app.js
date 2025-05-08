@@ -20,6 +20,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 const bcardRoutes = require("./routes/bcardContentRoutes");
 const bcardBgRoutes = require("./routes/bcardBgRoutes");
+const logRoutes = require("./routes/logRoutes");
 const vuforiaRouter = require("./routes/vuforiaRoutes");
 const awardRouter = require("./routes/awardRoutes");
 const videoRouter = require("./routes/videoRoutes");
@@ -86,6 +87,7 @@ app.use("/arcms/api/v1/contacts", contactRoutes);
 app.use("/arcms/api/v1/schedule", scheduleRoutes);
 app.use("/arcms/api/v1/bcardContents", bcardRoutes);
 app.use("/arcms/api/v1/bcardBg", bcardBgRoutes);
+app.use("/arcms/api/v1/logs", logRoutes);
 
 // 404 page
 

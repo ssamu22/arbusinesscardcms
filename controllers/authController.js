@@ -35,7 +35,7 @@ exports.login = async (req, res) => {
     }
 
     // Check if employee is inactive
-    if (!employee.isActive) {
+    if (!employee.isActive || !employee.isApproved) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
@@ -47,9 +47,31 @@ exports.login = async (req, res) => {
       last_name: employee.last_name,
       honorifics: employee.honorifics,
       email: employee.getEmail(),
+      employee_number: employee.employee_number,
       position: employee.position,
       department_id: employee.department_id,
     };
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "LOGIN",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "success",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     // Step 4: Redirect to the home page or return a success message
     res.redirect("/home"); // You can customize the redirection route as needed
@@ -60,7 +82,27 @@ exports.login = async (req, res) => {
 };
 
 // Handle logout
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "LOGOUT",
+      actor: req.session.user.email,
+      is_admin: false,
+      status: "success",
+      employee_number: req.session.user.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Logout Failed" });
@@ -72,14 +114,29 @@ exports.logout = (req, res) => {
 
 exports.signup = async (req, res) => {
   // Check if a required value are missing.
-  const { fname, mname, honorifics, lname, email, password, passwordConfirm, employee_number } =
-    req.body;
+  const {
+    fname,
+    mname,
+    honorifics,
+    lname,
+    email,
+    password,
+    passwordConfirm,
+    employee_number,
+  } = req.body;
 
   const signupErrors = [];
 
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/;
 
-  if (!fname || !lname || !email || !password || !passwordConfirm || !employee_number) {
+  if (
+    !fname ||
+    !lname ||
+    !email ||
+    !password ||
+    !passwordConfirm ||
+    !employee_number
+  ) {
     return res.status(400).json({
       status: "failed",
       message: "Fill out all required inputs!",
@@ -103,6 +160,7 @@ exports.signup = async (req, res) => {
   }
 
   // Check if employee number already exists
+
   const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
   const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
 
@@ -152,7 +210,8 @@ exports.signup = async (req, res) => {
     password: hashedPassword, // Store the hashed password
     image_id: 68, // Use default profile image_id
     date_created: new Date().toISOString(), // Automatically set the creation date
-    isActive: req.body.isActive ? true : false,
+    isActive: false,
+    isApproved: false,
     honorifics: honorifics,
   };
 
@@ -183,6 +242,25 @@ exports.signup = async (req, res) => {
 
   console.log(req.body);
   // Return response
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "SIGNED_UP",
+      actor: email,
+      is_admin: false,
+      status: "requested",
+      employee_number: employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   return res.status(200).json({
     status: "success",
@@ -233,16 +311,44 @@ exports.updateProfile = async (req, res) => {
       department_id: department,
     };
 
-    console.log("THE UPDATED PROFILE DATA:", updatedProfileData);
     if (image_id) {
       updatedProfileData.image_id = image_id;
     }
 
-    console.log(updatedProfileData);
-
     // Update the user profile in the database here
     // Assuming you have a function in your model to handle this
-    await Employee.update(req.session.user.employee_id, updatedProfileData);
+
+    const { data: employeeData, error: employeeError } = await supabase
+      .from("employee")
+      .update(updatedProfileData)
+      .eq("employee_id", req.session.user.employee_id)
+      .select()
+      .single();
+
+    if (employeeError) {
+      console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
+      return res.status(400).json({ message: "Failed to update profile" });
+    }
+    console.log("NEW EMPLOYEE DATA:", employeeData);
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_PROFILE",
+        actor: employeeData.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: employeeData.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     // Update session with the new profile data, while preserving existing values
     if (req.session.admin) {
@@ -261,7 +367,9 @@ exports.updateProfile = async (req, res) => {
     };
 
     // Send a success response
-    res.status(200).json({ message: "Profile updated successfully!" });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully!", employeeData });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ message: "Failed to update profile" });
@@ -269,31 +377,99 @@ exports.updateProfile = async (req, res) => {
 };
 
 exports.approveUser = async (req, res) => {
-  // Change the status of the user from inactive to active
+  // Create activation token
+  const activationData = createAccountActivationToken();
+
   const { data: user, error } = await supabase
     .from("employee")
-    .update({ isActive: true })
+    .update({
+      isApproved: true,
+      verification_expiration_date: activationData.tokenExpirationDate,
+      account_verification_token: activationData.accountVerificationToken,
+    })
     .eq("employee_id", req.params.employeeId)
     .single();
 
   const { password, password_reset_token, token_expiration_date, ...safeUser } =
     user;
 
-  // Send an email to the user
   try {
-    const info = await transporter.sendMail({
-      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
-      to: safeUser.email, //  receivers
-      subject: "Your Registration Has Been Approved",
-      text: `Registration Approved`,
-      html: `<p>Your registration has been approved by the administrators. Please <a href= 'https://arbusinesscardcms.onrender.com/'>login</a> with your account to proceed.</p>`,
-    });
-  } catch (err) {
-    console.log("FAILED TO SEND EMAIL", err);
+    const info = transporter
+      .sendMail({
+        from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`,
+        to: safeUser.email,
+        subject: "Welcome to ARCMS – Please Activate Your Employee Account",
+        text: `Welcome to ARCMS! Your employee account has been approved.
+    
+    Please verify your account using the link below:
+    ${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }
+    
+    After logging in, be sure to change your password.`,
+
+        html: `
+        <h2>Welcome to ARCMS!</h2>
+        <p>Your employee account has been approved.</p>
+        <p>
+          Please verify your account:
+          <a href="${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }">
+            Activate My Account
+          </a>
+        </p>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p><a href="${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }">
+          ${req.protocol}://${req.get("host")}/employee/verified/${
+          activationData.verificationToken
+        }
+        </a></p>
+        <p>We're excited to have you on board!<br>— The ARCMS Team</p>
+      `,
+      })
+      .then((info) => {
+        console.log("Email sent successfully:", info.messageId);
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        // Optionally log error to external service
+      });
+
+    console.log("Email sent successfully:", info.messageId);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    // Optionally, you can respond with a status or log this to an error tracking service
+    res
+      .status(500)
+      .json({ message: "Failed to send email. Please try again later." });
   }
 
   const image = await Image.getImageById(safeUser.image_id);
   safeUser.image_url = image ? image.image_url : null;
+
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "APPROVE_EMPLOYEE",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   res.status(200).json({
     status: "success",
@@ -398,6 +574,27 @@ exports.changePassword = async (req, res) => {
   } else {
     await Employee.changePassword(employee_id, hashedPassword);
 
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CHANGE_PASSWORD",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "success",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
     res.status(200).json({
       status: "success",
       message: "Password successfully updated!",
@@ -410,9 +607,11 @@ exports.forgotPassword = async (req, res) => {
   const { data, error } = await supabase
     .from("employee")
     .select("*")
-    .eq("email", req.body.email);
+    .eq("email", req.body.email)
+    .single();
 
-  if (data.length === 0) {
+  if (data === null) {
+    console.log("BRUH NO EMAIL");
     return res.status(404).json({
       status: "failed",
       message: "There is no existing user associated with this email address!",
@@ -428,7 +627,7 @@ exports.forgotPassword = async (req, res) => {
       password_reset_token: resetData.passwordResetToken,
       token_expiration_date: resetData.tokenExpirationDate,
     })
-    .eq("employee_id", data[0].employee_id);
+    .eq("employee_id", data.employee_id);
 
   // 3. Send the reset link to the email of the user
   try {
@@ -437,7 +636,7 @@ exports.forgotPassword = async (req, res) => {
     }`;
 
     const info = await transporter.sendMail({
-      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+      from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
       to: req.body.email, //  receivers
       subject: "Password Reset Link",
       text: `Password Reset Link`,
@@ -450,6 +649,19 @@ exports.forgotPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "FORGOT_PASSWORD",
+      actor: req.body.email,
+      is_admin: false,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
   res.status(200).json({
     status: "success",
@@ -544,6 +756,25 @@ const createPasswordResetToken = () => {
   return {
     resetToken,
     passwordResetToken,
+    tokenExpirationDate,
+  };
+};
+
+const createAccountActivationToken = () => {
+  const verificationToken = crypto.randomBytes(64).toString("hex");
+
+  const accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  const tokenExpirationDate = new Date(
+    Date.now() + 24 * 60 * 60 * 1000
+  ).toISOString(); // Expires in 24 hours
+
+  return {
+    verificationToken,
+    accountVerificationToken,
     tokenExpirationDate,
   };
 };

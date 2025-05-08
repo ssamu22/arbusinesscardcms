@@ -172,6 +172,26 @@ exports.updateVideo = async (req, res) => {
         }`
       );
 
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `UPDATE_LPU_VIDEO`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
     res.status(200).json({
       status: "success",
       message: "Video updated successfully!",
@@ -205,6 +225,26 @@ exports.deleteVideo = async (req, res) => {
         error: error.message,
       });
     }
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `DELETE_LPU_VIDEO`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(204).json({
       status: "success",

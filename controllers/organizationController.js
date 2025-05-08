@@ -113,6 +113,36 @@ exports.createOrganization = async (req, res) => {
       })
     );
 
+    const { data: employeeData, error: employeeError } = await supabase
+      .from("employee")
+      .select("*")
+      .eq("employee_id", req.session.user.employee_id)
+      .single();
+
+    if (employeeError) {
+      console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
+      return res.status(400).json({ message: "Failed to find employee" });
+    }
+    console.log("GET EMP DATA:", employeeData);
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CREATE_ORGANIZATION",
+        actor: employeeData.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: employeeData.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
     console.log("Created: " + JSON.stringify(response[0]));
 
     res.status(201).json(response[0]); // Return the created organization
@@ -181,6 +211,7 @@ exports.updateOrganization = async (req, res) => {
       date_joined,
       date_active
     );
+
     const updatedOrganization = await newOrganization.save(); // Save the new organization
 
     const response = await Promise.all(
@@ -211,6 +242,26 @@ exports.updateOrganization = async (req, res) => {
 
     console.log("Updated: " + JSON.stringify(response[0]));
 
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_ORGANIZATION",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
     res.status(201).json(response[0]); // Return the updated organization
   } catch (error) {
     console.error("Error updating organization:", error);
@@ -230,6 +281,26 @@ exports.deleteOrganization = async (req, res) => {
 
     const deletedorganization = await organization.delete(); // delete the episode
 
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "DELETE_ORGANIZATION",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
     res.status(200).json(deletedorganization); // Return the delete episode
   } catch (error) {
     console.error("Error deleting organization:", error);
