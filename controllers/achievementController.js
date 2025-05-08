@@ -256,6 +256,25 @@ exports.updateAchievementType = async (req, res) => {
 
     console.log(JSON.stringify(updatedAchievement));
 
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_ACHIEVEMENT_TYPE",
+        actor: req.session.admin.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
     res.status(200).json(updatedAchievement);
   } catch (error) {
     console.error("Error updating department:", error);
@@ -272,6 +291,25 @@ exports.createAchievementType = async (req, res) => {
     const createdAchievement = await newAchievement.save();
 
     console.log(JSON.stringify(createdAchievement));
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CREATE_ACHIEVEMENT_TYPE",
+        actor: req.session.admin.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
 
     res.status(201).json(createdAchievement);
   } catch (error) {
@@ -290,6 +328,25 @@ exports.deleteAchievementType = async (req, res) => {
     }
 
     const deletedAchievement = await achievement.delete();
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "DELETE_ACHIEVEMENT_TYPE",
+        actor: req.session.admin.email,
+        is_admin: false,
+        status: "requested",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
 
     res.status(200).json(deletedAchievement);
   } catch (error) {

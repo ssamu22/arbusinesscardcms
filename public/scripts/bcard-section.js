@@ -679,14 +679,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (data.error?.result_code === "TargetStatusNotSuccess") {
         console.log("THE EMPLOYEE:", employee);
-        showErrorMessage(
-          `${employee.last_name}'s business card is still processing! Please try again later.`
-        );
+        replaceTargetErrors += 1;
       }
 
       console.log("UPDATE RESPONSE:", data);
     } catch (err) {
-      console.log("FAIELD TO UPDATE BUSINESS CARD DATA:", err);
+      showErrorMessage("FAILED TO UPDATE BUSINESS CARD DATA:", err);
     }
   }
 
@@ -702,8 +700,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         LastName: theEmployee.last_name,
       };
 
-      formData.append("name", `${theEmployee.last_name} Business Card`);
-      formData.append("width", 6);
+      formData.append("name", `${theEmployee.employee_number}`);
+      formData.append("width", 1);
       formData.append("active_flag", true);
       formData.append("bucket", "assets/targetImages");
       formData.append("application_metadata", JSON.stringify(metadata));
@@ -729,6 +727,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("NEW TARGET DATA OF EMPLOYEE:", data);
 
       if (response.status === 400) {
+        createTargetErrors += 1;
         return showErrorMessage(
           "Failed to add a new target! Please use another image or try again later."
         );
@@ -923,6 +922,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   //   location.reload();
   // }
 
+  const replaceTargetErrors = 0;
+  const createTargetErrors = 0;
+
   async function generateAndReplaceTargets() {
     // 1. Get all employees
     const allEmployees = await getAllEmployees();
@@ -956,8 +958,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (target) {
         // If employee already has a business card target, replace it
-        console.log("THIS EMPLOYEE ALREADY HAS TARGET:", employee);
-
         targetNameText.text = `${employee.honorifics ?? ""} ${
           employee.first_name
         } ${
@@ -1034,7 +1034,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (targetNameText) targetNameText.text = "Name";
 
-    location.reload();
+    if (replaceTargetErrors > 0)
+      showErrorMessage(
+        "Some business cards were still processing. Please generate all cards again later."
+      );
+
+    if (createTargetErrors > 0)
+      showErrorMessage(
+        "Some business cards failed to create. Please check the database for more details and try again."
+      );
+    // location.reload();
   }
 
   draw();

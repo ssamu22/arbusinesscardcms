@@ -603,9 +603,11 @@ exports.forgotPassword = async (req, res) => {
   const { data, error } = await supabase
     .from("employee")
     .select("*")
-    .eq("email", req.body.email);
+    .eq("email", req.body.email)
+    .single();
 
-  if (data.length === 0) {
+  if (data === null) {
+    console.log("BRUH NO EMAIL");
     return res.status(404).json({
       status: "failed",
       message: "There is no existing user associated with this email address!",
@@ -621,7 +623,7 @@ exports.forgotPassword = async (req, res) => {
       password_reset_token: resetData.passwordResetToken,
       token_expiration_date: resetData.tokenExpirationDate,
     })
-    .eq("employee_id", data[0].employee_id);
+    .eq("employee_id", data.employee_id);
 
   // 3. Send the reset link to the email of the user
   try {
@@ -630,7 +632,7 @@ exports.forgotPassword = async (req, res) => {
     }`;
 
     const info = await transporter.sendMail({
-      from: `"TEAM MID" <${process.env.GOOGLE_APP_EMAIL}>`, // sender address
+      from: `"TEAM MID" <${process.env.OUTLOOK_APP_EMAIL}>`, // sender address
       to: req.body.email, //  receivers
       subject: "Password Reset Link",
       text: `Password Reset Link`,
@@ -643,6 +645,19 @@ exports.forgotPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "FORGOT_PASSWORD",
+      actor: req.body.email,
+      is_admin: false,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
   res.status(200).json({
     status: "success",

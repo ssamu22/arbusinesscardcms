@@ -210,6 +210,19 @@ exports.updateMe = async (req, res) => {
     });
   }
 
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "UPDATE_ADMIN",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
   res.status(200).json({
     status: "success",
     message: "Admin data successfully updated!",
@@ -222,9 +235,10 @@ exports.forgotPassword = async (req, res) => {
   const { data, error } = await supabase
     .from("admin")
     .select("*")
-    .eq("email", req.body.email);
+    .eq("email", req.body.email)
+    .single();
 
-  if (data.length === 0) {
+  if (data === null) {
     return res.status(404).json({
       status: "failed",
       message: "There is no existing admin associated with this email address!",
@@ -240,7 +254,7 @@ exports.forgotPassword = async (req, res) => {
       password_reset_token: resetData.passwordResetToken,
       token_expiration_date: resetData.tokenExpirationDate,
     })
-    .eq("admin_id", data[0].admin_id);
+    .eq("admin_id", data.admin_id);
 
   // 3. Send the reset link to the email of the admin
   try {
@@ -262,6 +276,19 @@ exports.forgotPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "FORGOT_PASSWORD",
+      actor: req.body.email,
+      is_admin: true,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
   res.status(200).json({
     status: "success",
@@ -319,16 +346,27 @@ exports.resetPassword = async (req, res) => {
       password_reset_token: null,
       token_expiration_date: null,
     })
-    .eq("admin_id", req.params.id);
+    .eq("admin_id", req.params.id)
+    .select()
+    .single();
 
-  console.log(req.params.id);
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "RESET_PASSWORD",
+      actor: data.email,
+      is_admin: true,
+      status: "success",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
 
-  console.log(data);
   // Return response
   res.status(200).json({
     status: "success",
     message: "Passsword successfully reset!",
-    data,
   });
 };
 
@@ -395,6 +433,20 @@ exports.changeAdminPassword = async (req, res) => {
         password_is_temp: false,
       })
       .eq("email", req.session.admin.email);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CHANGE_PASSWORD",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
     res.status(200).json({
       status: "success",
       message: "Password successfully updated!",
@@ -722,6 +774,27 @@ exports.changeAdminImage = async (req, res) => {
       message: "Error updating admin avatar!",
     });
   }
+
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "CHANGE_ADMIN_IMAGE",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   // Return the response containg the image url
   res.status(200).json({

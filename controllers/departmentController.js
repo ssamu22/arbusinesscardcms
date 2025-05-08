@@ -35,6 +35,26 @@ exports.updateDepartment = async (req, res) => {
 
     const updatedDepartment = await department.save();
 
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `UPDATE_LPU_DEPARTMENT`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
     console.log(JSON.stringify(updatedDepartment));
 
     res.status(200).json(updatedDepartment);
@@ -53,6 +73,26 @@ exports.createDepartment = async (req, res) => {
     const createdDepartment = await department.save();
 
     console.log(JSON.stringify(createdDepartment));
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `CREATE_LPU_DEPARTMENT`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(201).json(createdDepartment);
   } catch (error) {
@@ -73,6 +113,26 @@ exports.deleteDepartment = async (req, res) => {
     }
 
     await department.delete();
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `DELETE_LPU_DEPARTMENT`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(200).json(department);
   } catch (error) {
