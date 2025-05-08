@@ -131,8 +131,9 @@
     <table class="members-table">
       <thead>
         <tr>
-          <th>No</th>
+          <th>Employee Number</th>
           <th>Admins</th>
+          <th>Admin Type</th>
           <th>Joined</th>
           <th>Action</th>
         </tr>
@@ -269,6 +270,27 @@
             class="new-admin-input"
             required
           />
+        </div>
+
+        <div class="form-group">
+          <label for="new-admin-name">Employee Number</label>
+          <input
+            type="text"
+            id="admin-employee-number"
+            name="employee_number"
+            placeholder="Enter Employee Number"
+            class="new-admin-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="new-admin-name">Admin Type</label>
+          <select name="admin_type" id="admin-type" class="new-admin-input" required>
+            <option value="0" selected>-- Select --</option>
+            <option value="human_resources">Human Resources</option>
+            <option value="center_for_public_affairs">Center for Public Affairs</option>
+          </select>
         </div>
 
         <div class="form-group">

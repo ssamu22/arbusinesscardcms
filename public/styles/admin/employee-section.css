@@ -201,8 +201,9 @@
   color: var(--text-color);
 }
 
-.form-group input {
-  width: 100%;
+.form-group input,
+.form-group select
+ {
   padding: 7px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -210,7 +211,9 @@
   transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus
+ {
   outline: none;
   border-color: var(--secondary-color);
 }

@@ -2,6 +2,7 @@
 const userService = require("../models/userService");
 const ensureAuthenticated = require("../middlewares/authMiddleware");
 const Admin = require("../models/Admin");
+const Employee = require("../models/Employee");
 const Image = require("../models/Image");
 const bcrypt = require("bcrypt"); // For password hashing
 const validator = require("validator"); // For email validation
@@ -53,6 +54,7 @@ exports.login = async (req, res) => {
       admin_id: admin.admin_id,
       admin_name: admin.admin_name,
       email: admin.getEmail(),
+      admin_type: admin.admin_type,
     };
 
     req.session.save((err) => {
@@ -362,7 +364,7 @@ exports.changeAdminPassword = async (req, res) => {
 };
 
 exports.createEmployee = async (req, res) => {
-  console.log("CREATE EMP:", req.body);
+  const { employee_number } = req.body;
 
   // Check if the email already exists in the db
   const existingEmployee = await supabase
@@ -379,18 +381,15 @@ exports.createEmployee = async (req, res) => {
     });
   }
 
-  // Check if the employee number already exists in the db
-  const existingEmployeeNumber = await supabase
-    .from("employee")
-    .select()
-    .eq("employee_number", req.body.employee_number)
-    .single();
+  // Check if employee number already exists
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
 
-  if (existingEmployeeNumber.data) {
+  if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
     return res.status(400).json({
       status: "failed",
       message:
-        "An existing account is already associated with the employee number! Please try another one.",
+        "An existing admin account is already associated with the employee number!",
     });
   }
 
@@ -494,6 +493,20 @@ exports.createEmployee = async (req, res) => {
 };
 
 exports.createAdmin = async (req, res) => {
+  const { employee_number } = req.body;
+
+  // Check if employee number already exists
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
+
+  if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "An existing admin account is already associated with the employee number!",
+    });
+  }
+
   // Check if the email already exists in the db
   const existingAdmin = await supabase
     .from("admin")
@@ -509,6 +522,8 @@ exports.createAdmin = async (req, res) => {
     });
   }
 
+  
+
   const activationData = createAccountActivationToken();
 
   // Generate an 8-charac random password
@@ -521,6 +536,8 @@ exports.createAdmin = async (req, res) => {
   const newAdminData = {
     admin_name: req.body.admin_name,
     email: req.body.email,
+    employee_number: req.body.employee_number,
+    admin_type: req.body.admin_type,
     password: hashedPassword,
     password_is_temp: true,
     verification_expiration_date: activationData.tokenExpirationDate,

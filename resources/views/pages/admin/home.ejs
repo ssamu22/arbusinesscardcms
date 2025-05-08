@@ -124,47 +124,51 @@
         <nav>
           <h3>Main Menu</h3>
           <ul>
-            <!-- Employee Tab -->
-            <li>
-              <a href="#" id="members-link" class="sidebar-active">
-                <i class="fas fa-users"></i> <span>Faculty</span>
-              </a>
-            </li>
 
-            <!-- Logs Tab -->
-            <li>
-              <a href="#" id="logs-link">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Logs</span>
-              </a>
-            </li>
+            <% if (admin.admin_type === "center_for_public_affairs") { %>
+              <!-- University Content Tab -->
+              <li>
+                <a href="#" id="university-link" class="<%= admin.admin_type === 'center_for_public_affairs' ? 'sidebar-active' : '' %>">
+                  <i class="fas fa-university"></i>
+                  <span>University Contents</span>
+                </a>
+              </li>
 
-            <!-- University Content Tab -->
-            <li>
-              <a href="#" id="university-link">
-                <i class="fas fa-university"></i>
-                <span>University Contents</span>
-              </a>
-            </li>
+              <!-- University Management Tab -->
+              <li>
+                <a href="#" id="university-management-link">
+                  <i class="fas fa-cogs"></i> <span>University Management</span>
+                </a>
+              </li>
+            <% } else { %>
+              <!-- Employee Tab -->
+              <li>
+                <a href="#" id="members-link" class="<%= admin.admin_type === 'human_resources' ? 'sidebar-active' : '' %>">
+                  <i class="fas fa-users"></i> <span>Faculty</span>
+                </a>
+              </li>
 
-            <!-- University Management Tab -->
-            <li>
-              <a href="#" id="university-management-link">
-                <i class="fas fa-cogs"></i> <span>University Management</span>
-              </a>
-            </li>
+              <!-- Logs Tab -->
+              <li>
+                <a href="#" id="logs-link">
+                  <i class="fas fa-clipboard-list"></i>
+                  <span>Logs</span>
+                </a>
+              </li>
 
-            <!-- Business Cards Tab -->
-            <li>
-              <a href="#" id="markers-link">
-                <i class="fas fa-id-card"></i> <span>Business Cards</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" id="bcards-link">
-                <i class="fas fa-bolt"></i> <span>Generate Business Cards</span>
-              </a>
-            </li>
+              <!-- Business Cards Tab -->
+              <li>
+                <a href="#" id="markers-link">
+                  <i class="fas fa-id-card"></i> <span>Business Cards</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" id="bcards-link">
+                  <i class="fas fa-bolt"></i> <span>Generate Business Cards</span>
+                </a>
+              </li>
+            <% } %>
+
             <li>
               <a href="#" id="admin-account-link">
                 <i class="fas fa-gear"></i> <span>My Account</span>
@@ -212,6 +216,7 @@
     </div>
 
     <script>
+      window.adminType = "<%= admin.admin_type %>";
       const adminName = document.getElementById("admin-name");
       const adminRole = document.getElementById("admin-email");
       const adminImage = document.getElementById("admin-image");

@@ -38,7 +38,7 @@ if (registerForm) {
 
     // Validation rules
     const nameRegex = /^[a-zA-Z .'-]+$/;
-    const employeeNumRegex = /^\d{4}-\d{1}-\d{5}$/;
+    const employeeNumRegex = /^\d{4}-\d{4}F$/;
     const errors = [];
 
     // Validate names
@@ -48,7 +48,7 @@ if (registerForm) {
 
     // Validate employee number
     if (!employeeNumRegex.test(rawEmployeeNumber)) {
-      errors.push("Employee number must follow the format XXXX-X-XXXXX.");
+      errors.push("Employee number must follow the format XXXX-XXXXF.");
     }
 
     // Validate password
