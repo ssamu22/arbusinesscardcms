@@ -830,7 +830,7 @@ const newUserInputs = document.querySelectorAll(".new-user-input");
 
 // Open the modal
 openModalBtn.addEventListener("click", () => {
-  modalHeader.textContent = "Create New User";
+  modalHeader.textContent = "Invite an Employee";
   newUserForm.style.display = "block";
   newAdminForm.style.display = "none";
   modal.style.display = "block";

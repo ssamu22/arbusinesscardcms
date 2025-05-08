@@ -243,25 +243,15 @@ exports.updateOrganization = async (req, res) => {
     console.log("Updated: " + JSON.stringify(response[0]));
 
     // LOG ACTION
-    const { data: employeeData, error: employeeError } = await supabase
-      .from("employee")
-      .select("*")
-      .eq("employee_id", req.session.user.employee_id)
-      .single();
 
-    if (employeeError) {
-      console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
-      return res.status(400).json({ message: "Failed to find employee" });
-    }
-    console.log("GET EMP DATA:", employeeData);
     const { data: newLog, error: logError } = await supabase
       .from("log")
       .insert({
         action: "UPDATE_ORGANIZATION",
-        actor: employeeData.email,
+        actor: req.session.user.email,
         is_admin: false,
         status: "requested",
-        employee_number: employeeData.employee_number,
+        employee_number: req.session.user.employee_number,
       })
       .select()
       .single();
@@ -292,25 +282,15 @@ exports.deleteOrganization = async (req, res) => {
     const deletedorganization = await organization.delete(); // delete the episode
 
     // LOG ACTION
-    const { data: employeeData, error: employeeError } = await supabase
-      .from("employee")
-      .select("*")
-      .eq("employee_id", req.session.user.employee_id)
-      .single();
 
-    if (employeeError) {
-      console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
-      return res.status(400).json({ message: "Failed to find employee" });
-    }
-    console.log("GET EMP DATA:", employeeData);
     const { data: newLog, error: logError } = await supabase
       .from("log")
       .insert({
         action: "DELETE_ORGANIZATION",
-        actor: employeeData.email,
+        actor: req.session.user.email,
         is_admin: false,
         status: "requested",
-        employee_number: employeeData.employee_number,
+        employee_number: req.session.user.employee_number,
       })
       .select()
       .single();

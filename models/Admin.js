@@ -18,7 +18,7 @@ class Admin {
     this.token_expiration_date = adminData.token_expiration_date;
     this.account_verification_token = adminData.account_verification_token;
     this.isActive = adminData.isActive;
-
+    this.employee_number = adminData.employee_number;
     // Private fields
     this.#password = adminData.password;
     this.#email = adminData.email;

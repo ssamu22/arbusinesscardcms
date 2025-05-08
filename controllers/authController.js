@@ -46,9 +46,31 @@ exports.login = async (req, res) => {
       last_name: employee.last_name,
       honorifics: employee.honorifics,
       email: employee.getEmail(),
+      employee_number: employee.employee_number,
       position: employee.position,
       department_id: employee.department_id,
     };
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "LOGIN",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "success",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     // Step 4: Redirect to the home page or return a success message
     res.redirect("/home"); // You can customize the redirection route as needed
@@ -59,7 +81,27 @@ exports.login = async (req, res) => {
 };
 
 // Handle logout
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "LOGOUT",
+      actor: req.session.user.email,
+      is_admin: false,
+      status: "success",
+      employee_number: req.session.user.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Logout Failed" });
@@ -196,6 +238,25 @@ exports.signup = async (req, res) => {
 
   console.log(req.body);
   // Return response
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "SIGNED_UP",
+      actor: email,
+      is_admin: false,
+      status: "requested",
+      employee_number: employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
 
   return res.status(200).json({
     status: "success",
@@ -385,6 +446,27 @@ exports.approveUser = async (req, res) => {
   const image = await Image.getImageById(safeUser.image_id);
   safeUser.image_url = image ? image.image_url : null;
 
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "APPROVE_EMPLOYEE",
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
+
   res.status(200).json({
     status: "success",
     message: "User successfully approved!",
@@ -487,6 +569,27 @@ exports.changePassword = async (req, res) => {
     });
   } else {
     await Employee.changePassword(employee_id, hashedPassword);
+
+    // LOG ACTION
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CHANGE_PASSWORD",
+        actor: req.session.user.email,
+        is_admin: false,
+        status: "success",
+        employee_number: req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(200).json({
       status: "success",

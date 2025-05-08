@@ -62,6 +62,24 @@ exports.getVerifiedAdminPage = async (req, res) => {
 
   console.log(updated);
 
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "VERIFY_ACCOUNT",
+      actor: data.email,
+      is_admin: true,
+      status: "activated",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
   res.status(200).render("auth/admin/verified");
 };
 
@@ -104,6 +122,25 @@ exports.getVerifiedEmployeePage = async (req, res) => {
     .eq("employee_id", data.employee_id)
     .single();
 
+  // LOG ACTION
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: "VERIFY_ACCOUNT",
+      actor: data.email,
+      is_admin: false,
+      status: "activated",
+      employee_number: data.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  console.log("New log added:", newLog);
   res.status(200).render("auth/user/verified");
 };
 

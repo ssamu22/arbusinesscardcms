@@ -172,6 +172,25 @@ exports.createEmployee = async (req, res) => {
     const image = await Image.getImageById(newEmployee.image_id);
     newEmployee.image_url = image ? image.image_url : null;
 
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "CREATE_EMPLOYEE",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
     // Success response
     res.status(201).json({
       message: "Employee created successfully.",
@@ -202,16 +221,41 @@ exports.updateEmployeeDepartment = async (req, res) => {
       return res.status(400).json({ error: "Could not found employee." });
     }
 
-    const updatedDepartment = await Employee.updateDepartment(employee_id, department_id);
+    const updatedDepartment = await Employee.updateDepartment(
+      employee_id,
+      department_id
+    );
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_EMPLOYEE_DEPARTMENT",
+        actor: req.session.admin
+          ? req.session.admin.email
+          : req.session.user.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin
+          ? req.session.admin.employee_number
+          : req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     return res.status(201).json(updatedDepartment);
-
   } catch (err) {
     console.error("Error:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 exports.editEmployeePosition = async (req, res) => {
   try {
@@ -223,10 +267,36 @@ exports.editEmployeePosition = async (req, res) => {
       return res.status(400).json({ error: "Could not found employee." });
     }
 
-    const updatedPosition = await Employee.updatePosition(employee_id, position);
+    const updatedPosition = await Employee.updatePosition(
+      employee_id,
+      position
+    );
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UPDATE_EMPLOYEE_POSITION",
+        actor: req.session.admin
+          ? req.session.admin.email
+          : req.session.user.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin
+          ? req.session.admin.employee_number
+          : req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     return res.status(201).json(updatedPosition);
-
   } catch (err) {
     console.error("Error:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -253,6 +323,8 @@ exports.deleteEmployee = async (req, res) => {
     }
 
     console.log("THE DELETED IMAGE TARGET: ", data);
+
+    const employeeData = await Employee.findById(req.params.id);
     const deletedEmployee = await Employee.delete(req.params.id); // delete the employee
     const deleteQueries = [
       supabase.from("achievement").delete().eq("employee_id", req.params.id),
@@ -275,6 +347,26 @@ exports.deleteEmployee = async (req, res) => {
         console.error(`Error deleting from table ${index + 1}:`, error);
       }
     });
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: employeeData.isApproved ? "DELETE_EMPLOYEE" : "DENY_SIGNUP",
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: employeeData.isApproved ? "success" : "rejected",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
 
     res.status(200).json(deletedEmployee); // Return the delete employee
   } catch (error) {

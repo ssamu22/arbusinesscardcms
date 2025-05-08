@@ -139,6 +139,9 @@
       const confirmNoBtn = document.getElementById("confirm-no-btn");
       const requireLogoutBtn = document.getElementById("require-logout-btn");
       const registerErrors = document.getElementById("register-errors");
+      const submitChangepassBtn = document.getElementById(
+        "submit-changepass-btn"
+      );
       const changeNewPassOverlay = document.querySelector(
         ".change-newpass-container"
       );
@@ -160,7 +163,7 @@
       requireChangepassForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         registerErrorsList.innerHTML = "";
-
+        submitChangepassBtn.textContent = "Changing Password...";
         const form = e.target;
 
         // Get the inputs
@@ -202,7 +205,7 @@
           console.log("Error changing password:", error);
         }
 
-        requireLogoutBtn.textContent = "Submit";
+        submitChangepassBtn.textContent = "Changing Password...";
       });
 
       requireLogoutBtn.addEventListener("click", (e) => {
