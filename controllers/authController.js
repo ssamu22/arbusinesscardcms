@@ -1,6 +1,7 @@
 const userService = require("../models/userService");
 const ensureAuthenticated = require("../middlewares/authMiddleware");
 const Employee = require("../models/Employee");
+const Admin = require("../models/Admin");
 const bcrypt = require("bcrypt"); // For password hashing
 const validator = require("validator"); // For email validation
 const axios = require("axios");
@@ -103,7 +104,9 @@ exports.signup = async (req, res) => {
 
   // Check if employee number already exists
   const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
-  if (existingEmployeeNumber) {
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
+
+  if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
     signupErrors.push(
       "The employee number you used already exists!"
     );

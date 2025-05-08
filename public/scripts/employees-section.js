@@ -656,7 +656,7 @@ async function displayAdminMembers(pageNumber) {
     // <td>${startIndex + index + 1}</td>
     const name = member.admin_name || "";
     row.innerHTML = `
-                <td>${member.admin_id}</td>
+                <td>${member.employee_number}</td>
                 <td class="member-info">
                     <div>
                         <img src="${member.image_url}" alt="${name}">
@@ -664,6 +664,7 @@ async function displayAdminMembers(pageNumber) {
                         <div class="member-email">${member.email}</div>
                     </div>
                 </td>
+                <td>${showAdminType(member.admin_type)}</td>
                 <td>${member.date_created}</td>
                 <td>
                   ${deleteButtonHTML}
@@ -682,6 +683,16 @@ async function displayAdminMembers(pageNumber) {
       showDeleteAdminOverlay();
     });
   });
+}
+
+function showAdminType(adminType) {
+  if (adminType === "human_resources") {
+    return "Human Resources";
+  } else if (adminType === "center_for_public_affairs") {
+    return "Public Affairs";
+  } else {
+    return "- - -";
+  }
 }
 
 function setupPaginationAdmin() {
@@ -863,7 +874,7 @@ newUserForm.addEventListener("submit", async (event) => {
 
   // Validate employee number
   const isValidEmployeeNumber = (empNum) => {
-    return /^\d{4}-\d{1}-\d{5}$/.test(empNum);
+    return /^\d{4}-\d{4}F$/.test(empNum);
   };
 
   // Extract and sanitize individual fields
@@ -875,7 +886,7 @@ newUserForm.addEventListener("submit", async (event) => {
   const employee_number = formData.get("employee_number").trim();
 
   if (!isValidEmployeeNumber(employee_number)) {
-    showErrorMessage("Employee number must follow the format xxxx-x-xxxxx.");
+    showErrorMessage("Employee number must follow the format XXXX-XXXXF.");
     return;
   }
 
@@ -939,15 +950,48 @@ newAdminForm.addEventListener("submit", async (event) => {
   const formData = new FormData(event.target);
   closeModalBtn.disabled = true;
 
-  newAdminInputs.forEach((input) => {
-    input.disabled = true;
-  });
-  console.log("THE FORM DATA:", formData);
+  // Get and sanitize values
+  const nameInput = document.getElementById("new-admin-name");
+  const employeeNumberInput = document.getElementById("admin-employee-number");
+  const adminTypeInput = document.getElementById("admin-type");
 
+  // Sanitize name: remove unwanted characters and capitalize
+  let rawName = nameInput.value;
+  rawName = rawName.replace(/[^a-zA-Z\s\-'.]/g, ""); // allow letters, space, hyphen, apostrophe, period
+  rawName = rawName
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  nameInput.value = rawName;
+
+  // Validate employee number: must match pattern xxxx-xxxxF
+  const employeeNumber = employeeNumberInput.value.trim();
+  const employeePattern = /^\d{4}-\d{4}F$/;
+  if (!employeePattern.test(employeeNumber)) {
+    showErrorMessage("Employee Number must be in the format XXXX-XXXXF.");
+    return;
+  }
+
+  // Validate admin type
+  const adminType = adminTypeInput.value;
+  if (adminType === "0") {
+    showErrorMessage("Please select a valid Admin Type.");
+    return;
+  }
+
+  // Prepare form for submission
+  closeModalBtn.disabled = true;
+  newAdminInputs.forEach((input) => input.disabled = true);
+  submitAdminBtn.textContent = "Creating Admin...";
+
+  formData.set("admin_name", rawName); // update sanitized name
+  formData.set("employee_number", employeeNumber);
   formData.append("isActive", true);
+
   const userData = Object.fromEntries(formData.entries());
 
-  submitAdminBtn.textContent = "Creating Admin...";
+  console.log("The new admin: " + JSON.stringify(userData));
 
   try {
     const response = await fetch("/arcms/api/v1/admin/create-admin", {
@@ -965,11 +1009,15 @@ newAdminForm.addEventListener("submit", async (event) => {
       modal.style.display = "none";
       event.target.reset();
 
-      const employee = result.data;
+      const admin = result.data;
 
-      console.log("THE NEW ADMIN:", employee);
+      console.log("THE NEW ADMIN:", admin);
+
+      adminMembers.push(admin);
+      displayAdminMembers(currentPageForAdmin); // Default to page 1
+      setupPaginationAdmin();
     } else {
-      showErrorMessage(`Error: ${result.message}`);
+      showErrorMessage(`${result.message}`);
     }
 
     submitAdminBtn.textContent = "Save";

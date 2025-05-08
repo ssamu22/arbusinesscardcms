@@ -1,117 +1,138 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // const dashboardLink = document.getElementById('dashboard-link');
+  const adminType = window.adminType;
+
+  console.log("admin type: "+adminType);
+  console.log(adminType === "center_for_public_affairs");
+
   const membersLink = document.getElementById("members-link");
-  // const analyticsLink = document.getElementById('analytics-link');
   const universityLink = document.getElementById("university-link");
-  const universityManagementLink = document.getElementById(
-    "university-management-link"
-  );
+  const universityManagementLink = document.getElementById("university-management-link");
   const theIntroVideo = document.getElementById("intro-video");
 
   const adminAccountLink = document.getElementById("admin-account-link");
   const markersLink = document.getElementById("markers-link");
   const bCardsLink = document.getElementById("bcards-link");
+
   const membersSection = document.getElementById("members-section");
   const universitySection = document.getElementById("university-section");
-  const universityManagementSection = document.getElementById(
-    "university-management-section"
-  );
+  const universityManagementSection = document.getElementById("university-management-section");
   const markersSection = document.getElementById("markers-section");
   const bCardsSection = document.getElementById("bcards-section");
   const adminAccountSection = document.getElementById("admin-account-section");
   const errorPasswordTooltip = document.querySelector(".tooltip-error-pass");
 
   function showSection(section) {
-    membersSection.style.display = "none";
-    universitySection.style.display = "none";
-    universityManagementSection.style.display = "none";
-    markersSection.style.display = "none";
-    bCardsSection.style.display = "none";
-    adminAccountSection.style.display = "none";
-    section.style.display = "block";
+    [membersSection, universitySection, universityManagementSection, markersSection, bCardsSection, adminAccountSection].forEach(s => {
+      if (s) s.style.display = "none";
+    });
 
-    // Update sidebar active state
-    [
+    if (section) section.style.display = "block";
+
+    const sidebarLinks = [
       membersLink,
       universityLink,
       universityManagementLink,
       markersLink,
       bCardsLink,
       adminAccountLink,
-    ].forEach((link) => {
-      link.classList.remove("sidebar-active");
+    ];
+    sidebarLinks.forEach((link) => {
+      if (link) link.classList.remove("sidebar-active");
     });
+
     if (section === membersSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      membersLink.classList.add("sidebar-active");
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (membersLink) membersLink.classList.add("sidebar-active");
     }
-    if (section === universitySection)
-      universityLink.classList.add("sidebar-active");
+    if (section === universitySection) {
+      if (universityLink) universityLink.classList.add("sidebar-active");
+    }
     if (section === universityManagementSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      universityManagementLink.classList.add("sidebar-active");
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (universityManagementLink) universityManagementLink.classList.add("sidebar-active");
     }
     if (section === markersSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      markersLink.classList.add("sidebar-active");
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (markersLink) markersLink.classList.add("sidebar-active");
     }
     if (section === bCardsSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      bCardsLink.classList.add("sidebar-active");
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (bCardsLink) bCardsLink.classList.add("sidebar-active");
     }
     if (section === adminAccountSection) {
-      theIntroVideo.pause();
-      theIntroVideo.currentTime = 0;
-      adminAccountLink.classList.add("sidebar-active");
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (adminAccountLink) adminAccountLink.classList.add("sidebar-active");
     }
   }
 
-  showSection(membersSection);
-
-  membersLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
-    e.preventDefault();
-    showSection(membersSection);
-  });
-
-  universityLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
-
-    e.preventDefault();
+  if (adminType === "center_for_public_affairs") {
     showSection(universitySection);
-  });
+  } else {
+    showSection(membersSection);
+  }
 
-  universityManagementLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
+  if (membersLink) {
+    membersLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(membersSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(universityManagementSection);
-  });
+  if (universityLink) {
+    universityLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(universitySection);
+    });
+  }
 
-  markersLink.addEventListener("click", function (e) {
-    errorPasswordTooltip.style.display = "none";
+  if (universityManagementLink) {
+    universityManagementLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(universityManagementSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(markersSection);
-  });
+  if (markersLink) {
+    markersLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(markersSection);
+    });
+  }
 
-  bCardsLink.addEventListener("click", (e) => {
-    errorPasswordTooltip.style.display = "none";
+  if (bCardsLink) {
+    bCardsLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(bCardsSection);
+    });
+  }
 
-    e.preventDefault();
-    showSection(bCardsSection);
-  });
-
-  adminAccountLink.addEventListener("click", (e) => {
-    errorPasswordTooltip.style.display = "none";
-
-    e.preventDefault();
-    showSection(adminAccountSection);
-  });
+  if (adminAccountLink) {
+    adminAccountLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(adminAccountSection);
+    });
+  }
 
   // University Contents Tabs
   const tabs = document.querySelectorAll(".university-tab");
@@ -122,19 +143,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       tabs.forEach((t) => t.classList.remove("active"));
       tabContents.forEach((content) => {
-        console.log("THE CONTENT ID:", content.id);
-        content.classList.remove("active");
-
-        if (content.id === "video-tab") {
-          theIntroVideo.pause();
-          theIntroVideo.currentTime = 0;
+        if (content) {
+          content.classList.remove("active");
+          if (content.id === "video-tab" && theIntroVideo) {
+            theIntroVideo.pause();
+            theIntroVideo.currentTime = 0;
+          }
         }
       });
 
       tab.classList.add("active");
-
       const theContentTab = document.getElementById(`${tabId}-tab`);
-      theContentTab.classList.add("active");
+      if (theContentTab) theContentTab.classList.add("active");
     });
   });
 
@@ -154,13 +174,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     universityForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      previewTitle.textContent = document.getElementById("title").value;
-      previewText.textContent = document.getElementById("content-text").value;
-      previewButton.textContent = document.getElementById("button-text").value;
+      if (previewTitle) previewTitle.textContent = document.getElementById("title").value;
+      if (previewText) previewText.textContent = document.getElementById("content-text").value;
+      if (previewButton) previewButton.textContent = document.getElementById("button-text").value;
 
-      const newBackground =
-        document.getElementById("background-image").files[0];
-      if (newBackground) {
+      const newBackground = document.getElementById("background-image").files[0];
+      if (newBackground && previewBackground) {
         const reader = new FileReader();
         reader.onload = function (e) {
           previewBackground.src = e.target.result;
@@ -169,9 +188,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       for (let i = 0; i < 3; i++) {
-        const newImage = document.getElementById(`carousel-image-${i + 1}`)
-          .files[0];
-        if (newImage) {
+        const newImage = document.getElementById(`carousel-image-${i + 1}`).files[0];
+        if (newImage && previewImages[i]) {
           const reader = new FileReader();
           reader.onload = function (e) {
             previewImages[i].src = e.target.result;
@@ -193,24 +211,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
 
       const newImage = document.getElementById("achievement-image").files[0];
-      const description = document.getElementById(
-        "achievement-description"
-      ).value;
+      const description = document.getElementById("achievement-description").value;
 
-      if (newImage && description) {
+      if (newImage && description && achievementsList) {
         const reader = new FileReader();
         reader.onload = function (e) {
           const achievementItem = document.createElement("div");
           achievementItem.className = "achievement-item";
           achievementItem.innerHTML = `
-                        <img src="${e.target.result}" alt="Achievement">
-                        <p>${description}</p>
-                    `;
+            <img src="${e.target.result}" alt="Achievement">
+            <p>${description}</p>
+          `;
           achievementsList.appendChild(achievementItem);
         };
         reader.readAsDataURL(newImage);
 
-        // Clear form
         document.getElementById("achievement-image").value = "";
         document.getElementById("achievement-description").value = "";
 
@@ -221,6 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 });
+
 
 // Functions for University management page
 const availableIcons = [
