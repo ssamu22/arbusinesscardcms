@@ -27,27 +27,6 @@ exports.getSchedule = async (req, res) => {
       })),
     };
 
-    // LOG ACTION
-
-    const { data: newLog, error: logError } = await supabase
-      .from("log")
-      .insert({
-        action: "UPDATE_SCHEDULE",
-        actor: req.session.user.email,
-        is_admin: false,
-        status: "requested",
-        employee_number: req.session.user.employee_number,
-      })
-      .select()
-      .single();
-
-    if (logError) {
-      console.log("Error in adding new log:", logError);
-      return res.status(400).json({ message: "Error adding log" });
-    }
-
-    console.log("New log added:", newLog);
-
     console.log(JSON.stringify(response));
 
     res.json(response);
@@ -69,11 +48,91 @@ exports.updateSchedule = async (req, res) => {
         const { schedule_id, day, start_time, end_time, available, location } =
           entry;
 
-        console.log("updated: " + JSON.stringify(day));
+        console.log(`${day} Updated `);
 
         // Update existing schedule
         const existingSchedule = await Employee_schedule.getById(schedule_id);
+
         if (existingSchedule) {
+          // LOG ACTION
+
+          if (existingSchedule.start_time != start_time) {
+            const { data: newLog, error: logError } = await supabase
+              .from("log")
+              .insert({
+                action: `UPDATE_${day.toUpperCase()}_START_TIME`,
+                action_details: `${existingSchedule.start_time} -> ${start_time}`,
+                actor: req.session.user.email,
+                is_admin: false,
+                status: "success",
+                employee_number: req.session.user.employee_number,
+              })
+              .select()
+              .single();
+
+            if (logError) {
+              console.log("Error in adding new log:", logError);
+              return res.status(400).json({ message: "Error adding log" });
+            }
+          }
+          if (existingSchedule.end_time != end_time) {
+            const { data: newLog, error: logError } = await supabase
+              .from("log")
+              .insert({
+                action: `UPDATE_${day.toUpperCase()}_END_TIME`,
+                action_details: `${existingSchedule.end_time} -> ${end_time}`,
+                actor: req.session.user.email,
+                is_admin: false,
+                status: "success",
+                employee_number: req.session.user.employee_number,
+              })
+              .select()
+              .single();
+
+            if (logError) {
+              console.log("Error in adding new log:", logError);
+              return res.status(400).json({ message: "Error adding log" });
+            }
+          }
+          if (existingSchedule.available != available) {
+            const { data: newLog, error: logError } = await supabase
+              .from("log")
+              .insert({
+                action: `UPDATE_${day.toUpperCase()}_AVAILABILITY`,
+                action_details: `${existingSchedule.available} -> ${available}`,
+                actor: req.session.user.email,
+                is_admin: false,
+                status: "success",
+                employee_number: req.session.user.employee_number,
+              })
+              .select()
+              .single();
+
+            if (logError) {
+              console.log("Error in adding new log:", logError);
+              return res.status(400).json({ message: "Error adding log" });
+            }
+          }
+          if (existingSchedule.location != location) {
+            const { data: newLog, error: logError } = await supabase
+              .from("log")
+              .insert({
+                action: `UPDATE_${day.toUpperCase()}_LOCATION`,
+                action_details: `${existingSchedule.location} -> ${location}`,
+                actor: req.session.user.email,
+                is_admin: false,
+                status: "success",
+                employee_number: req.session.user.employee_number,
+              })
+              .select()
+              .single();
+
+            if (logError) {
+              console.log("Error in adding new log:", logError);
+              return res.status(400).json({ message: "Error adding log" });
+            }
+          }
+
           existingSchedule.day = day;
           existingSchedule.start_time = start_time;
           existingSchedule.end_time = end_time;

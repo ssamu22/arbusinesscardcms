@@ -102,9 +102,10 @@ exports.createAchievement = async (req, res) => {
       .from("log")
       .insert({
         action: "CREATE_ACHIEVEMENT",
+        action_details: `New Achievement: ${newAchievement.title}`,
         actor: req.session.user.email,
         is_admin: false,
-        status: "requested",
+        status: "success",
         employee_number: req.session.user.employee_number,
       })
       .select()
@@ -137,6 +138,11 @@ exports.updateAchievement = async (req, res) => {
   try {
     const achievement = await Achievement.getById(achievement_id);
 
+    const oldTitle = achievement.title;
+    const oldDesc = achievement.description;
+    const oldDateAchieved = achievement.date_achieved;
+    const oldAchievementType = achievement.achievement_type;
+
     if (!achievement || achievement.employee_id !== employee_id) {
       return res
         .status(404)
@@ -167,27 +173,83 @@ exports.updateAchievement = async (req, res) => {
     );
 
     console.log(JSON.stringify(response));
+    console.log("UPDATED TITLE?", achievement.title != title);
+    if (oldTitle != title) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ACHIEVEMENT_TITLE",
+          actor: req.session.user.email,
+          action_details: `${achievement.title} -> ${title}`,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
 
-    // LOG ACTION
-
-    const { data: newLog, error: logError } = await supabase
-      .from("log")
-      .insert({
-        action: "UPDATE_ACHIEVEMENT",
-        actor: req.session.user.email,
-        is_admin: false,
-        status: "requested",
-        employee_number: req.sesssion.user.employee_number,
-      })
-      .select()
-      .single();
-
-    if (logError) {
-      console.log("Error in adding new log:", logError);
-      return res.status(400).json({ message: "Error adding log" });
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
     }
+    if (oldDesc != description) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ACHIEVEMENT_DESCRIPTION",
+          actor: req.session.user.email,
+          action_details: `Achievement: ${title} | Description updated`,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
 
-    console.log("New log added:", newLog);
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (oldDateAchieved != date_achieved) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ACHIEVEMENT_DATE_ACHIEVED",
+          actor: req.session.user.email,
+          action_details: `Achievement: ${title} | ${achievement.date_achieved} -> ${date_achieved}`,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (oldAchievementType != achievement_type) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ACHIEVEMENT_TYPE",
+          actor: req.session.user.email,
+          action_details: `Achievement: ${title} | Achievement type updated`,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
 
     res.status(201).json(response[0]); // Return the created achievement
   } catch (error) {
@@ -217,9 +279,10 @@ exports.deleteAchievement = async (req, res) => {
       .from("log")
       .insert({
         action: "DELETE_ACHIEVEMENT",
+        action_details: `Achievement Deleted: ${achievement.title}`,
         actor: req.session.user.email,
         is_admin: false,
-        status: "requested",
+        status: "success",
         employee_number: req.session.user.employee_number,
       })
       .select()

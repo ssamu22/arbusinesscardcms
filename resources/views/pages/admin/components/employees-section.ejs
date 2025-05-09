@@ -64,6 +64,7 @@
           <th>Employee</th>
           <th>Position</th>
           <th>Office</th>
+          <th>Status</th>
           <th>Joined</th>
           <th>Action</th>
         </tr>
@@ -271,17 +272,6 @@
             required
           />
         </div>
-        <div class="form-group">
-          <label for="new-admin-number">Employee Number</label>
-          <input
-            type="text"
-            id="new-admin-number"
-            name="employee_number"
-            placeholder="Enter Admin Name"
-            class="new-admin-input"
-            required
-          />
-        </div>
 
         <div class="form-group">
           <label for="new-admin-name">Employee Number</label>
@@ -297,10 +287,17 @@
 
         <div class="form-group">
           <label for="new-admin-name">Admin Type</label>
-          <select name="admin_type" id="admin-type" class="new-admin-input" required>
+          <select
+            name="admin_type"
+            id="admin-type"
+            class="new-admin-input"
+            required
+          >
             <option value="0" selected>-- Select --</option>
             <option value="human_resources">Human Resources</option>
-            <option value="center_for_public_affairs">Center for Public Affairs</option>
+            <option value="center_for_public_affairs">
+              Center for Public Affairs
+            </option>
           </select>
         </div>
 
