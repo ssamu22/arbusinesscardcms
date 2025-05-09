@@ -14,9 +14,39 @@ document.addEventListener("DOMContentLoaded", () => {
   let events = []; // This will store our events data
   let editingEventId = null;
   let deleteEventId = null;
+
+  const timeFilter = document.getElementById('event-time-filter');
+
+  let currentTimeFilter = 'all';
+  let currentTab = 'active';
+
+  document.querySelectorAll('.event-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.event-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      eventsGrid.innerHTML = "";
+
+      if (currentTab === 'archived') {
+        timeFilter.style.display = 'none';
+        addEventBtn.disabled = true;
+      } else {
+        timeFilter.style.display = '';
+        addEventBtn.disabled = false;
+      }
+
+      fetchEvents(currentTab); // update displayed events
+    });
+  });
+
+  timeFilter.addEventListener('change', (e) => {
+    currentTimeFilter = e.target.value;
+    fetchEvents(); // update displayed events
+  });
+
   // Fetch events data (replace this with actual API call in production)
-  const fetchEvents = async () => {
-    const response = await fetch("/events/");
+  const fetchEvents = async (tab = currentTab) => {
+    const response = await fetch(`/events/${tab}`);
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -26,6 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     events = json.events;
     console.log("ALL EVENTS:", events);
+
+    const today = new Date();
+    events = events.filter(event => {
+      const eventDate = new Date(event.date);
+      if (currentTimeFilter === 'upcoming') return eventDate >= today;
+      if (currentTimeFilter === 'previous') return eventDate < today;
+      return true;
+    });
+
     renderEvents();
   };
 
@@ -141,18 +180,20 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     } else {
       filteredEvents.forEach((event) => {
-        const eventElement = createEventElement(event);
+        const eventElement = createEventElement(event, currentTab);
         eventsGrid.appendChild(eventElement);
       });
     }
   };
 
   // Create an event element
-  const createEventElement = (event) => {
+  const createEventElement = (event, tab) => {
     const eventElement = document.createElement("div");
     eventElement.classList.add("event-card");
     const date = new Date(event.date);
     const readTime = Math.ceil(event.event_desc.split(" ").length / 200); // Approximate read time
+
+    const archiveLabel = tab === "archived" ? "Unarchive" : "Archive";
 
     eventElement.innerHTML = `
         <div class="event-image-container">
@@ -176,10 +217,47 @@ document.addEventListener("DOMContentLoaded", () => {
             <button class="delete-event" data-id="${
               event.event_id
             }">Delete</button>
+            <button class="archive-event" data-id="${event.event_id}">
+              ${archiveLabel}
+            </button>
           </div>
         </div>
       `;
+
+      const archiveBtn = eventElement.querySelector(".archive-event");
+      archiveBtn.addEventListener("click", () => {
+        if (tab === "archived") {
+          if(confirm("Remove event from archive?")) unarchiveEvent(event.event_id);
+        } else {
+          if(confirm("Archive event?")) archiveEvent(event.event_id);
+        }
+      });
+
     return eventElement;
+  };
+
+  const archiveEvent = async (eventId) => {
+    try {
+      const res = await fetch(`/events/archive/${eventId}`, { method: "PUT" });
+      if (!res.ok) throw new Error("Failed to archive event");
+      showSuccessMessage("Event archived!");
+      fetchEvents(); // Refresh view
+    } catch (err) {
+      showErrorMessage("Could not archive event!");
+      console.error(err.message);
+    }
+  };
+  
+  const unarchiveEvent = async (eventId) => {
+    try {
+      const res = await fetch(`/events/unarchive/${eventId}`, { method: "PUT" });
+      if (!res.ok) throw new Error("Failed to unarchive event");
+      showSuccessMessage("Event removed from archive!");
+      fetchEvents(); // Refresh view
+    } catch (err) {
+      showErrorMessage("Could not remove event from archive!");
+      console.error(err.message);
+    }
   };
 
   // Filter events based on search

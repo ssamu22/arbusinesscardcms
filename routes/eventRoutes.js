@@ -26,7 +26,11 @@ const upload = multer({
 
 router.use(upload.single("event_image"));
 
-router.route("/").get(controller.getAllEvents).post(controller.addEvent);
+router.post("/", controller.addEvent);
+router.get("/:tab", controller.getAllEvents);
+
+router.put("/archive/:id", controller.archiveEvent);
+router.put("/unarchive/:id", controller.unarchiveEvent);
 
 router
   .route("/:eventId")

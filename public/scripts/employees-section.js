@@ -895,7 +895,7 @@ newUserForm.addEventListener("submit", async (event) => {
 
   // Validate employee number
   const isValidEmployeeNumber = (empNum) => {
-    return /^\d{4}-\d{4}F$/.test(empNum);
+    return /^\d{4}-\d{4}[A-Z]$/.test(empNum);
   };
 
   // Extract and sanitize individual fields
@@ -907,7 +907,7 @@ newUserForm.addEventListener("submit", async (event) => {
   const employee_number = formData.get("employee_number").trim();
 
   if (!isValidEmployeeNumber(employee_number)) {
-    showErrorMessage("Employee number must follow the format XXXX-XXXXF.");
+    showErrorMessage("Employee number must follow the format XXXX-XXXXA.");
     return;
   }
 
@@ -988,9 +988,9 @@ newAdminForm.addEventListener("submit", async (event) => {
 
   // Validate employee number: must match pattern xxxx-xxxxF
   const employeeNumber = employeeNumberInput.value.trim();
-  const employeePattern = /^\d{4}-\d{4}F$/;
+  const employeePattern = /^\d{4}-\d{4}[A-Z]$/;
   if (!employeePattern.test(employeeNumber)) {
-    showErrorMessage("Employee Number must be in the format XXXX-XXXXF.");
+    showErrorMessage("Employee Number must be in the format XXXX-XXXXA.");
     return;
   }
 
