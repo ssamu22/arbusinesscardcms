@@ -11,17 +11,76 @@ class Event {
 
   static async getAllEvents() {
     try {
-      const { data, error } = await supabase.from("event").select("*");
+      const { data, error } = await supabase
+      .from("event")
+      .select("*")
+      .eq("is_archived", false);
       console.log(data); // Check the structure of the fetched data
 
       if (error) {
-        throw new Error(`Failed to list employees: ${error.message}`);
+        throw new Error(`Failed to list events: ${error.message}`);
       }
 
       return data;
     } catch (err) {
       console.log(err);
       throw err;
+    }
+  }
+
+  static async getArchivedEvents() {
+    try {
+      const { data, error } = await supabase
+      .from("event")
+      .select("*")
+      .eq("is_archived", true);
+      console.log(data); // Check the structure of the fetched data
+
+      if (error) {
+        throw new Error(`Failed to list events: ${error.message}`);
+      }
+
+      return data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
+  static async archiveEvent(event_id, is_archived){
+    try {
+      const { data, error } = await supabase
+      .from("event")
+      .update({ is_archived: is_archived })
+      .eq("event_id", event_id);
+
+      if (error) {
+        console.error(`Error:`, error);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(err.message);
+      throw err;
+    } 
+  }
+
+  static async getEventById(event_id) {
+    try {
+      const { data, error } = await supabase
+      .from("event")
+      .select("*")
+      .eq("event_id", event_id)
+      .single();
+
+      if (error) {
+        throw new Error(`Failed to list events: ${error.message}`);
+      }
+
+      return data;
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   }
 
@@ -53,10 +112,12 @@ class Event {
       .from("event")
       .delete()
       .eq("event_id", event_id);
+
+      if(error) {
+        console.error(`Error: ${error}`);
+      }
   }
-  if(error) {
-    console.error(`Error: ${error}`);
-  }
+  
 }
 
 module.exports = Event;

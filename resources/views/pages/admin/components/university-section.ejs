@@ -233,6 +233,10 @@ University Philosophy</textarea
     <div class="events-content">
       <div class="events-header">
         <h3>University Events</h3>
+        <div class="event-tab-group">
+          <button class="event-tab active" data-tab="active">Active</button>
+          <button class="event-tab" data-tab="archived">Archived</button>
+        </div>
         <button id="add-event-btn" class="add-event-btn">
           <i class="fas fa-plus"></i> Add New Event
         </button>
@@ -245,6 +249,13 @@ University Philosophy</textarea
             placeholder="Search events..."
             class="event-search"
           />
+        </div>
+        <div class="filter-group">
+          <select id="event-time-filter" class="event-filter">
+            <option value="all">All</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="previous">Previous</option>
+          </select>
         </div>
       </div>
 

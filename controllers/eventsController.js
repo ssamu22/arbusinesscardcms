@@ -3,7 +3,15 @@ const Event = require("../models/Event");
 const Image = require("../models/Image");
 
 exports.getAllEvents = async (req, res) => {
-  const eventResponse = await Event.getAllEvents();
+  const tab = req.params.tab;
+
+  let eventResponse;
+
+  if( tab === "active") {
+    eventResponse = await Event.getAllEvents();
+  } else {
+    eventResponse = await Event.getArchivedEvents();
+  }
 
   const events = await Promise.all(
     eventResponse.map(async (event) => {
@@ -119,6 +127,48 @@ exports.updateEvent = async (req, res) => {
     message: "successfully updated an lpu event!",
     data: newEvent.data[0],
   });
+};
+
+exports.archiveEvent = async (req, res) => {
+  const event_id = req.params.id;
+  console.log("Event ID: "+event_id);
+
+  try {
+    const event = await Event.getEventById(event_id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found or unauthorized" });
+    }
+
+    const archivedEvent = await Event.archiveEvent(event_id, true);
+    console.log("Archived Event: " + archivedEvent);
+
+    res.status(201).json(archivedEvent);
+  } catch (err) {
+    console.log("Error in archiving the event: ", err);
+    return res.status(400).json({ message: "Error archiving the event" });
+  }
+};
+
+exports.unarchiveEvent = async (req, res) => {
+  const event_id = req.params.id;
+
+  try {
+    const event = await Event.getEventById(event_id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found or unauthorized" });
+    }
+
+    const unarchivedEvent = await Event.archiveEvent(event_id, false);
+
+    console.log("Unarchived Event: " + unarchivedEvent);
+
+    res.status(201).json(unarchivedEvent);
+  } catch (err) {
+    console.log("Error in unarchiving the event: ", err);
+    return res.status(400).json({ message: "Error unarchiving the event" });
+  }
 };
 
 exports.deleteEvent = async (req, res) => {
