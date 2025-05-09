@@ -213,6 +213,7 @@ async function displayActiveMembers(pageNumber) {
                       member.department_id || ""
                     }" style="display: none;" />
                 </td>
+                <td>${member.isActive ? "Active" : "Inactive"}</td>
                 <td>${member.date_created}</td>
                 <td>
                   <a href="#" class="delete-btn" data-id="${
@@ -1003,7 +1004,7 @@ newAdminForm.addEventListener("submit", async (event) => {
 
   // Prepare form for submission
   closeModalBtn.disabled = true;
-  newAdminInputs.forEach((input) => input.disabled = true);
+  newAdminInputs.forEach((input) => (input.disabled = true));
   submitAdminBtn.textContent = "Creating Admin...";
 
   formData.set("admin_name", rawName); // update sanitized name

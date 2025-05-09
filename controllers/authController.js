@@ -161,13 +161,15 @@ exports.signup = async (req, res) => {
 
   // Check if employee number already exists
 
-  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
-  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(
+    employee_number
+  );
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(
+    employee_number
+  );
 
   if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
-    signupErrors.push(
-      "The employee number you used already exists!"
-    );
+    signupErrors.push("The employee number you used already exists!");
   }
 
   console.log("CARRY ON ");
@@ -301,14 +303,10 @@ exports.updateProfile = async (req, res) => {
     }
     // Create the updated profile data
     const updatedProfileData = {
-      first_name: firstName,
-      middle_name: middleName,
-      last_name: lastName,
       honorifics: honorifics,
       introduction: introduction,
-      position: position,
       field: formattedResearchFields,
-      department_id: department,
+      // department_id: department,
     };
 
     if (image_id) {
@@ -318,6 +316,12 @@ exports.updateProfile = async (req, res) => {
     // Update the user profile in the database here
     // Assuming you have a function in your model to handle this
 
+    const { data: existingData, error: fetchError } = await supabase
+      .from("employee")
+      .select("*")
+      .eq("employee_id", req.session.user.employee_id)
+      .single();
+
     const { data: employeeData, error: employeeError } = await supabase
       .from("employee")
       .update(updatedProfileData)
@@ -325,30 +329,107 @@ exports.updateProfile = async (req, res) => {
       .select()
       .single();
 
+    console.log("EXISTING HONORIFICS:", existingData.honorifics);
+    console.log("EXISTING HONORIFICS:", existingData.introduction);
+    console.log("EXISTING HONORIFICS:", existingData.field);
     if (employeeError) {
       console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
       return res.status(400).json({ message: "Failed to update profile" });
     }
     console.log("NEW EMPLOYEE DATA:", employeeData);
 
-    const { data: newLog, error: logError } = await supabase
-      .from("log")
-      .insert({
-        action: "UPDATE_PROFILE",
-        actor: employeeData.email,
-        is_admin: false,
-        status: "requested",
-        employee_number: employeeData.employee_number,
-      })
-      .select()
-      .single();
+    console.log(
+      "HONORIFICS CHANGED?",
+      existingData.honorifics != updatedProfileData.honorifics
+    );
 
-    if (logError) {
-      console.log("Error in adding new log:", logError);
-      return res.status(400).json({ message: "Error adding log" });
+    if (existingData.honorifics != updatedProfileData.honorifics) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_HONORIFICS",
+          action_details: `${existingData.honorifics} -> ${updatedProfileData.honorifics}`,
+          actor: employeeData.email,
+          is_admin: false,
+          status: "requested",
+          employee_number: employeeData.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+
+      console.log("New log added:", newLog);
+    }
+    if (existingData.introduction != updatedProfileData.introduction) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_USER_INTRO",
+          action_details: `Introduction updated`,
+          actor: employeeData.email,
+          is_admin: false,
+          status: "requested",
+          employee_number: employeeData.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+
+      console.log("New log added:", newLog);
+    }
+    if (existingData.field != updatedProfileData.field) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_RESEARCH_FIELDS",
+          action_details: `Research fields updated`,
+          actor: employeeData.email,
+          is_admin: false,
+          status: "requested",
+          employee_number: employeeData.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+
+      console.log("New log added:", newLog);
     }
 
-    console.log("New log added:", newLog);
+    console.log("NEW IMAGE_ID", updatedProfileData.image_id);
+    console.log("OLD IMAGE_ID", existingData.image_id);
+    if (updatedProfileData.image_id) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_PROFILE",
+          action_details: `Profile image updated`,
+          actor: employeeData.email,
+          is_admin: false,
+          status: "success",
+          employee_number: employeeData.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+
+      console.log("New log added:", newLog);
+    }
 
     // Update session with the new profile data, while preserving existing values
     if (req.session.admin) {

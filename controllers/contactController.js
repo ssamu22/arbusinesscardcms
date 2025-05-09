@@ -65,7 +65,100 @@ exports.updateContacts = async (req, res) => {
       const contact = await Contact.getById(contact_id);
 
       if (contact) {
+        // LOG PHONE NUMBER
+        if (contact.phone_number != phone_number) {
+          const { data: newLog, error: logError } = await supabase
+            .from("log")
+            .insert({
+              action: "UPDATE_PHONE_NUMBER",
+              action_details: `${contact.phone_number} -> ${phone_number}`,
+              actor: req.session.user.email,
+              is_admin: false,
+              status: "requested",
+              employee_number: req.session.user.employee_number,
+            })
+            .select()
+            .single();
+
+          if (logError) {
+            console.log("Error in adding new log:", logError);
+            return res.status(400).json({ message: "Error adding log" });
+          }
+
+          console.log("New log added:", newLog);
+        }
+
+        // LOG FACEBOOK
+        if (contact.facebook_url != facebook_url) {
+          const { data: newLog, error: logError } = await supabase
+            .from("log")
+            .insert({
+              action: "UPDATE_FB_URL",
+              action_details: `Facebook URL updated`,
+              actor: req.session.user.email,
+              is_admin: false,
+              status: "requested",
+              employee_number: req.session.user.employee_number,
+            })
+            .select()
+            .single();
+
+          if (logError) {
+            console.log("Error in adding new log:", logError);
+            return res.status(400).json({ message: "Error adding log" });
+          }
+
+          console.log("New log added:", newLog);
+        }
+
+        // LOG INSTAGRAM
+        if (contact.instagram_url != instagram_url) {
+          const { data: newLog, error: logError } = await supabase
+            .from("log")
+            .insert({
+              action: "UPDATE_INSTAGRAM_URL",
+              action_details: `Instagram URL updated`,
+              actor: req.session.user.email,
+              is_admin: false,
+              status: "requested",
+              employee_number: req.session.user.employee_number,
+            })
+            .select()
+            .single();
+
+          if (logError) {
+            console.log("Error in adding new log:", logError);
+            return res.status(400).json({ message: "Error adding log" });
+          }
+
+          console.log("New log added:", newLog);
+        }
+
+        // LOG LINKEDIN
+        if (contact.linkedin_url != linkedin_url) {
+          const { data: newLog, error: logError } = await supabase
+            .from("log")
+            .insert({
+              action: "UPDATE_LINKEDIN_URL",
+              action_details: `LinkedIn URL updated`,
+              actor: req.session.user.email,
+              is_admin: false,
+              status: "requested",
+              employee_number: req.session.user.employee_number,
+            })
+            .select()
+            .single();
+
+          if (logError) {
+            console.log("Error in adding new log:", logError);
+            return res.status(400).json({ message: "Error adding log" });
+          }
+
+          console.log("New log added:", newLog);
+        }
+
         // If the contact exists and belongs to the current employee, update it
+
         contact.phone_number = phone_number;
         contact.landline = landline;
         contact.email = email;
@@ -77,36 +170,6 @@ exports.updateContacts = async (req, res) => {
         console.log(JSON.stringify(updatedContact));
 
         console.log("UPDATED CONTACT:", updatedContact);
-
-        const { data: employeeData, error: employeeError } = await supabase
-          .from("employee")
-          .select("*")
-          .eq("employee_id", req.session.user.employee_id)
-          .single();
-
-        if (employeeError) {
-          console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
-          return res.status(400).json({ message: "Failed to find employee" });
-        }
-        console.log("GET EMP DATA:", employeeData);
-        const { data: newLog, error: logError } = await supabase
-          .from("log")
-          .insert({
-            action: "UPDATE_CONTACT",
-            actor: employeeData.email,
-            is_admin: false,
-            status: "requested",
-            employee_number: employeeData.employee_number,
-          })
-          .select()
-          .single();
-
-        if (logError) {
-          console.log("Error in adding new log:", logError);
-          return res.status(400).json({ message: "Error adding log" });
-        }
-
-        console.log("New log added:", newLog);
 
         return res.status(200).json(updatedContact); // Return updated contact
       } else {

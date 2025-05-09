@@ -22,6 +22,8 @@ async function fetchAllLogs() {
     const responseData = await response.json();
 
     logs = responseData.data;
+    logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     console.log("ALL LOGS:", logs);
     displayLogs(currentLogPage); // Default to page 1
     setupPaginationLogs();
@@ -32,9 +34,11 @@ async function fetchAllLogs() {
 
 fetchAllLogs();
 
-refreshLogsBtn.addEventListener("click", (e) => {
+refreshLogsBtn.addEventListener("click", async (e) => {
   currentLogPage = 1;
-  fetchAllLogs();
+  refreshLogsBtn.textContent = "Refreshing Logs...";
+  await fetchAllLogs();
+  refreshLogsBtn.textContent = "Refresh Logs";
 });
 
 function setupPaginationLogs() {
@@ -121,17 +125,21 @@ async function displayLogs(pageNumber) {
   const startIndex = (pageNumber - 1) * logsPerPage;
   const endIndex = startIndex + logsPerPage;
   const logsToDisplay = logs.slice(startIndex, endIndex);
+
   console.log("LOGS TO DISPLAY:", logsToDisplay);
 
   logTableBody.innerHTML = ""; // Clear existing content
   logsToDisplay.forEach((log, index) => {
     const row = document.createElement("tr");
 
+    row.style.cursor = "pointer";
+
     row.innerHTML = `
                 <td>${log.action}</td>
+                <td>${log.action_details == null ? "-" : log.action_details}</td>
                 <td>${log.actor}</td>
                 <td>${log.is_admin ? "Admin" : "User"}</td>
-                <td>${log.date}</td>
+                <td>${convertToMilitaryTimePHT(new Date(log.date))}</td>
                 <td>${
                   log.status.charAt(0).toUpperCase() + log.status.slice(1)
                 }</td>
@@ -140,4 +148,31 @@ async function displayLogs(pageNumber) {
 
     logTableBody.appendChild(row);
   });
+}
+
+function convertToMilitaryTimePHT(date) {
+  const phtDateStr = new Date(date).toLocaleString("en-US", {
+    timeZone: "Asia/Manila",
+  });
+
+  const phtDate = new Date(phtDateStr);
+
+  // Get the formatted time in 12-hour format with AM/PM
+  const options = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // AM/PM format
+  };
+
+  const formattedTime = phtDate.toLocaleTimeString("en-US", options);
+
+  // Format the date as YYYY-MM-DD
+  const formattedDate = phtDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // Return formatted date and time
+  return `${formattedDate} ${formattedTime}`;
 }

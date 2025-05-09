@@ -231,6 +231,11 @@ exports.updateEmployeeDepartment = async (req, res) => {
       .from("log")
       .insert({
         action: "UPDATE_EMPLOYEE_DEPARTMENT",
+        action_details: `${existingEmployee.first_name} ${
+          existingEmployee.middle_name
+            ? existingEmployee.middle_name.toUpperCase()[0]
+            : ""
+        }. ${existingEmployee.last_name}: Department Updated`,
         actor: req.session.admin
           ? req.session.admin.email
           : req.session.user.email,
@@ -277,6 +282,13 @@ exports.editEmployeePosition = async (req, res) => {
       .from("log")
       .insert({
         action: "UPDATE_EMPLOYEE_POSITION",
+        action_details: `${existingEmployee.first_name} ${
+          existingEmployee.middle_name
+            ? existingEmployee.middle_name.toUpperCase()[0]
+            : ""
+        } ${existingEmployee.last_name}: ${
+          existingEmployee.position
+        } -> ${position}`,
         actor: req.session.admin
           ? req.session.admin.email
           : req.session.user.email,
@@ -353,6 +365,13 @@ exports.deleteEmployee = async (req, res) => {
       .from("log")
       .insert({
         action: employeeData.isApproved ? "DELETE_EMPLOYEE" : "DENY_SIGNUP",
+        action_details: `Employee ${
+          employeeData.isApproved ? "DELETED" : "REJECTED"
+        }: ${employeeData.first_name} ${
+          employeeData.middle_name
+            ? employeeData.middle_name.toUpperCase()[0]
+            : ""
+        }. ${employeeData.last_name}`,
         actor: req.session.admin.email,
         is_admin: true,
         status: employeeData.isApproved ? "success" : "rejected",

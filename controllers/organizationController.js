@@ -128,6 +128,7 @@ exports.createOrganization = async (req, res) => {
       .from("log")
       .insert({
         action: "CREATE_ORGANIZATION",
+        action_details: `Added affiliated organization: ${org_name} to their profile.`,
         actor: employeeData.email,
         is_admin: false,
         status: "requested",
@@ -140,8 +141,6 @@ exports.createOrganization = async (req, res) => {
       console.log("Error in adding new log:", logError);
       return res.status(400).json({ message: "Error adding log" });
     }
-
-    console.log("New log added:", newLog);
 
     console.log("Created: " + JSON.stringify(response[0]));
 
@@ -212,6 +211,14 @@ exports.updateOrganization = async (req, res) => {
       date_active
     );
 
+    console.log("THE BANNER ID:", banner_id);
+    console.log("THE IMAGE ID:", image_id);
+    const { data: existingData, error: fetchError } = await supabase
+      .from("organization")
+      .select("*")
+      .eq("organization_id", organization_id)
+      .single();
+
     const updatedOrganization = await newOrganization.save(); // Save the new organization
 
     const response = await Promise.all(
@@ -244,24 +251,186 @@ exports.updateOrganization = async (req, res) => {
 
     // LOG ACTION
 
-    const { data: newLog, error: logError } = await supabase
-      .from("log")
-      .insert({
-        action: "UPDATE_ORGANIZATION",
-        actor: req.session.user.email,
-        is_admin: false,
-        status: "requested",
-        employee_number: req.session.user.employee_number,
-      })
-      .select()
-      .single();
+    if (existingData.org_name != org_name) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_NAME",
+          action_details: `${existingData.org_name} -> ${org_name}`,
+          is_admin: false,
+          actor: req.session.user.email,
 
-    if (logError) {
-      console.log("Error in adding new log:", logError);
-      return res.status(400).json({ message: "Error adding log" });
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
     }
 
-    console.log("New log added:", newLog);
+    if (existingData.org_type != org_type) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_TYPE",
+          action_details: `Org: ${org_name} | Org Type: ${existingData.org_type} -> ${org_type}`,
+          is_admin: false,
+          actor: req.session.user.email,
+
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (existingData.category != category) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_CATEGORY",
+          action_details: `Org: ${org_name} | Category: ${existingData.category} -> ${category}`,
+          is_admin: false,
+          actor: req.session.user.email,
+
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (existingData.position != position) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_POSITION",
+          action_details: `Org: ${org_name} | Position: ${existingData.position} -> ${position}`,
+          is_admin: false,
+          actor: req.session.user.email,
+
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (existingData.date_joined != date_joined) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_DATE_JOINED",
+          action_details: `Org: ${org_name} | Date Joined: ${existingData.date_joined} -> ${date_joined}`,
+          actor: req.session.user.email,
+
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (existingData.date_active != date_active) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_DATE_ACTIVE",
+          action_details: `Org: ${org_name} | Date Active: ${existingData.date_active} -> ${date_active}`,
+          actor: req.session.user.email,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+    if (existingData.description != description) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_DESCRIPTION",
+          action_details: `Org: ${org_name} | Description Updated`,
+          actor: req.session.user.email,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+
+    if (banner_id) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_BANNER",
+          action_details: `Org: ${org_name} | Banner Updated`,
+          actor: req.session.user.email,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+
+    if (image_id) {
+      const { data: newLog, error: logError } = await supabase
+        .from("log")
+        .insert({
+          action: "UPDATE_ORG_IMAGE",
+          action_details: `Org: ${org_name} | Image Updated`,
+          actor: req.session.user.email,
+          is_admin: false,
+          status: "success",
+          employee_number: req.session.user.employee_number,
+        })
+        .select()
+        .single();
+
+      if (logError) {
+        console.log("Error in adding new log:", logError);
+        return res.status(400).json({ message: "Error adding log" });
+      }
+    }
+
     res.status(201).json(response[0]); // Return the updated organization
   } catch (error) {
     console.error("Error updating organization:", error);
@@ -300,7 +469,6 @@ exports.deleteOrganization = async (req, res) => {
       return res.status(400).json({ message: "Error adding log" });
     }
 
-    console.log("New log added:", newLog);
     res.status(200).json(deletedorganization); // Return the delete episode
   } catch (error) {
     console.error("Error deleting organization:", error);
