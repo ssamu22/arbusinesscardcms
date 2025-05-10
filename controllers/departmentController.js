@@ -30,6 +30,8 @@ exports.updateDepartment = async (req, res) => {
       return res.status(404).json({ error: "Department not found" });
     }
 
+    const oldDeptName = department.department_name;
+
     department.department_name = department_name;
 
     const updatedDepartment = await department.save();
@@ -39,6 +41,7 @@ exports.updateDepartment = async (req, res) => {
       .from("log")
       .insert({
         action: `UPDATE_LPU_DEPARTMENT`,
+        action_details: `Department Updated: ${oldDeptName} -> ${department.department_name}`,
         actor: req.session.admin.email,
         is_admin: true,
         status: "success",
@@ -64,7 +67,6 @@ exports.updateDepartment = async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to update department" });
     }
-    
   }
 };
 
@@ -106,7 +108,6 @@ exports.createDepartment = async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to create department" });
     }
-    
   }
 };
 

@@ -97,7 +97,7 @@ exports.updateContacts = async (req, res) => {
               action_details: `Facebook URL updated`,
               actor: req.session.user.email,
               is_admin: false,
-              status: "requested",
+              status: "success",
               employee_number: req.session.user.employee_number,
             })
             .select()

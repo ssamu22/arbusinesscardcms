@@ -12,9 +12,9 @@ class Event {
   static async getAllEvents() {
     try {
       const { data, error } = await supabase
-      .from("event")
-      .select("*")
-      .eq("is_archived", false);
+        .from("event")
+        .select("*")
+        .eq("is_archived", false);
       console.log(data); // Check the structure of the fetched data
 
       if (error) {
@@ -31,9 +31,9 @@ class Event {
   static async getArchivedEvents() {
     try {
       const { data, error } = await supabase
-      .from("event")
-      .select("*")
-      .eq("is_archived", true);
+        .from("event")
+        .select("*")
+        .eq("is_archived", true);
       console.log(data); // Check the structure of the fetched data
 
       if (error) {
@@ -47,12 +47,14 @@ class Event {
     }
   }
 
-  static async archiveEvent(event_id, is_archived){
+  static async archiveEvent(event_id, is_archived) {
     try {
       const { data, error } = await supabase
-      .from("event")
-      .update({ is_archived: is_archived })
-      .eq("event_id", event_id);
+        .from("event")
+        .update({ is_archived: is_archived })
+        .eq("event_id", event_id)
+        .select()
+        .single();
 
       if (error) {
         console.error(`Error:`, error);
@@ -62,16 +64,16 @@ class Event {
     } catch (error) {
       console.error(err.message);
       throw err;
-    } 
+    }
   }
 
   static async getEventById(event_id) {
     try {
       const { data, error } = await supabase
-      .from("event")
-      .select("*")
-      .eq("event_id", event_id)
-      .single();
+        .from("event")
+        .select("*")
+        .eq("event_id", event_id)
+        .single();
 
       if (error) {
         throw new Error(`Failed to list events: ${error.message}`);
@@ -113,11 +115,10 @@ class Event {
       .delete()
       .eq("event_id", event_id);
 
-      if(error) {
-        console.error(`Error: ${error}`);
-      }
+    if (error) {
+      console.error(`Error: ${error}`);
+    }
   }
-  
 }
 
 module.exports = Event;

@@ -292,7 +292,6 @@ Accepted values for updating:
 
 exports.updateImageTarget = async (req, res) => {
   console.log("UPDATING IMAGE TARGET:");
-  console.log("THE FILE:", req.file);
 
   if (!req.file) {
     return res.status(404).json({
