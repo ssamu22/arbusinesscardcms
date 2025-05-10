@@ -34,7 +34,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="org-name" class="form-label">Organization Name</label>
-                            <input type="text" id="org-name" class="form-control" required>
+                            <input type="text" id="org-name" class="form-control" maxlength="100" placeholder="Enter organization name..." required>
                         </div>
                         <div class="mb-3">
                             <label for="org-type" class="form-label">Type</label>
@@ -45,11 +45,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="org-category" class="form-label">Category</label>
-                            <input type="text" id="org-category" class="form-control">
+                            <input type="text" id="org-category" class="form-control" placeholder="(e.g. Coding Bootcamps, Educational, etc..)" maxlength="50">
                         </div>
                         <div class="mb-3">
                             <label for="org-position" class="form-label">Position</label>
-                            <input type="text" id="org-position" class="form-control">
+                            <input type="text" id="org-position" class="form-control" placeholder="Enter your organization position..." maxlength="50">
                         </div>
                         <div class="mb-3">
                             <label for="org-date-joined" class="form-label">Date Joined</label>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="org-description" class="form-label">Description</label>
-                            <textarea id="org-description" class="form-control" rows="3"></textarea>
+                            <textarea id="org-description" class="form-control" rows="3" placeholder="Write a brief description about the organization" maxlength="500"></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="org-image" class="form-label">Upload Logo</label>

@@ -348,7 +348,7 @@ class Employee {
     try {
       const { data, error } = await supabase
         .from("employee")
-        .select("introduction, field, position, image_id")
+        .select("introduction, field, position, image_id, department_id")
         .eq("employee_id", employee_id)
         .single(); // Ensure we get a single record
 

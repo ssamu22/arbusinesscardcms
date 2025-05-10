@@ -22,6 +22,104 @@
   </head>
   <body>
     <div class="container-fluid p-0 main-container">
+      <!-- Privacy Policy Modal -->
+      <div
+        class="modal fade"
+        id="privacyModal"
+        tabindex="-1"
+        aria-labelledby="privacyModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p>
+                This privacy policy explains how your personal data is collected, used,
+                and protected within the Augmented Reality Content Management System (ARCMS),
+                which supports the AR mobile application <strong>PartnAR</strong>.
+              </p>
+
+              <h6>1. Information Collected</h6>
+              <p>When you register for ARCMS, you are required to provide certain personal and professional information:</p>
+              <ul>
+                <li><strong>Mandatory Information:</strong>
+                  <ul>
+                    <li>Name (First, Last)</li>
+                    <li>Employee Number</li>
+                    <li>Email Address</li>
+                  </ul>
+                </li>
+                <li><strong>Optional Information:</strong> (voluntarily provided by the user)
+                  <ul>
+                    <li>Middle Name</li>
+                    <li>Honorifics</li>
+                    <li>Professional Introduction</li>
+                    <li>Research Fields</li>
+                    <li>Social Media Links</li>
+                    <li>Phone Number</li>
+                    <li>Personal and Professional Achievements (local and international)</li>
+                    <li>Affiliated Organizations (professional and civic)</li>
+                    <li>Consultation Hours</li>
+                  </ul>
+                </li>
+              </ul>
+
+              <h6>2. Use of Information</h6>
+              <p>Your provided information will be displayed in the PartnAR mobile application when someone scans your AR business card. Optional fields are only shown if you choose to provide them.</p>
+
+              <h6>3. Registration and Approval Process</h6>
+              <ul>
+                <li>After submitting your registration, your account will remain inactive until reviewed and approved by an Administrator.</li>
+                <li>Once approved, you will receive an <strong>account activation email</strong> at your provided email address. Only after activation can you access and use your ARCMS account.</li>
+              </ul>
+
+              <h6>4. Administrator Access and Control</h6>
+              <ul>
+                <li><strong>Validation:</strong> Admins can review and validate your Research Fields and Honorifics.</li>
+                <li><strong>Restricted Fields:</strong> Only Admins can update your official Office Assignment and Company Position.</li>
+                <li><strong>Monitoring:</strong> Admins track activity logs including changes made to your profile and login/logout actions for audit and security purposes.</li>
+              </ul>
+
+              <h6>5. Your Consent</h6>
+              <p>
+                By registering, you agree to the collection, processing, and use of your information
+                as described in this policy. Optional fields are completely voluntary and under your control.
+              </p>
+
+              <h6>6. Data Protection</h6>
+              <p>
+                ARCMS uses appropriate technical and organizational safeguards to protect your information.
+                Access to administrative functions is restricted to authorized personnel only.
+              </p>
+
+              <h6>7. Contact</h6>
+              <p>
+                If you have questions about your data or this policy, please contact the system administrator
+                or your institution’s data privacy officer.
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row g-0">
         <!-- Left side with welcome message -->
         <div class="col-md-5 welcome-section">
@@ -198,6 +296,12 @@
                   required
                 />
               </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="agreePrivacy" required/>
+                <label class="form-check-label" for="agreePrivacy">
+                  I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>.
+                </label>
+              </div>
 
               <button type="submit" class="btn-login" id="register-btn">
                 Register
@@ -218,6 +322,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="/js/index.js"></script>
     <script>
       document.addEventListener("contextmenu", function (e) {

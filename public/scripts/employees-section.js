@@ -550,7 +550,7 @@ async function approveUser(employeeId) {
     activeEmployees.push(employee);
     displayActiveMembers(currentPageForActive);
     setupPaginationActive();
-    showSuccessMessage(`Employee ${employeeId} is approved!`);
+    showSuccessMessage(`Employee ${employee.employee_number} is approved!`);
   } catch (err) {
     console.error("Network or unexpected error approving user:", err);
     showErrorMessage(

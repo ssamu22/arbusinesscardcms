@@ -350,10 +350,11 @@
             });
 
             tagify.addTags(data.fields);
+            fetchDepartments(data.department_id);
           }
 
           // Fetch departments and populate dropdown
-          async function fetchDepartments() {
+          async function fetchDepartments(department_id) {
             const response = await fetch("/api/departments");
             const departments = await response.json();
 
@@ -366,12 +367,11 @@
             });
 
             // Set the selected department based on the logged-in user (session info)
-            const currentDepartmentId = "<%= user.department_id %>"; // Assuming you pass session info from the backend
+            const currentDepartmentId = department_id; // Assuming you pass session info from the backend
             dropdown.value = currentDepartmentId;
           }
 
           fetchDetails();
-          fetchDepartments();
 
           document
             .getElementById("profile-img")
@@ -672,6 +672,7 @@
               // Fetch the types for creating a new achievement
               fetchAchievementTypes("achievement-type");
             }
+            document.getElementById("achievement-year").max = new Date().toISOString().split("T")[0];
 
             achievementModal.show();
           }
@@ -686,12 +687,9 @@
           });
 
           saveAchievementBtn.addEventListener("click", async function () {
-            const title = document.getElementById("achievement-title").value;
-            const description = document.getElementById(
-              "achievement-description"
-            ).value;
-            const date_achieved =
-              document.getElementById("achievement-year").value;
+            const title = sanitizeInput(document.getElementById("achievement-title").value);
+            const description = sanitizeInput(document.getElementById("achievement-description").value);
+            const date_achieved = document.getElementById("achievement-year").value;
             const achievement_id = editAchievementId;
 
             // Get the selected option from the achievement-type select
@@ -786,6 +784,12 @@
               saveAchievementBtn.textContent = "Add Achievement";
             }
           });
+
+          function sanitizeInput(str) {
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML.trim();
+          }
 
           // Button to open the modal for adding a new achievement
           addAchievementBtn.addEventListener("click", () =>
@@ -942,32 +946,40 @@
           let isEditing = false;
 
           const currentYear = new Date().getFullYear();
-          const startYear = 1950; // Start year for the dropdowns
+          const startYear = 1990;
           const dateJoinedDropdown = document.getElementById("org-date-joined");
           const dateActiveDropdown = document.getElementById("org-date-active");
 
-          // Populate year dropdowns
+          // Populate Date Joined dropdown
           for (let year = currentYear; year >= startYear; year--) {
             const option = document.createElement("option");
             option.value = year;
             option.textContent = year;
             dateJoinedDropdown.appendChild(option);
-
-            const activeOption = option.cloneNode(true);
-            dateActiveDropdown.insertBefore(
-              activeOption,
-              dateActiveDropdown.firstChild
-            );
           }
 
-          // Ensure "Present" is the first option in Date Active
+          // Populate Date Active initially with "Present" only
           const presentOption = document.createElement("option");
           presentOption.value = "present";
           presentOption.textContent = "Present";
-          dateActiveDropdown.insertBefore(
-            presentOption,
-            dateActiveDropdown.firstChild
-          );
+          dateActiveDropdown.appendChild(presentOption);
+
+          // When Date Joined changes, update Date Active options
+          dateJoinedDropdown.addEventListener("change", () => {
+            const joinedYear = parseInt(dateJoinedDropdown.value, 10);
+
+            // Clear existing (except 'Present')
+            dateActiveDropdown.innerHTML = "";
+            dateActiveDropdown.appendChild(presentOption.cloneNode(true));
+
+            // Add years starting from joinedYear to currentYear
+            for (let year = currentYear; year >= joinedYear; year--) {
+              const option = document.createElement("option");
+              option.value = year;
+              option.textContent = year;
+              dateActiveDropdown.insertBefore(option, dateActiveDropdown.firstChild);
+            }
+          });
 
           async function fetchOrganizations() {
             try {
@@ -994,29 +1006,48 @@
             orgModal.show();
           });
 
+          function sanitizeInput(str) {
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML.trim();
+          }
+
+          function isValidName(str) {
+            return /^[a-zA-Z0-9\s\-.'()&]+$/.test(str);
+          }
+
           orgForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-
-            const name = document.getElementById("org-name").value.trim();
-            const type = document.getElementById("org-type").value.trim();
-            const category = document
-              .getElementById("org-category")
-              .value.trim();
-            const description = document
-              .getElementById("org-description")
-              .value.trim();
-            const position = document
-              .getElementById("org-position")
-              .value.trim();
-            const date_joined =
-              document.getElementById("org-date-joined").value;
-            const date_active =
-              document.getElementById("org-date-active").value;
-
+          
+            const name = sanitizeInput(document.getElementById("org-name").value);
+            const type = sanitizeInput(document.getElementById("org-type").value);
+            const category = sanitizeInput(document.getElementById("org-category").value);
+            const description = sanitizeInput(document.getElementById("org-description").value);
+            const position = sanitizeInput(document.getElementById("org-position").value);
+            const date_joined = document.getElementById("org-date-joined").value;
+            const date_active = document.getElementById("org-date-active").value;
+          
             const bannerFile = document.getElementById("org-banner").files[0];
             const logoFile = document.getElementById("org-image").files[0];
-
-            let orgData = {
+          
+            // Validate fields
+            if (!isValidName(name)) {
+              alert("Organization name contains invalid characters.");
+              return;
+            }
+          
+            if (!isValidName(position)) {
+              alert("Position contains invalid characters.");
+              return;
+            }
+          
+            // Optional: Check that date_active is not earlier than date_joined
+            if (date_active !== "present" && parseInt(date_active) < parseInt(date_joined)) {
+              alert("Date Active cannot be earlier than Date Joined.");
+              return;
+            }
+          
+            const orgData = {
               org_name: name,
               org_type: type,
               image_id: null,
@@ -1027,50 +1058,40 @@
               date_joined: date_joined,
               date_active: date_active,
             };
-
-            // Check if editing an existing organization
-            if (currentOrgId) {
-              if (confirm("Are you sure you want to save changes?")) {
-                createOrganization(orgData, bannerFile, logoFile);
-              }
-            } else {
-              // Create a new organization entry
-              if (confirm("Are you sure you want to save this entry?")) {
-                createOrganization(orgData, bannerFile, logoFile);
-              }
+          
+            const confirmMessage = currentOrgId
+              ? "Are you sure you want to save changes?"
+              : "Are you sure you want to save this entry?";
+          
+            if (confirm(confirmMessage)) {
+              createOrganization(orgData, bannerFile, logoFile);
+              orgModal.hide();
             }
-
-            orgModal.hide();
           });
 
           // Upload image to the server
           async function uploadImage(file, namePrefix) {
             const formData = new FormData();
-            const extension = file.name.split(".").pop(); // Extract file extension
-            const fileName = `${namePrefix}.${extension}`; // Generate file name
-
-            // Determine the bucket based on the type of image
+            const extension = file.name.split(".").pop();
+            const timestamp = Date.now(); // Unique to avoid browser cache
+            const fileName = `${namePrefix}_${timestamp}.${extension}`;
+          
             const bucket = namePrefix.includes("banner")
               ? "assets/orgBannerImages"
               : "assets/employeeOrgsImages";
-
+          
             formData.append("file", file);
             formData.append("bucket", bucket);
             formData.append("fileName", fileName);
-
-            console.log("Uploading image: ", formData);
-
+          
             try {
-              const response = await fetch(
-                "/arcms/api/v1/organizations/image",
-                {
-                  method: "POST",
-                  body: formData,
-                }
-              );
-
+              const response = await fetch("/arcms/api/v1/organizations/image", {
+                method: "POST",
+                body: formData,
+              });
+          
               if (response.ok) {
-                return await response.json(); // Returns { bucket, fileName, url }
+                return await response.json(); // { image_id, url, etc. }
               } else {
                 console.error("Failed to upload image:", response.statusText);
               }
@@ -1432,9 +1453,7 @@
                     <span class="me-2" style="width: 150px;">
                       ${platform.charAt(0).toUpperCase() + platform.slice(1)}
                     </span>
-                    <input type="url" class="form-control" placeholder="Enter your ${
-                      platform.charAt(0).toUpperCase() + platform.slice(1)
-                    } URL" value="" data-index="${index}" ${
+                    <input type="url" class="form-control" placeholder="www.${platform}.com/username" value="" data-index="${index}" ${
                   !editMode ? "disabled" : ""
                 }>
                   </li>
@@ -1463,67 +1482,99 @@
           }
 
           async function toggleEditMode() {
-            editMode = !editMode;
-            editToggle.textContent = editMode ? "Save" : "Edit";
-            // addSocialMediaBtn.style.display = editMode ? 'block' : 'none';
-
-            const inputs = contactForm.querySelectorAll("input, select");
-            inputs.forEach((input) => (input.disabled = !editMode));
-
-            if (!editMode) {
-              const isConfirmed = confirm(
-                "Are you sure you want to save changes?"
-              );
+            // If we're in edit mode and trying to save
+            if (editMode) {
+              const isConfirmed = confirm("Are you sure you want to save changes?");
               if (!isConfirmed) {
-                editToggle.disabled = false; // Re-enable if saving was cancelled
+                return; // Don't toggle anything, just stay in edit mode
+              }
+          
+              editToggle.disabled = true;
+              editToggle.textContent = "Saving...";
+
+              // Gather data from contactInfo
+
+              console.log("THE CONTACT INFO:", contactInfo);
+              const phonePattern = /^(09|\+63)[0-9]{9}$/;
+              if (!phonePattern.test(contactInfo.phone)) {
+                alert("Please enter a valid Philippine phone number.");
                 return;
               }
-
-              editToggle.disabled = true; // Disable the button while saving
-              editToggle.textContent = "Saving..."; // Change button text to "Loading..." while saving
-
+            
+              // Validate the social media URLs
+              const socialMediaLinks = {
+                facebook_url: contactInfo.socialMedia.find(social => social.platform === "facebook")?.url || "",
+                instagram_url: contactInfo.socialMedia.find(social => social.platform === "instagram")?.url || "",
+                linkedin_url: contactInfo.socialMedia.find(social => social.platform === "linkedin")?.url || "",
+              };
+            
+              // Regular expressions for each platform
+              const regexValidators = {
+                facebook: /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.\-_]+\/?$/i,
+                instagram: /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/i,
+                linkedin: /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9.\-_%]+\/?$/i,
+              };
+            
+              for (const [platform, url] of Object.entries(socialMediaLinks)) {
+                const validator = regexValidators[platform];
+                if (url && validator && !validator.test(url)) {
+                  alert(`Please enter a valid ${platform.replace("_url", "").toUpperCase()} URL.`);
+                  editToggle.disabled = false;
+                  editToggle.textContent = "Save";
+                  return;
+                } else if (url && !validator) {
+                  console.warn(`No validator defined for platform: ${platform}`);
+                }
+              }
+            
+              const updatedContactInfo = {
+                ...(contactInfo.contactId && {
+                  contact_id: contactInfo.contactId,
+                }),
+                phone_number: contactInfo.phone,
+                landline: contactInfo.landline,
+                email: contactInfo.email,
+                facebook_url: contactInfo.socialMedia.find(
+                  (social) => social.platform === "facebook"
+                )?.url || "",
+                instagram_url: contactInfo.socialMedia.find(
+                  (social) => social.platform === "instagram"
+                )?.url || "",
+                linkedin_url: contactInfo.socialMedia.find(
+                  (social) => social.platform === "linkedin"
+                )?.url || "",
+              };
+          
               try {
-                await saveContactInfo(); // Call the save function
-                editToggle.textContent = "Edit"; // Revert button text to "Edit" after successful save
+                await saveContactInfo(updatedContactInfo);
+                editMode = false; // Now we exit edit mode only after successful save
+                editToggle.textContent = "Edit";
+          
+                const inputs = contactForm.querySelectorAll("input, select");
+                inputs.forEach((input) => (input.disabled = true));
+                document.getElementById("email").disabled = true;
+          
               } catch (error) {
                 console.error("Failed to save contact info:", error);
                 alert("An error occurred while saving. Please try again.");
-                editToggle.textContent = "Save"; // Keep "Save" text in case of error, to retry
+                editToggle.textContent = "Save"; // Stay in save mode
+              } finally {
+                editToggle.disabled = false;
               }
+            } else {
+              // Enter edit mode
+              editMode = true;
+              editToggle.textContent = "Save";
+          
+              const inputs = contactForm.querySelectorAll("input, select");
+              inputs.forEach((input) => (input.disabled = false));
+              document.getElementById("email").disabled = true;
             }
-
-            editToggle.disabled = false; // Re-enable the button after save is complete
+          
             renderSocialMedia();
           }
 
-          async function saveContactInfo() {
-            // Gather data from contactInfo
-
-            console.log("THE CONTACT INFO:", contactInfo);
-
-            const updatedContactInfo = {
-              ...(contactInfo.contactId && {
-                contact_id: contactInfo.contactId,
-              }),
-              phone_number: contactInfo.phone,
-              landline: contactInfo.landline,
-              email: contactInfo.email,
-              facebook_url:
-                contactInfo.socialMedia.find(
-                  (social) => social.platform === "facebook"
-                )?.url || "",
-              instagram_url:
-                contactInfo.socialMedia.find(
-                  (social) => social.platform === "instagram"
-                )?.url || "",
-              linkedin_url:
-                contactInfo.socialMedia.find(
-                  (social) => social.platform === "linkedin"
-                )?.url || "",
-            };
-
-            let errors = {};
-
+          async function saveContactInfo(updatedContactInfo) {
             // console.log("New contact info: " + JSON.stringify(updatedSchedule));
             console.log("THE UPDATED CONTACT INFO:", updatedContactInfo);
             try {
@@ -1538,13 +1589,15 @@
 
               if (!contactResponse.ok) {
                 throw new Error("Failed to save contact information");
-                errors.contacts = "Failed to save contact information";
               }
 
               const updatedContacts = await contactResponse.json();
               console.log("Contact information saved:", updatedContacts);
 
               alert("Contact information saved successfully!");
+              
+              editToggle.disabled = false; // Re-enable the button after save is complete
+              renderSocialMedia();
             } catch (error) {
               console.error("Error saving contact information:", error);
               alert("An error occurred while saving the contact information.");
