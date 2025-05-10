@@ -45,11 +45,8 @@ exports.login = async (req, res) => {
       first_name: employee.first_name,
       middle_name: employee.middle_name,
       last_name: employee.last_name,
-      honorifics: employee.honorifics,
       email: employee.getEmail(),
       employee_number: employee.employee_number,
-      position: employee.position,
-      department_id: employee.department_id,
     };
 
     // LOG ACTION

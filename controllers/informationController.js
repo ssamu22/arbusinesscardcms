@@ -15,6 +15,8 @@ exports.getDetails = async (req, res) => {
       position: userInfo.position,
       fields: userInfo.field,
       image_url: image ? image.image_url : null,
+      position: userInfo.position,
+      department_id: userInfo.department_id
     });
   } catch (error) {
     console.error(error);
