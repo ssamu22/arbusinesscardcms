@@ -35,6 +35,7 @@ if (registerForm) {
     const password = document.getElementById("password").value;
     const passwordConfirm = document.getElementById("passwordConfirm").value;
     const honorifics = sanitizeInput(document.getElementById("honorifics").value);
+    const privacyCheckbox = document.getElementById("agreePrivacy");
 
     // Validation rules
     const nameRegex = /^[a-zA-Z .'-]+$/;
@@ -62,6 +63,12 @@ if (registerForm) {
 
     if (password !== passwordConfirm) {
       errors.push("Passwords do not match.");
+    }
+
+    if (!privacyCheckbox.checked) {
+      e.preventDefault(); 
+      errors.push("You must agree to the Privacy Policy before registering.");
+      return;
     }
 
     if (errors.length > 0) {
