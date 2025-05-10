@@ -30,9 +30,28 @@ exports.updateCollege = async (req, res) => {
       return res.status(404).json({ error: "College not found" });
     }
 
+    const oldName = college.name;
     college.name = name;
 
     const updatedCollege = await college.save();
+
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `UPDATE_LPU_COLLEGE`,
+        action_details: `LPU-C College Updated: ${oldName} -> ${name}`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
 
     console.log(JSON.stringify(updatedCollege));
 
@@ -44,7 +63,6 @@ exports.updateCollege = async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to update college" });
     }
-    
   }
 };
 
@@ -58,6 +76,25 @@ exports.createCollege = async (req, res) => {
 
     console.log(JSON.stringify(createdCollege));
 
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `ADD_LPU_COLLEGE`,
+        action_details: `LPU-C College Created: ${createdCollege[0].name}`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
     res.status(201).json(createdCollege);
   } catch (error) {
     console.error("Error creating college:", error);
@@ -66,7 +103,6 @@ exports.createCollege = async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to create college" });
     }
-    
   }
 };
 
@@ -76,6 +112,25 @@ exports.deleteCollege = async (req, res) => {
     const college = await College.getById(req.params.id);
 
     console.log("THE COLLEGE TO BE DLEETED:", college);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `DELETE_LPU_COLLEGE`,
+        action_details: `LPU-C College Deleted: ${college.name}`,
+        actor: req.session.admin.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
 
     if (!college) {
       return res.status(404).json({ error: "College not found" });

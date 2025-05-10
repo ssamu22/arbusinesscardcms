@@ -197,6 +197,13 @@ exports.updateMe = async (req, res) => {
   // Find the admin by its email
   console.log("UPDATE REQUEST BODY:", req.body);
   console.log("SESSION EMAIL", req.session.admin.email);
+
+  const { data: existingData, error: existingError } = await supabase
+    .from("admin")
+    .select()
+    .eq("email", req.session.admin.email)
+    .single();
+
   const { data, error } = await supabase
     .from("admin")
     .update(req.body)
@@ -216,7 +223,8 @@ exports.updateMe = async (req, res) => {
   const { data: newLog, error: logError } = await supabase
     .from("log")
     .insert({
-      action: "UPDATE_ADMIN",
+      action: "UPDATE_ADMIN_NAME",
+      action_details: `Admin Name: ${existingData.admin_name} -> ${req.body.admin_name}`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",
@@ -476,8 +484,12 @@ exports.createEmployee = async (req, res) => {
   }
 
   // Check if employee number already exists
-  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
-  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(
+    employee_number
+  );
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(
+    employee_number
+  );
 
   if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
     return res.status(400).json({
@@ -611,8 +623,12 @@ exports.createAdmin = async (req, res) => {
   const { employee_number } = req.body;
 
   // Check if employee number already exists
-  const existingEmployeeNumber = await Employee.findByEmployeeNumber(employee_number);
-  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(employee_number);
+  const existingEmployeeNumber = await Employee.findByEmployeeNumber(
+    employee_number
+  );
+  const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(
+    employee_number
+  );
 
   if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
     return res.status(400).json({
@@ -636,8 +652,6 @@ exports.createAdmin = async (req, res) => {
         "An existing admin account is already associated with the email! Please try another one.",
     });
   }
-
-  
 
   const activationData = createAccountActivationToken();
 

@@ -44,6 +44,9 @@ exports.updatePrinciple = async (req, res) => {
     .from("log")
     .insert({
       action: `UPDATE_LPU_${principle.replace(/\s+/g, "_").toUpperCase()}`,
+      action_details: `Updated ${principle
+        .replace(/\s+/g, "_")
+        .toUpperCase()} of LPU-Cavite`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",

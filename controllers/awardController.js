@@ -77,6 +77,7 @@ exports.addAward = async (req, res) => {
     .from("log")
     .insert({
       action: `ADD_LPU_AWARD`,
+      action_details: `LPU-C Award Added: ${awardTitle}`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",
@@ -112,6 +113,7 @@ exports.editAward = async (req, res) => {
     .from("log")
     .insert({
       action: `UPDATE_LPU_AWARD`,
+      action_details: `LPU-C Award Updated: ${req.body.awardTitle}`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",
@@ -137,7 +139,9 @@ exports.deleteAward = async (req, res) => {
   const { data, error } = await supabase
     .from("award")
     .delete()
-    .eq("award_id", req.params.id);
+    .eq("award_id", req.params.id)
+    .select()
+    .single();
 
   if (error) {
     return res.status(400).json({
@@ -151,6 +155,7 @@ exports.deleteAward = async (req, res) => {
     .from("log")
     .insert({
       action: `DELETE_LPU_AWARD`,
+      action_details: `LPU-C Award Deleted: ${data.award_title}`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",

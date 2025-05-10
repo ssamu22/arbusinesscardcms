@@ -7,7 +7,7 @@ exports.getAllEvents = async (req, res) => {
 
   let eventResponse;
 
-  if( tab === "active") {
+  if (tab === "active") {
     eventResponse = await Event.getAllEvents();
   } else {
     eventResponse = await Event.getArchivedEvents();
@@ -56,6 +56,7 @@ exports.addEvent = async (req, res) => {
     .from("log")
     .insert({
       action: `ADD_LPU_EVENT`,
+      action_details: `LPU-C Event Added: ${req.body.event_name}`,
       actor: req.session.admin.email,
       is_admin: true,
       status: "success",
@@ -107,6 +108,7 @@ exports.updateEvent = async (req, res) => {
     .insert({
       action: `UPDATE_LPU_EVENT`,
       actor: req.session.admin.email,
+      action_details: `LPU-C Event Updated: ${req.body.event_name}`,
       is_admin: true,
       status: "success",
       employee_number: req.session.admin.employee_number,
@@ -131,7 +133,7 @@ exports.updateEvent = async (req, res) => {
 
 exports.archiveEvent = async (req, res) => {
   const event_id = req.params.id;
-  console.log("Event ID: "+event_id);
+  console.log("Event ID: " + event_id);
 
   try {
     const event = await Event.getEventById(event_id);
@@ -142,6 +144,25 @@ exports.archiveEvent = async (req, res) => {
 
     const archivedEvent = await Event.archiveEvent(event_id, true);
     console.log("Archived Event: " + archivedEvent);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `ARCHIVE_LPU_EVENT`,
+        actor: req.session.admin.email,
+        action_details: `LPU-C Event Updated: ${event.event_name}`,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
 
     res.status(201).json(archivedEvent);
   } catch (err) {
@@ -160,6 +181,20 @@ exports.unarchiveEvent = async (req, res) => {
       return res.status(404).json({ error: "Event not found or unauthorized" });
     }
 
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: `UNARCHIVE_LPU_EVENT`,
+        actor: req.session.admin.email,
+        action_details: `LPU-C Event Updated: ${event.event_name}`,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin.employee_number,
+      })
+      .select()
+      .single();
+
     const unarchivedEvent = await Event.archiveEvent(event_id, false);
 
     console.log("Unarchived Event: " + unarchivedEvent);
@@ -172,7 +207,11 @@ exports.unarchiveEvent = async (req, res) => {
 };
 
 exports.deleteEvent = async (req, res) => {
-  await Event.deleteEvent(req.params.eventId);
+  const { data: existingData, error: existingError } = await supabase
+    .from("event")
+    .select()
+    .eq("event_id", req.params.eventId)
+    .single();
 
   // LOG ACTION
   const { data: newLog, error: logError } = await supabase
@@ -180,12 +219,14 @@ exports.deleteEvent = async (req, res) => {
     .insert({
       action: `DELETE_LPU_EVENT`,
       actor: req.session.admin.email,
+      action_details: `LPU-C Event Deleted: ${existingData.event_name}`,
       is_admin: true,
       status: "success",
       employee_number: req.session.admin.employee_number,
     })
     .select()
     .single();
+  await Event.deleteEvent(req.params.eventId);
 
   if (logError) {
     console.log("Error in adding new log:", logError);

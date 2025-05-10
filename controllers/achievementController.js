@@ -312,6 +312,7 @@ exports.updateAchievementType = async (req, res) => {
       return res.status(404).json({ error: "Achievement_type not found" });
     }
 
+    const oldAchievement = achievement.name;
     achievement.name = name;
     achievement.icon = icon;
 
@@ -325,9 +326,10 @@ exports.updateAchievementType = async (req, res) => {
       .from("log")
       .insert({
         action: "UPDATE_ACHIEVEMENT_TYPE",
+        action_details: `Achievement Type Updated: ${name}`,
         actor: req.session.admin.email,
-        is_admin: false,
-        status: "requested",
+        is_admin: true,
+        status: "success",
         employee_number: req.session.admin.employee_number,
       })
       .select()
@@ -362,6 +364,7 @@ exports.createAchievementType = async (req, res) => {
       .insert({
         action: "CREATE_ACHIEVEMENT_TYPE",
         actor: req.session.admin.email,
+        action_details: `Achievement Type Added: ${name}`,
         is_admin: false,
         status: "requested",
         employee_number: req.session.admin.employee_number,
@@ -398,9 +401,10 @@ exports.deleteAchievementType = async (req, res) => {
       .from("log")
       .insert({
         action: "DELETE_ACHIEVEMENT_TYPE",
+        action_details: `Achievement Type: ${achievement.name}`,
         actor: req.session.admin.email,
-        is_admin: false,
-        status: "requested",
+        is_admin: true,
+        status: "success",
         employee_number: req.session.admin.employee_number,
       })
       .select()

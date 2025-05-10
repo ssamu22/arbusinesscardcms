@@ -99,7 +99,9 @@ exports.updateSchedule = async (req, res) => {
               .from("log")
               .insert({
                 action: `UPDATE_${day.toUpperCase()}_AVAILABILITY`,
-                action_details: `${existingSchedule.available} -> ${available}`,
+                action_details: `${
+                  existingSchedule.available ? "AVAILABLE" : "NOT AVAILABLE"
+                } -> ${available ? "AVAILABLE" : "NOT AVAILABLE"}`,
                 actor: req.session.user.email,
                 is_admin: false,
                 status: "success",
