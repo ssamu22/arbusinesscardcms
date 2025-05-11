@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const supabase = require("../utils/supabaseClient");
 const Image = require("../models/Image");
+const { format } = require("path");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.office365.com",
@@ -299,12 +300,6 @@ exports.updateProfile = async (req, res) => {
       }
     }
     // Create the updated profile data
-    const updatedProfileData = {
-      honorifics: honorifics,
-      introduction: introduction,
-      field: formattedResearchFields,
-      // department_id: department,
-    };
 
     if (image_id) {
       updatedProfileData.image_id = image_id;
@@ -319,6 +314,32 @@ exports.updateProfile = async (req, res) => {
       .eq("employee_id", req.session.user.employee_id)
       .single();
 
+    console.log("EXISTING DATA FIELD:", existingData.field);
+    console.log("NEW DATA FIELD:", formattedResearchFields);
+
+    const introIsEdited = existingData.introduction != introduction;
+    const fieldIsEdited =
+      existingData.field.join(",") !== formattedResearchFields.join(",");
+    const honorIsEdited = existingData.introduction != honorifics;
+
+    const updatedProfileData = {
+      honorifics: honorifics,
+      introduction: introduction,
+      field: formattedResearchFields,
+      oldHonorifics: !existingData.honorIsEdited
+        ? existingData.honorifics
+        : existingData.oldHonorifics,
+      oldField: !existingData.fieldIsEdited
+        ? existingData.field
+        : existingData.oldField,
+      oldIntroduction: !existingData.introIsEdited
+        ? existingData.introduction
+        : existingData.oldIntroduction,
+      introIsEdited: introIsEdited || existingData.introIsEdited,
+      fieldIsEdited: fieldIsEdited || existingData.fieldIsEdited,
+      honorIsEdited: honorIsEdited || existingData.honorIsEdited,
+    };
+
     const { data: employeeData, error: employeeError } = await supabase
       .from("employee")
       .update(updatedProfileData)
@@ -326,9 +347,6 @@ exports.updateProfile = async (req, res) => {
       .select()
       .single();
 
-    console.log("EXISTING HONORIFICS:", existingData.honorifics);
-    console.log("EXISTING HONORIFICS:", existingData.introduction);
-    console.log("EXISTING HONORIFICS:", existingData.field);
     if (employeeError) {
       console.log("FAILED UPDATING EMPLOYEE PROFILE:", employeeError);
       return res.status(400).json({ message: "Failed to update profile" });
@@ -340,7 +358,7 @@ exports.updateProfile = async (req, res) => {
       existingData.honorifics != updatedProfileData.honorifics
     );
 
-    if (existingData.honorifics != updatedProfileData.honorifics) {
+    if (honorIsEdited && !existingData.honorIsEdited) {
       const { data: newLog, error: logError } = await supabase
         .from("log")
         .insert({
@@ -361,7 +379,7 @@ exports.updateProfile = async (req, res) => {
 
       console.log("New log added:", newLog);
     }
-    if (existingData.introduction != updatedProfileData.introduction) {
+    if (introIsEdited && !existingData.introIsEdited) {
       const { data: newLog, error: logError } = await supabase
         .from("log")
         .insert({
@@ -382,7 +400,7 @@ exports.updateProfile = async (req, res) => {
 
       console.log("New log added:", newLog);
     }
-    if (existingData.field != updatedProfileData.field) {
+    if (fieldIsEdited && !existingData.fieldIsEdited) {
       const { data: newLog, error: logError } = await supabase
         .from("log")
         .insert({

@@ -313,7 +313,7 @@ async function displayValidationLogs(pageNumber) {
                 <td>${log.employee_number}</td>
                 <td>
                   <div>
-                    <button id = "approve-content-validation" class = "approve-validation-btn">Approve</button>
+                    <button id = "approve-${log.employee_number}" class = "approve-validation-btn">Approve</button>
                     <button id = "reject-content-validation" class = "reject-validation-btn">Reject</button>
                   </div>
                 </td>

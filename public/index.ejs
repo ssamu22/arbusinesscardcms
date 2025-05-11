@@ -338,9 +338,16 @@
             const data = await response.json();
             console.log(data);
 
-            document.getElementById("introduction").value = data.introduction;
-            document.getElementById("position").value = data.position;
+            const honorificsInput = document.getElementById("honorifics");
+            const introInput = document.getElementById("introduction");
             document.getElementById("profile-picture").src = data.image_url;
+            document.getElementById("firstName").value = data.first_name;
+            document.getElementById("middleName").value = data.middle_name;
+            document.getElementById("lastName").value = data.last_name;
+            document.getElementById("position").value = data.position;
+
+            honorificsInput.value = data.honorifics;
+            introInput.value = data.introduction;
 
             let fieldsInput = document.getElementById("researchFields");
             tagify = new Tagify(fieldsInput, {
@@ -349,7 +356,25 @@
               editTags: true, // Allow users to edit tags
             });
 
-            tagify.addTags(data.fields);
+            honorificsInput.disabled = data.honorIsEdited;
+            introInput.disabled = data.introIsEdited;
+            tagify.setDisabled(data.fieldIsEdited);
+
+            if (data.honorIsEdited) {
+              document.getElementById("honorifics-label").textContent =
+                "Honorifics (For Approval)";
+            }
+
+            if (data.introIsEdited) {
+              document.getElementById("intro-label").textContent =
+                "Introduction (For Approval)";
+            }
+
+            if (data.fieldIsEdited) {
+              document.getElementById("research-label").textContent =
+                "Research Fields (For Approval)";
+            }
+            tagify.addTags(data.field);
             fetchDepartments(data.department_id);
           }
 
@@ -458,6 +483,14 @@
                   const result = await response.json();
 
                   if (response.ok) {
+                    const honorificsInput =
+                      document.getElementById("honorifics");
+                    const introInput = document.getElementById("introduction");
+                    let fieldsInput = document.getElementById("researchFields");
+
+                    honorificsInput.disabled = true;
+                    introInput.disabled = true;
+                    tagify.setDisabled(true);
                     alert(result.message); // Show success message
                   } else {
                     alert("Error: " + result.message); // Show error message
@@ -672,7 +705,9 @@
               // Fetch the types for creating a new achievement
               fetchAchievementTypes("achievement-type");
             }
-            document.getElementById("achievement-year").max = new Date().toISOString().split("T")[0];
+            document.getElementById("achievement-year").max = new Date()
+              .toISOString()
+              .split("T")[0];
 
             achievementModal.show();
           }
@@ -687,9 +722,14 @@
           });
 
           saveAchievementBtn.addEventListener("click", async function () {
-            const title = sanitizeInput(document.getElementById("achievement-title").value);
-            const description = sanitizeInput(document.getElementById("achievement-description").value);
-            const date_achieved = document.getElementById("achievement-year").value;
+            const title = sanitizeInput(
+              document.getElementById("achievement-title").value
+            );
+            const description = sanitizeInput(
+              document.getElementById("achievement-description").value
+            );
+            const date_achieved =
+              document.getElementById("achievement-year").value;
             const achievement_id = editAchievementId;
 
             // Get the selected option from the achievement-type select
@@ -977,7 +1017,10 @@
               const option = document.createElement("option");
               option.value = year;
               option.textContent = year;
-              dateActiveDropdown.insertBefore(option, dateActiveDropdown.firstChild);
+              dateActiveDropdown.insertBefore(
+                option,
+                dateActiveDropdown.firstChild
+              );
             }
           });
 
@@ -1018,35 +1061,50 @@
 
           orgForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-          
-            const name = sanitizeInput(document.getElementById("org-name").value);
-            const type = sanitizeInput(document.getElementById("org-type").value);
-            const category = sanitizeInput(document.getElementById("org-category").value);
-            const description = sanitizeInput(document.getElementById("org-description").value);
-            const position = sanitizeInput(document.getElementById("org-position").value);
-            const date_joined = document.getElementById("org-date-joined").value;
-            const date_active = document.getElementById("org-date-active").value;
-          
+
+            const name = sanitizeInput(
+              document.getElementById("org-name").value
+            );
+            const type = sanitizeInput(
+              document.getElementById("org-type").value
+            );
+            const category = sanitizeInput(
+              document.getElementById("org-category").value
+            );
+            const description = sanitizeInput(
+              document.getElementById("org-description").value
+            );
+            const position = sanitizeInput(
+              document.getElementById("org-position").value
+            );
+            const date_joined =
+              document.getElementById("org-date-joined").value;
+            const date_active =
+              document.getElementById("org-date-active").value;
+
             const bannerFile = document.getElementById("org-banner").files[0];
             const logoFile = document.getElementById("org-image").files[0];
-          
+
             // Validate fields
             if (!isValidName(name)) {
               alert("Organization name contains invalid characters.");
               return;
             }
-          
+
             if (!isValidName(position)) {
               alert("Position contains invalid characters.");
               return;
             }
-          
+
             // Optional: Check that date_active is not earlier than date_joined
-            if (date_active !== "present" && parseInt(date_active) < parseInt(date_joined)) {
+            if (
+              date_active !== "present" &&
+              parseInt(date_active) < parseInt(date_joined)
+            ) {
               alert("Date Active cannot be earlier than Date Joined.");
               return;
             }
-          
+
             const orgData = {
               org_name: name,
               org_type: type,
@@ -1058,11 +1116,11 @@
               date_joined: date_joined,
               date_active: date_active,
             };
-          
+
             const confirmMessage = currentOrgId
               ? "Are you sure you want to save changes?"
               : "Are you sure you want to save this entry?";
-          
+
             if (confirm(confirmMessage)) {
               createOrganization(orgData, bannerFile, logoFile);
               orgModal.hide();
@@ -1075,21 +1133,24 @@
             const extension = file.name.split(".").pop();
             const timestamp = Date.now(); // Unique to avoid browser cache
             const fileName = `${namePrefix}_${timestamp}.${extension}`;
-          
+
             const bucket = namePrefix.includes("banner")
               ? "assets/orgBannerImages"
               : "assets/employeeOrgsImages";
-          
+
             formData.append("file", file);
             formData.append("bucket", bucket);
             formData.append("fileName", fileName);
-          
+
             try {
-              const response = await fetch("/arcms/api/v1/organizations/image", {
-                method: "POST",
-                body: formData,
-              });
-          
+              const response = await fetch(
+                "/arcms/api/v1/organizations/image",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+
               if (response.ok) {
                 return await response.json(); // { image_id, url, etc. }
               } else {
@@ -1484,11 +1545,13 @@
           async function toggleEditMode() {
             // If we're in edit mode and trying to save
             if (editMode) {
-              const isConfirmed = confirm("Are you sure you want to save changes?");
+              const isConfirmed = confirm(
+                "Are you sure you want to save changes?"
+              );
               if (!isConfirmed) {
                 return; // Don't toggle anything, just stay in edit mode
               }
-          
+
               editToggle.disabled = true;
               editToggle.textContent = "Saving...";
 
@@ -1500,33 +1563,51 @@
                 alert("Please enter a valid Philippine phone number.");
                 return;
               }
-            
+
               // Validate the social media URLs
               const socialMediaLinks = {
-                facebook_url: contactInfo.socialMedia.find(social => social.platform === "facebook")?.url || "",
-                instagram_url: contactInfo.socialMedia.find(social => social.platform === "instagram")?.url || "",
-                linkedin_url: contactInfo.socialMedia.find(social => social.platform === "linkedin")?.url || "",
+                facebook_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "facebook"
+                  )?.url || "",
+                instagram_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "instagram"
+                  )?.url || "",
+                linkedin_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "linkedin"
+                  )?.url || "",
               };
-            
+
               // Regular expressions for each platform
               const regexValidators = {
-                facebook: /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.\-_]+\/?$/i,
-                instagram: /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/i,
-                linkedin: /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9.\-_%]+\/?$/i,
+                facebook:
+                  /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.\-_]+\/?$/i,
+                instagram:
+                  /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/i,
+                linkedin:
+                  /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9.\-_%]+\/?$/i,
               };
-            
+
               for (const [platform, url] of Object.entries(socialMediaLinks)) {
                 const validator = regexValidators[platform];
                 if (url && validator && !validator.test(url)) {
-                  alert(`Please enter a valid ${platform.replace("_url", "").toUpperCase()} URL.`);
+                  alert(
+                    `Please enter a valid ${platform
+                      .replace("_url", "")
+                      .toUpperCase()} URL.`
+                  );
                   editToggle.disabled = false;
                   editToggle.textContent = "Save";
                   return;
                 } else if (url && !validator) {
-                  console.warn(`No validator defined for platform: ${platform}`);
+                  console.warn(
+                    `No validator defined for platform: ${platform}`
+                  );
                 }
               }
-            
+
               const updatedContactInfo = {
                 ...(contactInfo.contactId && {
                   contact_id: contactInfo.contactId,
@@ -1534,26 +1615,28 @@
                 phone_number: contactInfo.phone,
                 landline: contactInfo.landline,
                 email: contactInfo.email,
-                facebook_url: contactInfo.socialMedia.find(
-                  (social) => social.platform === "facebook"
-                )?.url || "",
-                instagram_url: contactInfo.socialMedia.find(
-                  (social) => social.platform === "instagram"
-                )?.url || "",
-                linkedin_url: contactInfo.socialMedia.find(
-                  (social) => social.platform === "linkedin"
-                )?.url || "",
+                facebook_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "facebook"
+                  )?.url || "",
+                instagram_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "instagram"
+                  )?.url || "",
+                linkedin_url:
+                  contactInfo.socialMedia.find(
+                    (social) => social.platform === "linkedin"
+                  )?.url || "",
               };
-          
+
               try {
                 await saveContactInfo(updatedContactInfo);
                 editMode = false; // Now we exit edit mode only after successful save
                 editToggle.textContent = "Edit";
-          
+
                 const inputs = contactForm.querySelectorAll("input, select");
                 inputs.forEach((input) => (input.disabled = true));
                 document.getElementById("email").disabled = true;
-          
               } catch (error) {
                 console.error("Failed to save contact info:", error);
                 alert("An error occurred while saving. Please try again.");
@@ -1565,12 +1648,12 @@
               // Enter edit mode
               editMode = true;
               editToggle.textContent = "Save";
-          
+
               const inputs = contactForm.querySelectorAll("input, select");
               inputs.forEach((input) => (input.disabled = false));
               document.getElementById("email").disabled = true;
             }
-          
+
             renderSocialMedia();
           }
 
@@ -1595,7 +1678,7 @@
               console.log("Contact information saved:", updatedContacts);
 
               alert("Contact information saved successfully!");
-              
+
               editToggle.disabled = false; // Re-enable the button after save is complete
               renderSocialMedia();
             } catch (error) {
@@ -2370,7 +2453,7 @@
           sidebarToggle.addEventListener("click", function () {
             sidebar.classList.toggle("collapsed");
             mainContent.classList.toggle("expanded");
-        
+
             // Toggle sidebar icon
             const icon = this.querySelector("i");
             if (sidebar.classList.contains("collapsed")) {
@@ -2380,12 +2463,12 @@
               icon.classList.remove("bi-chevron-right");
               icon.classList.add("bi-chevron-left");
             }
-        
+
             // Toggle sidebar logo
             const logo = document.getElementById("sidebarLogo");
             if (sidebar.classList.contains("collapsed")) {
               logo.src = "/images/lpu_logo_icon.png"; // smaller or square logo
-              logo.height = 30; 
+              logo.height = 30;
             } else {
               logo.src = "/images/lpu_logo_horizontal.jpg"; // original horizontal logo
               logo.height = 76; // restore size

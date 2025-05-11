@@ -44,6 +44,65 @@ exports.getAllValidationLogs = async (req, res) => {
   });
 };
 
+exports.approveValidation = async (req, res) => {
+  const { data: existingData, error: existingError } = await supabase
+    .from("employee")
+    .select()
+    .eq("employee_number", req.params.id)
+    .single();
+
+  const { data, error } = await supabase.from("employee").update({
+    introIsEdited:
+      req.body.action == "UPDATE_USER_INTRO"
+        ? false
+        : existingData.introIsEdited,
+    fieldIsEdited:
+      req.body.action == "UPDATE_RESEARCH_FIELDS"
+        ? false
+        : existingData.fieldIsEdited,
+    honorIsEdited:
+      req.body.action == "UPDATE_HONORIFICS"
+        ? false
+        : existingData.honorIsEdited,
+    oldIntroduction: "",
+    oldHonorifics: "",
+    oldField: "",
+  });
+
+  // LOG ACTION
+
+  const { data: newLog, error: logError } = await supabase
+    .from("log")
+    .insert({
+      action: `APPROVE_${req.body.action}`,
+      actor: req.session.admin.email,
+      is_admin: true,
+      status: "success",
+      employee_number: req.session.admin.employee_number,
+    })
+    .select()
+    .single();
+
+  if (logError) {
+    console.log("Error in adding new log:", logError);
+    return res.status(400).json({ message: "Error adding log" });
+  }
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to approve validation",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Action approved!",
+    data,
+  });
+};
+exports.rejectValidation = async (req, res) => {};
+
 exports.getLog = async (req, res) => {
   const { data, error } = await supabase
     .from("log")
