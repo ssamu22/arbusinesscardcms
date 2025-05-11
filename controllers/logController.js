@@ -19,6 +19,31 @@ exports.getAllLogs = async (req, res) => {
   });
 };
 
+exports.getAllValidationLogs = async (req, res) => {
+  const { data, error } = await supabase
+    .from("log")
+    .select("*")
+    .in("action", [
+      "UPDATE_USER_INTRO",
+      "UPDATE_RESEARCH_FIELDS",
+      "UPDATE_HONORIFICS",
+    ]);
+
+  if (error) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to retrieve all logs",
+      error: error.message,
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved all user validation logs",
+    data,
+  });
+};
+
 exports.getLog = async (req, res) => {
   const { data, error } = await supabase
     .from("log")

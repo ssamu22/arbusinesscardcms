@@ -23,6 +23,7 @@ class Employee {
     this.date_created = employeeData.date_created;
     this.isActive = employeeData.isActive;
     this.isApproved = employeeData.isApproved;
+    this.;
     // Private fields
     this.#password = employeeData.password;
     this.email = employeeData.email;
