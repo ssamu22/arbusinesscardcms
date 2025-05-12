@@ -93,6 +93,46 @@ exports.fetchAllActiveEmployee = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.fetchAllArchivedEmployee = async (req, res) => {
+  try {
+    // Step 1: Fetch all employees
+    console.log("THIS IS THE CURRENT SESSION:", req.session);
+    const employees = await Employee.getArchivedEmployees();
+
+    console.log("ALL ACTIVE EMPLOYEES:", employees);
+
+    // Step 2: Replace each employee's `image_id` with the corresponding `image_url`
+    const employeesWithDetails = employees.map(async (employee) => {
+      const employeeData = { ...employee };
+
+      employeeData.image_url = "";
+
+      // If image_id exists, fetch the corresponding image URL
+      if (employee.image_id) {
+        const image = await Image.getImageById(employee.image_id);
+        employeeData.image_url = image ? image.image_url : null;
+      }
+
+      // Add email using the getEmail method
+      employeeData.email = employee.getEmail();
+
+      // Remove `image_id` as it's no longer needed
+      delete employeeData.image_id;
+
+      return employeeData;
+    });
+
+    const resolvedEmployees = await Promise.all(employeesWithDetails);
+
+    // Step 3: Send the updated employees list
+    res.json({ employeesList: resolvedEmployees });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 exports.fetchAllInactiveEmployee = async (req, res) => {
   try {
     // Step 1: Fetch all employees
@@ -207,6 +247,100 @@ exports.createEmployee = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in createEmployee:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.archiveEmployee = async (req, res) => {
+  try {
+    const employee_id = req.params.id;
+
+    const existingEmployee = await Employee.findById(employee_id);
+    if (!existingEmployee) {
+      return res.status(400).json({ error: "Could not found employee." });
+    }
+
+    const archivedEmployee = await Employee.archiveEmployee(employee_id);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "ARCHIVE_EMPLOYEE",
+        action_details: `${existingEmployee.first_name} ${
+          existingEmployee.middle_name
+            ? existingEmployee.middle_name.toUpperCase()[0]
+            : ""
+        }. ${existingEmployee.last_name}: Archived Employee`,
+        actor: req.session.admin
+          ? req.session.admin.email
+          : req.session.user.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin
+          ? req.session.admin.employee_number
+          : req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
+    return res.status(201).json(archivedEmployee);
+  } catch (err) {
+    console.error("Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.unarchiveEmployee = async (req, res) => {
+  try {
+    const employee_id = req.params.id;
+
+    const existingEmployee = await Employee.findById(employee_id);
+    if (!existingEmployee) {
+      return res.status(400).json({ error: "Could not found employee." });
+    }
+
+    const archivedEmployee = await Employee.unarchiveEmployee(employee_id);
+
+    // LOG ACTION
+    const { data: newLog, error: logError } = await supabase
+      .from("log")
+      .insert({
+        action: "UNARCHIVE_EMPLOYEE",
+        action_details: `${existingEmployee.first_name} ${
+          existingEmployee.middle_name
+            ? existingEmployee.middle_name.toUpperCase()[0]
+            : ""
+        }. ${existingEmployee.last_name}: Unarchived Employee`,
+        actor: req.session.admin
+          ? req.session.admin.email
+          : req.session.user.email,
+        is_admin: true,
+        status: "success",
+        employee_number: req.session.admin
+          ? req.session.admin.employee_number
+          : req.session.user.employee_number,
+      })
+      .select()
+      .single();
+
+    if (logError) {
+      console.log("Error in adding new log:", logError);
+      return res.status(400).json({ message: "Error adding log" });
+    }
+
+    console.log("New log added:", newLog);
+
+    return res.status(201).json(archivedEmployee);
+  } catch (err) {
+    console.error("Error:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

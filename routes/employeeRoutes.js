@@ -16,9 +16,12 @@ router
   .delete(controller.deleteEmployee);
 
 router.put("/department/:id", controller.updateEmployeeDepartment);
+router.put("/archive/:id", controller.archiveEmployee);
+router.put("/unarchive/:id", controller.unarchiveEmployee);
 
 router.get("/active", controller.fetchAllActiveEmployee);
 router.get("/inactive", controller.fetchAllInactiveEmployee);
+router.get("/archive", controller.fetchAllArchivedEmployee);
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);

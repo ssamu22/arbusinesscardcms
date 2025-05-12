@@ -91,49 +91,88 @@ function setupPaginationLogs() {
   const paginationContainer = document.querySelector(".number-buttons-logs");
 
   paginationContainer.innerHTML = ""; // Clear existing pagination buttons
-  for (let i = 1; i <= totalPages; i++) {
-    const pageButton = document.createElement("a");
-    pageButton.href = "#";
-    pageButton.textContent = i;
-    pageButton.classList.add("page-btn");
 
-    pageButton.addEventListener("click", function (event) {
-      event.preventDefault();
-      currentLogPage = i;
-      displayLogs(i);
-      updatePaginationStateForLogs();
-      updateActivePageForLogs(i);
-    });
+  const maxVisibleButtons = 5; // Number of page buttons to show around the current
+  const half = Math.floor(maxVisibleButtons / 2);
+  let startPage = Math.max(1, currentLogPage - half);
+  let endPage = Math.min(totalPages, currentLogPage + half);
 
-    if (i === currentLogPage) {
-      pageButton.classList.add("active");
-    }
-
-    paginationContainer.appendChild(pageButton);
+  if (currentLogPage <= half) {
+    endPage = Math.min(totalPages, maxVisibleButtons);
+  } else if (currentLogPage + half > totalPages) {
+    startPage = Math.max(1, totalPages - maxVisibleButtons + 1);
   }
 
+  // Always show first page
+  if (startPage > 1) {
+    paginationContainer.appendChild(createPageButton(1));
+    if (startPage > 2) {
+      paginationContainer.appendChild(createEllipsis());
+    }
+  }
+
+  // Show range around current page
+  for (let i = startPage; i <= endPage; i++) {
+    paginationContainer.appendChild(createPageButton(i));
+  }
+
+  // Always show last page
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      paginationContainer.appendChild(createEllipsis());
+    }
+    paginationContainer.appendChild(createPageButton(totalPages));
+  }
+
+  // Previous and next buttons
   prevLogsBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    if (currentLogPage - 1 >= 1) {
-      currentLogPage -= 1;
+    if (currentLogPage > 1) {
+      currentLogPage--;
       displayLogs(currentLogPage);
-      updatePaginationStateForLogs();
+      setupPaginationLogs(); // Re-render pagination
       updateActivePageForLogs(currentLogPage);
     }
   });
+
   nextLogsBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    if (currentLogPage + 1 <= totalPages) {
-      currentLogPage += 1;
-      console.log("CURRENT ACTIVE PAGE:", currentLogPage);
+    if (currentLogPage < totalPages) {
+      currentLogPage++;
       displayLogs(currentLogPage);
-      updatePaginationStateForLogs();
+      setupPaginationLogs(); // Re-render pagination
       updateActivePageForLogs(currentLogPage);
     }
   });
 
   updatePaginationStateForLogs();
+
+  function createPageButton(i) {
+    const pageButton = document.createElement("a");
+    pageButton.href = "#";
+    pageButton.textContent = i;
+    pageButton.classList.add("page-btn");
+    if (i === currentLogPage) {
+      pageButton.classList.add("active");
+    }
+    pageButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      currentLogPage = i;
+      displayLogs(i);
+      setupPaginationLogs(); // Re-render pagination on click
+      updateActivePageForLogs(i);
+    });
+    return pageButton;
+  }
+
+  function createEllipsis() {
+    const ellipsis = document.createElement("span");
+    ellipsis.textContent = "...";
+    ellipsis.classList.add("ellipsis");
+    return ellipsis;
+  }
 }
+
 
 // SETUP PAGINATION FOR ALL VALIDATION LOGS4
 function setupPaginationValidation() {
