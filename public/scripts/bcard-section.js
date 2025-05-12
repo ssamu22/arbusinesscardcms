@@ -1441,7 +1441,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get navigation links
   const bcardsLink = document.getElementById("bcards-link");
   const otherLinks = document.querySelectorAll(
-    "#members-link, #logs-link, #university-link, #university-management-link, #markers-link, #admin-account-link"
+    "#members-link, #archive-link, #logs-link, #university-link, #university-management-link, #markers-link, #admin-account-link"
   );
 
   // Get sections

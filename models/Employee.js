@@ -248,6 +248,31 @@ class Employee {
           "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number, department_id"
         )
         .eq("isApproved", true)
+        .eq("isActive", true)
+        .order("employee_number", { ascending: true });
+
+      console.log("ALL ACTIVE MEMBERS: ", data);
+
+      if (error) {
+        throw new Error(`Failed to list employees: ${error.message}`);
+      }
+
+      return data.map((empData) => new Employee(empData)); // Return array of Employee instances
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  }
+
+  static async getArchivedEmployees() {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .select(
+          "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, employee_number"
+        )
+        .eq("isApproved", true)
+        .eq("isActive", false)
         .order("employee_number", { ascending: true });
 
       console.log("ALL ACTIVE MEMBERS: ", data);
@@ -279,6 +304,50 @@ class Employee {
       }
 
       return data.map((empData) => new Employee(empData));
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  }
+
+  static async unarchiveEmployee(employee_id) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({
+          isActive: true,
+        })
+        .eq("employee_id", employee_id);
+
+      if (error) {
+        console.error("Failed to unarchive user.");
+      } else {
+        console.log("User unarchived!");
+      }
+
+      return data;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  }
+
+  static async archiveEmployee(employee_id) {
+    try {
+      const { data, error } = await supabase
+        .from("employee")
+        .update({
+          isActive: false,
+        })
+        .eq("employee_id", employee_id);
+
+      if (error) {
+        console.error("Failed to archive user.");
+      } else {
+        console.log("User archived!");
+      }
+
+      return data;
     } catch (err) {
       console.error(err.message);
       throw err;

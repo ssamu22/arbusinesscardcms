@@ -1,0 +1,116 @@
+<section id="archive-section" class="archive-section">
+    <div class="confirm-delete-overlay" id="confirm-delete-overlay">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="30px"
+        viewBox="0 -960 960 960"
+        width="30px"
+        fill="#e3e3e3"
+        class="close-delete-overlay"
+      >
+        <path
+          d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+        />
+      </svg>
+  
+      <div class="delete-employee-div">
+        <p>Are you sure you want to permanently delete this employee?</p>
+        <button class="confirm-delete-btn" id="delete-yes-btn">Yes</button>
+        <button class="confirm-delete-btn" id="delete-no-btn">No</button>
+      </div>
+    </div>
+  
+    <div class="confirm-delete-overlay" id="confirm-delete-overlay-admin">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="30px"
+        viewBox="0 -960 960 960"
+        width="30px"
+        fill="#e3e3e3"
+        class="close-delete-overlay-admin"
+      >
+        <path
+          d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+        />
+      </svg>
+  
+      <div class="delete-employee-div delete-admin">
+        <p>Are you sure you want to permanently delete this admin?</p>
+        <button class="confirm-delete-btn" id="delete-yes-btn-admin">Yes</button>
+        <button class="confirm-delete-btn" id="delete-no-btn-admin">No</button>
+      </div>
+    </div>
+  
+    <div class="members-header">
+      <h2>Employees</h2>
+    </div>
+    <!-- <div class="members-actions">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search members..." />
+      </div>
+      <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+    </div> -->
+  
+    <div class="members-table-container">
+      <table class="members-table">
+        <thead>
+          <tr>
+            <th>Employee Number</th>
+            <th>Employee</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="archived-employee-table">
+          <!-- Dummy data will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info-archive-employee">
+          Showing <span></span> to <span></span> of <span></span> results
+        </div>
+        <div class="pagination-buttons">
+          <a href="#" class="prev-page-archive-employee"
+            ><i class="fas fa-chevron-left"></i
+          ></a>
+          <div class="number-buttons-archive-employee"></div>
+          <a href="#" class="next-page-archive-employee"
+            ><i class="fas fa-chevron-right"></i
+          ></a>
+        </div>
+      </div>
+  
+      <!-- ADMIN MEMBERS SECTION -->
+      <!-- <div class="members-header" style="margin-top: 20pt">
+        <h2>Admins</h2>
+      </div>
+  
+      <table class="members-table">
+        <thead>
+          <tr>
+            <th>Employee Number</th>
+            <th>Admins</th>
+            <th>Admin Type</th>
+            <th>Joined</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="archived-admin-table"> -->
+          <!-- Dummy data will be inserted here by JavaScript -->
+        <!-- </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info-archive-admin">
+          Showing <span></span> to <span></span> of <span></span> results
+        </div>
+        <div class="pagination-buttons">
+          <a class="prev-page-archive-admin"><i class="fas fa-chevron-left"></i></a>
+          <div class="number-buttons-archive-admin"></div>
+          <a class="next-page-archive-admin"><i class="fas fa-chevron-right"></i></a>
+        </div>
+      </div>
+    </div> -->
+  
+  </section>

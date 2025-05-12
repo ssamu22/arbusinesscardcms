@@ -27,16 +27,17 @@ exports.getContacts = async (req, res) => {
   const employee_id = req.session.user.employee_id; // Get the user ID from the session
   try {
     const contacts = await Contact.getAllContact(employee_id); // Fetch user info from the database
-    const honorifics = req.session.user.honorifics;
     const fname = req.session.user.first_name;
     const lname = req.session.user.last_name;
-    const name = `${honorifics} ${fname} ${lname}`; // Combine first and last name to form the full name
+    const name = `${fname} ${lname}`; // Combine first and last name to form the full name
     const position = req.session.user.position;
-
+    const email = req.session.user.email;
+    
     console.log(JSON.stringify(contacts || [])); // Log contacts or an empty array
 
     res.json({
       name,
+      email,
       position,
       contacts: contacts || [], // Return an empty array if no contacts are found
     });

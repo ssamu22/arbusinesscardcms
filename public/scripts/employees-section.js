@@ -47,7 +47,7 @@ function showDeleteOverlay() {
 }
 
 deleteYesBtn.addEventListener("click", (e) => {
-  deleteUser(employeeToDelete);
+  archiveUser(employeeToDelete);
 
   unapprovedToDelete?.remove();
   hideDeleteOverlay();
@@ -218,7 +218,7 @@ async function displayActiveMembers(pageNumber) {
                 <td>
                   <a href="#" class="delete-btn" data-id="${
                     member.employee_id
-                  }">Delete</a>
+                  }">Archive</a>
                 </td>
             `;
 
@@ -583,18 +583,18 @@ async function approveAll() {
   }
 }
 
-async function deleteUser(employee_id) {
+async function archiveUser(employee_id) {
   employee_id = Number(employee_id);
   try {
-    const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
-      method: "DELETE",
+    const response = await fetch(`/arcms/api/v1/employees/archive/${employee_id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      showErrorMessage("User deleted successfully!");
+      showErrorMessage("User archived successfully!");
 
       // Remove the deleted employee from the employees array
       activeEmployees = activeEmployees.filter(
@@ -609,7 +609,7 @@ async function deleteUser(employee_id) {
     }
   } catch (error) {
     console.error("Error deleting user:", error);
-    showErrorMessage("An error occurred while deleting the user.");
+    showErrorMessage("An error occurred while archiving the user.");
   }
 }
 
