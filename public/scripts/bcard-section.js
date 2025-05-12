@@ -939,6 +939,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       (text) => text.text.toLowerCase() === "name"
     );
 
+    const employeeNumberText = texts.find(
+      (text) => text.text.toLowerCase() === "employee number"
+    );
+
     // Store all asynchronous operations in an array
     const tasks = [];
 
@@ -968,6 +972,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           .replace(/\s+/g, " ")
           .trim();
 
+        employeeNumberText.text = employee.employee_number;
         draw();
 
         const task = new Promise((resolve, reject) => {
@@ -1003,6 +1008,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         targetNameText.text = `${employee.honorifics ?? ""} ${
           employee.first_name
         } ${employee.middle_name ?? ""} ${employee.last_name}`;
+        employeeNumberText.text = employee.employee_number;
 
         // Update the canvas
         draw();
@@ -1033,6 +1039,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await Promise.all(tasks);
 
     if (targetNameText) targetNameText.text = "Name";
+    if (employeeNumberText) employeeNumberText.text = "Employee Number";
 
     if (replaceTargetErrors > 0)
       showErrorMessage(
@@ -1043,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       showErrorMessage(
         "Some business cards failed to create. Please check the database for more details and try again."
       );
-    // location.reload();
+    location.reload();
   }
 
   draw();
