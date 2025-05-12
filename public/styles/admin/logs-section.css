@@ -10,6 +10,26 @@
   --border-color: #ddd;
 }
 
+.approve-validation-btn {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 5px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reject-validation-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
 .confirm-delete-overlay {
   position: fixed; /* <-- THIS makes it stick to the screen */
   top: 0;
@@ -82,6 +102,10 @@
   color: var(--primary-color);
   font-size: 24px;
   margin: 0;
+}
+
+#validation-header {
+  margin-top: 1rem;
 }
 
 .refresh-logs-btn {
@@ -695,8 +719,8 @@
     padding: 10px;
   }
 
-  .pagination-info-active,
-  .pagination-info-inactive {
+  .pagination-info-logs,
+  .pagination-info-validation {
     font-size: 12px;
   }
 

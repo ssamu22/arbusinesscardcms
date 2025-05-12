@@ -8,6 +8,7 @@
       </button>
     </div>
   </div>
+
   <!-- <div class="members-actions">
       <div class="search-bar">
         <i class="fas fa-search"></i>
@@ -34,7 +35,7 @@
       </tbody>
     </table>
     <div class="pagination">
-      <div class="pagination-info-active">
+      <div class="pagination-info-logs">
         Showing <span></span> to <span></span> of <span></span> results
       </div>
       <div class="pagination-buttons">
@@ -43,6 +44,50 @@
         ></a>
         <div class="number-buttons-logs"></div>
         <a href="#" class="next-page-logs"
+          ><i class="fas fa-chevron-right"></i
+        ></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT VALIDATION -->
+
+  <div id = "validation-header" class="logs-header">
+    <h2>Content Validation</h2>
+
+    <div>
+      <button id="refresh-validation" class="refresh-logs-btn" id="openModal">
+        Refresh Content Validation Logs
+      </button>
+    </div>
+  </div>
+
+  <div class="content-val-container">
+    <table class="logs-table">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Action Details</th>
+          <th>Email</th>
+          <th>Account Type</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Employee ID</th>
+          <th>Approve/Reject</th>
+        </tr>
+      </thead>
+      <tbody id="contentValTableBody"></tbody>
+    </table>
+    <div class="pagination">
+      <div class="pagination-info-validation">
+        Showing <span></span> to <span></span> of <span></span> results
+      </div>
+      <div class="pagination-buttons">
+        <a href="#" class="prev-page-validation"
+          ><i class="fas fa-chevron-left"></i
+        ></a>
+        <div class="number-buttons-validation"></div>
+        <a href="#" class="next-page-validation"
           ><i class="fas fa-chevron-right"></i
         ></a>
       </div>

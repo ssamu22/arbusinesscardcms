@@ -23,6 +23,12 @@ class Employee {
     this.date_created = employeeData.date_created;
     this.isActive = employeeData.isActive;
     this.isApproved = employeeData.isApproved;
+    this.introIsEdited = employeeData.introIsEdited;
+    this.fieldIsEdited = employeeData.fieldIsEdited;
+    this.honorIsEdited = employeeData.honorIsEdited;
+    this.oldHonorifics = employeeData.newHonorifics;
+    this.oldField = employeeData.newField;
+    this.oldIntroduction = employeeData.newIntroduction;
     // Private fields
     this.#password = employeeData.password;
     this.email = employeeData.email;
@@ -348,7 +354,7 @@ class Employee {
     try {
       const { data, error } = await supabase
         .from("employee")
-        .select("introduction, field, position, image_id, department_id")
+        .select("*")
         .eq("employee_id", employee_id)
         .single(); // Ensure we get a single record
 

@@ -10,14 +10,8 @@ exports.getDetails = async (req, res) => {
     const image = userInfo.image_id
       ? await Image.getImageById(userInfo.image_id)
       : null;
-    res.json({
-      introduction: userInfo.introduction,
-      position: userInfo.position,
-      fields: userInfo.field,
-      image_url: image ? image.image_url : null,
-      position: userInfo.position,
-      department_id: userInfo.department_id
-    });
+
+    res.json({ ...userInfo, image_url: image ? image.image_url : null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

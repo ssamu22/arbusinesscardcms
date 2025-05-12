@@ -1,22 +1,32 @@
+const logsPerPage = 10;
+
+// Logs Variables
 let logs = [];
 let currentLogPage = 1;
-const logsPerPage = 10;
 const totalLogPages = Math.ceil(logs.length / logsPerPage);
 const logTableBody = document.getElementById("logsTableBody");
 const prevLogsBtn = document.querySelector(".prev-page-logs");
 const nextLogsBtn = document.querySelector(".next-page-logs");
 const refreshLogsBtn = document.getElementById("refresh-logs");
 
-// FOR ACTIVE EMPLOYEES
+// Content Validation Variables
+let validationLogs = [];
+let currentValidationPage = 1;
+const totalValidationPages = Math.ceil(validationLogs.length / logsPerPage);
+const validationTableBody = document.getElementById("contentValTableBody");
+const prevValidationBtn = document.querySelector(".prev-page-validation");
+const nextValidationBtn = document.querySelector(".next-page-validation");
+const refreshValidationBtn = document.getElementById("refresh-validation");
 
+// GET ALL LOGS
 async function fetchAllLogs() {
   try {
-    console.log("Fetching active employees...");
+    // console.log("Fetching all logs...");
 
     const response = await fetch("/arcms/api/v1/logs");
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch employees: ${response.statusText}`);
+      throw new Error(`Failed to fetch all logs: ${response.statusText}`);
     }
 
     const responseData = await response.json();
@@ -24,16 +34,42 @@ async function fetchAllLogs() {
     logs = responseData.data;
     logs.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    console.log("ALL LOGS:", logs);
+    // console.log("ALL LOGS:", logs);
     displayLogs(currentLogPage); // Default to page 1
     setupPaginationLogs();
   } catch (error) {
-    console.error("Error fetching employees:", error);
+    console.error("Error fetching logs:", error);
+  }
+}
+// GET ALL VALIDATION LOGS
+
+async function fetchAllValidationLogs() {
+  try {
+    console.log("Fetching all validation logs...");
+
+    const response = await fetch("/arcms/api/v1/logs/allValidation");
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch all logs: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+
+    validationLogs = responseData.data;
+    validationLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    console.log("ALL VALIDATION LOGS:", validationLogs);
+    displayValidationLogs(currentValidationPage); // Default to page 1
+    setupPaginationValidation();
+  } catch (err) {
+    console.log("Error fetching all validation logs:", err);
   }
 }
 
 fetchAllLogs();
+fetchAllValidationLogs();
 
+// REFRESH ALL LOGS
 refreshLogsBtn.addEventListener("click", async (e) => {
   currentLogPage = 1;
   refreshLogsBtn.textContent = "Refreshing Logs...";
@@ -41,6 +77,15 @@ refreshLogsBtn.addEventListener("click", async (e) => {
   refreshLogsBtn.textContent = "Refresh Logs";
 });
 
+// REFRESH ALL VALIDATION LOGS
+refreshValidationBtn.addEventListener("click", async (e) => {
+  currentValidationPage = 1;
+  refreshValidationBtn.textContent = "Refreshing Logs...";
+  await fetchAllValidationLogs();
+  refreshValidationBtn.textContent = "Refresh Logs";
+});
+
+// SETUP PAGINATION FOR ALL LOGS
 function setupPaginationLogs() {
   const totalPages = Math.ceil(logs.length / logsPerPage);
   const paginationContainer = document.querySelector(".number-buttons-logs");
@@ -90,6 +135,59 @@ function setupPaginationLogs() {
   updatePaginationStateForLogs();
 }
 
+// SETUP PAGINATION FOR ALL VALIDATION LOGS4
+function setupPaginationValidation() {
+  const totalPages = Math.ceil(validationLogs.length / logsPerPage);
+  const paginationContainer = document.querySelector(
+    ".number-buttons-validation"
+  );
+
+  paginationContainer.innerHTML = ""; // Clear existing pagination buttons
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("a");
+    pageButton.href = "#";
+    pageButton.textContent = i;
+    pageButton.classList.add("page-btn");
+
+    pageButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      currentValidationPage = i;
+      displayValidationLogs(i);
+      updatePaginationStateForValidationLogs();
+      updateActivePageForValidationLogs(i);
+    });
+
+    if (i === currentValidationPage) {
+      pageButton.classList.add("active");
+    }
+
+    paginationContainer.appendChild(pageButton);
+  }
+
+  prevLogsBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentLogPage - 1 >= 1) {
+      currentLogPage -= 1;
+      displayLogs(currentLogPage);
+      updatePaginationStateForLogs();
+      updateActivePageForLogs(currentLogPage);
+    }
+  });
+  nextLogsBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentLogPage + 1 <= totalPages) {
+      currentLogPage += 1;
+      console.log("CURRENT ACTIVE PAGE:", currentLogPage);
+      displayLogs(currentLogPage);
+      updatePaginationStateForLogs();
+      updateActivePageForLogs(currentLogPage);
+    }
+  });
+
+  updatePaginationStateForLogs();
+}
+
+// UPDATE ACTIVE PAGE FOR LOGS
 function updateActivePageForLogs(selectedPage) {
   const pageButtons = document.querySelectorAll(".number-buttons-logs a");
   pageButtons.forEach((btn) => {
@@ -102,31 +200,65 @@ function updateActivePageForLogs(selectedPage) {
   selectedButton.classList.add("active"); // Add active class to the clicked button
 }
 
+// UPDATE ACTIVE PAGE FOR VALIDATION LOGS
+function updateActivePageForValidationLogs(selectedPage) {
+  const pageButtons = document.querySelectorAll(".number-buttons-validation a");
+  pageButtons.forEach((btn) => {
+    btn.classList.remove("active"); // Remove active class from all buttons
+  });
+
+  const selectedButton = document.querySelector(
+    `.number-buttons-validation a:nth-child(${selectedPage})`
+  );
+  selectedButton.classList.add("active"); // Add active class to the clicked button
+}
+
+// UPDATE PAGINATION STATE FOR ALL LOGS
 function updatePaginationStateForLogs() {
   const totalResults = logs.length;
   const startIndex = (currentLogPage - 1) * logsPerPage + 1;
   const endIndex = Math.min(currentLogPage * logsPerPage, totalResults);
 
   document.querySelector(
-    ".pagination-info-active span:nth-child(1)"
+    ".pagination-info-logs span:nth-child(1)"
   ).textContent = startIndex;
 
   document.querySelector(
-    ".pagination-info-active span:nth-child(2)"
+    ".pagination-info-logs span:nth-child(2)"
   ).textContent = endIndex;
 
   document.querySelector(
-    ".pagination-info-active span:nth-child(3)"
+    ".pagination-info-logs span:nth-child(3)"
   ).textContent = totalResults;
 }
 
+// UPDATE PAGINATION STATE FOR ALL VALIDATION LOGS
+function updatePaginationStateForValidationLogs() {
+  const totalResults = validationLogs.length;
+  const startIndex = (currentValidationPage - 1) * logsPerPage + 1;
+  const endIndex = Math.min(currentValidationPage * logsPerPage, totalResults);
+
+  document.querySelector(
+    ".pagination-info-validation span:nth-child(1)"
+  ).textContent = startIndex;
+
+  document.querySelector(
+    ".pagination-info-validation span:nth-child(2)"
+  ).textContent = endIndex;
+
+  document.querySelector(
+    ".pagination-info-validation span:nth-child(3)"
+  ).textContent = totalResults;
+}
+
+// DISPLAY ALL LOGS
 async function displayLogs(pageNumber) {
-  console.log("THE PAGE NUMBER:", pageNumber);
+  // console.log("THE PAGE NUMBER:", pageNumber);
   const startIndex = (pageNumber - 1) * logsPerPage;
   const endIndex = startIndex + logsPerPage;
   const logsToDisplay = logs.slice(startIndex, endIndex);
 
-  console.log("LOGS TO DISPLAY:", logsToDisplay);
+  // console.log("LOGS TO DISPLAY:", logsToDisplay);
 
   logTableBody.innerHTML = ""; // Clear existing content
   logsToDisplay.forEach((log, index) => {
@@ -136,7 +268,9 @@ async function displayLogs(pageNumber) {
 
     row.innerHTML = `
                 <td>${log.action}</td>
-                <td>${log.action_details == null ? "-" : log.action_details}</td>
+                <td>${
+                  log.action_details == null ? "-" : log.action_details
+                }</td>
                 <td>${log.actor}</td>
                 <td>${log.is_admin ? "Admin" : "User"}</td>
                 <td>${convertToMilitaryTimePHT(new Date(log.date))}</td>
@@ -148,6 +282,131 @@ async function displayLogs(pageNumber) {
 
     logTableBody.appendChild(row);
   });
+}
+
+// DISPLAY ALL VALIDATION LOGS
+async function displayValidationLogs(pageNumber) {
+  // console.log("THE PAGE NUMBER:", pageNumber);
+  const startIndex = (pageNumber - 1) * logsPerPage;
+  const endIndex = startIndex + logsPerPage;
+  const validationLogsToDisplay = validationLogs.slice(startIndex, endIndex);
+
+  // console.log("LOGS TO DISPLAY:", validationLogsToDisplay);
+
+  validationTableBody.innerHTML = ""; // Clear existing content
+  validationLogsToDisplay.forEach((log, index) => {
+    const row = document.createElement("tr");
+
+    row.style.cursor = "pointer";
+
+    row.innerHTML = `
+                <td>${log.action}</td>
+                <td>${
+                  log.action_details == null ? "-" : log.action_details
+                }</td>
+                <td>${log.actor}</td>
+                <td>${log.is_admin ? "Admin" : "User"}</td>
+                <td>${convertToMilitaryTimePHT(new Date(log.date))}</td>
+                <td>${
+                  log.status.charAt(0).toUpperCase() + log.status.slice(1)
+                }</td>
+                <td>${log.employee_number}</td>
+                <td>
+                  <div>
+                    <button id = "approve-${
+                      log.employee_number
+                    }" class = "approve-validation-btn">Approve</button>
+                    <button id = "reject-${
+                      log.employee_number
+                    }" class = "reject-validation-btn">Reject</button>
+                  </div>
+                </td>
+            `;
+
+    validationTableBody.appendChild(row);
+    const approveBtn = row.querySelector(`#approve-${log.employee_number}`);
+    const rejectBtn = row.querySelector(`#reject-${log.employee_number}`);
+
+    if (approveBtn) {
+      approveBtn.addEventListener("click", async () => {
+        approveValidation({
+          action: log.action,
+          employee_number: log.employee_number,
+          actor: log.actor,
+        });
+
+        row.remove(); // Remove the row from the table
+
+        console.log("Approved:", [log.action, log.employee_number, log.actor]);
+      });
+    }
+
+    if (rejectBtn) {
+      rejectBtn.addEventListener("click", async () => {
+        rejectValidation({
+          action: log.action,
+          employee_number: log.employee_number,
+          actor: log.actor,
+        });
+
+        row.remove(); // Remove the row from the table
+
+        console.log("Rejected:", [log.action, log.employee_number, log.actor]);
+      });
+    }
+  });
+}
+
+async function approveValidation(data) {
+  try {
+    const response = await fetch("/arcms/api/v1/logs/approve-validation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      return console.log("Error approving validation:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+    }
+
+    const responseData = response.json();
+
+    console.log("APRPOVAL DATA:", responseData);
+  } catch (err) {
+    console.log("Error approving validation:", err);
+  }
+}
+
+async function rejectValidation(data) {
+  try {
+    const response = await fetch("/arcms/api/v1/logs/reject-validation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      return console.log("Error rejecting validation:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+    }
+
+    const responseData = response.json();
+
+    console.log("REJECTING DATA:", responseData);
+  } catch (err) {
+    console.log("Error approving validation:", err);
+  }
 }
 
 function convertToMilitaryTimePHT(date) {

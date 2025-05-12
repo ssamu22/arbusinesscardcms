@@ -393,3 +393,22 @@ exports.deleteEmployee = async (req, res) => {
     res.status(500).json({ error: "Failed to delete employee" });
   }
 };
+
+exports.approveValidationRequest = async (req, res) => {
+  // Check if the validation request is for honorifics, research field, and introduction
+
+  if (req.body.action == "UPDATE_RESEARCH_FIELDS") {
+  } else if (req.body.action == "UPDATE_USER_INTRO") {
+  } else if (req.body.action == "UPDATE_HONORIFICS	") {
+  }
+  const { data, error } = await supabase.from("employee").update({
+    
+  });
+  // Log the action according to which input is validated
+  // Return response
+
+  return res.status(200).json({
+    status: "success",
+    message: "Validation request approved.",
+  });
+};
