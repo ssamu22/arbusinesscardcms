@@ -323,7 +323,7 @@ exports.deleteEmployee = async (req, res) => {
       .eq("associated_employee", req.params.id)
       .single();
 
-    if (data && !error) {
+    if (data) {
       client.deleteTarget(data.image_target, async function (error, result) {
         // Check if the business card in vuforia is successfully deleted
         if (error) {
@@ -401,9 +401,7 @@ exports.approveValidationRequest = async (req, res) => {
   } else if (req.body.action == "UPDATE_USER_INTRO") {
   } else if (req.body.action == "UPDATE_HONORIFICS	") {
   }
-  const { data, error } = await supabase.from("employee").update({
-    
-  });
+  const { data, error } = await supabase.from("employee").update({});
   // Log the action according to which input is validated
   // Return response
 
