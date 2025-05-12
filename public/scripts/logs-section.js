@@ -313,14 +313,100 @@ async function displayValidationLogs(pageNumber) {
                 <td>${log.employee_number}</td>
                 <td>
                   <div>
-                    <button id = "approve-${log.employee_number}" class = "approve-validation-btn">Approve</button>
-                    <button id = "reject-content-validation" class = "reject-validation-btn">Reject</button>
+                    <button id = "approve-${
+                      log.employee_number
+                    }" class = "approve-validation-btn">Approve</button>
+                    <button id = "reject-${
+                      log.employee_number
+                    }" class = "reject-validation-btn">Reject</button>
                   </div>
                 </td>
             `;
 
     validationTableBody.appendChild(row);
+    const approveBtn = row.querySelector(`#approve-${log.employee_number}`);
+    const rejectBtn = row.querySelector(`#reject-${log.employee_number}`);
+
+    if (approveBtn) {
+      approveBtn.addEventListener("click", async () => {
+        approveValidation({
+          action: log.action,
+          employee_number: log.employee_number,
+          actor: log.actor,
+        });
+
+        row.remove(); // Remove the row from the table
+
+        console.log("Approved:", [log.action, log.employee_number, log.actor]);
+      });
+    }
+
+    if (rejectBtn) {
+      rejectBtn.addEventListener("click", async () => {
+        rejectValidation({
+          action: log.action,
+          employee_number: log.employee_number,
+          actor: log.actor,
+        });
+
+        row.remove(); // Remove the row from the table
+
+        console.log("Rejected:", [log.action, log.employee_number, log.actor]);
+      });
+    }
   });
+}
+
+async function approveValidation(data) {
+  try {
+    const response = await fetch("/arcms/api/v1/logs/approve-validation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      return console.log("Error approving validation:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+    }
+
+    const responseData = response.json();
+
+    console.log("APRPOVAL DATA:", responseData);
+  } catch (err) {
+    console.log("Error approving validation:", err);
+  }
+}
+
+async function rejectValidation(data) {
+  try {
+    const response = await fetch("/arcms/api/v1/logs/reject-validation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      return console.log("Error rejecting validation:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+    }
+
+    const responseData = response.json();
+
+    console.log("REJECTING DATA:", responseData);
+  } catch (err) {
+    console.log("Error approving validation:", err);
+  }
 }
 
 function convertToMilitaryTimePHT(date) {

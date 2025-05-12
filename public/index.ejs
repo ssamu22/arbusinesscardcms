@@ -468,6 +468,8 @@
                   data[key] = value;
                 });
 
+                console.log("THE DATA:", data);
+
                 try {
                   const response = await fetch(
                     "/arcms/api/v1/employees/update-profile",
@@ -488,9 +490,7 @@
                     const introInput = document.getElementById("introduction");
                     let fieldsInput = document.getElementById("researchFields");
 
-                    honorificsInput.disabled = true;
-                    introInput.disabled = true;
-                    tagify.setDisabled(true);
+                    location.reload();
                     alert(result.message); // Show success message
                   } else {
                     alert("Error: " + result.message); // Show error message

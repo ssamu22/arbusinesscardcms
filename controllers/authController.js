@@ -320,7 +320,9 @@ exports.updateProfile = async (req, res) => {
     const introIsEdited = existingData.introduction != introduction;
     const fieldIsEdited =
       existingData.field.join(",") !== formattedResearchFields.join(",");
-    const honorIsEdited = existingData.introduction != honorifics;
+
+    const honorIsEdited =
+      normalize(honorifics) !== normalize(existingData.honorifics);
 
     const updatedProfileData = {
       honorifics: honorifics,
@@ -874,3 +876,10 @@ const createAccountActivationToken = () => {
     tokenExpirationDate,
   };
 };
+
+function normalize(str) {
+  return (str || "") // handle null/undefined
+    .trim() // remove leading/trailing whitespace
+    .replace(/\s+/g, " ") // collapse multiple spaces to one
+    .toLowerCase(); // make it case-insensitive (optional)
+}
