@@ -79,6 +79,7 @@
 .draw-text-btn,
 .clear-btn,
 .highlight-name-btn,
+.highlight-empnumber-btn,
 #download-bcard {
   margin-bottom: 15px;
   padding: 10px;
@@ -190,7 +191,6 @@
   display: none;
 }
 
-
 /* Tutorial tooltip styles */
 .tutorial-overlay {
   position: fixed;
@@ -226,9 +226,15 @@
 }
 
 @keyframes tooltipPulse {
-  0% { box-shadow: 0 0 0 0 rgba(155, 56, 56, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(155, 56, 56, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(155, 56, 56, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(155, 56, 56, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(155, 56, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(155, 56, 56, 0);
+  }
 }
 
 .tutorial-tooltip-header {

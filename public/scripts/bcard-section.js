@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const contents = await getAllContents();
   let bcardCanvas = document.getElementById("canvas");
   let bcardCtx = bcardCanvas.getContext("2d");
+
   const contextMenu = document.getElementById("contextMenu");
   const applyBtn = document.getElementById("apply-btn");
   const textOptionsDiv = document.getElementById("text-options");
@@ -12,6 +13,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const deleteBtn = document.getElementById("delete-text-btn");
   const clearBtn = document.getElementById("clear-btn");
   const highlightNameBtn = document.getElementById("highlight-name-btn");
+  const highlightEmpNumberBtn = document.getElementById(
+    "highlight-empnumber-btn"
+  );
   const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
   const allBusinessCards = await getAllBusinessCards();
 
@@ -48,14 +52,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   setBackgroundFromURL(background_url);
   // EVENT LISTENERS
 
-  highlightNameBtn.addEventListener("click", async (e) => {
+  function centerText(text) {
+    const canvasWidth = bcardCanvas.width;
+    const canvasHeight = bcardCanvas.height;
     for (let i = 0; i < texts.length; i++) {
-      if (texts[i].text.toLowerCase() === "name") {
-        texts[i].x = 384;
-        texts[i].y = 225;
+      if (texts[i].text.toLowerCase() === text) {
+        bcardCtx.font = `${texts[i].font_size || 16}px ${
+          texts[i].font_family || "Arial"
+        }`; // set font for measurement
+        const textWidth = bcardCtx.measureText(texts[i].text).width;
+
+        texts[i].x = (canvasWidth - textWidth) / 2;
+        texts[i].y = canvasHeight / 2; // middle of canvas vertically
         break;
       }
     }
+  }
+
+  highlightNameBtn.addEventListener("click", async (e) => {
+    centerText("name");
+    // deleteBtn.style.display = "block";
+    draw();
+  });
+
+  highlightEmpNumberBtn.addEventListener("click", async (e) => {
+    centerText("employee number");
 
     // deleteBtn.style.display = "block";
 
