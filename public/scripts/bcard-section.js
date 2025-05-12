@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const saveBgBtn = document.getElementById("save-bg-btn");
   const fileInput = document.getElementById("bcard-bg");
   const downloadBcardBtn = document.getElementById("download-bcard");
-  const deleteBtn = document.getElementById("delete-text-btn");
+  // const deleteBtn = document.getElementById("delete-text-btn");
   const clearBtn = document.getElementById("clear-btn");
   const highlightNameBtn = document.getElementById("highlight-name-btn");
   const highlightEmpNumberBtn = document.getElementById(
@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
   const genAndReplaceBtn = document.getElementById("generate-bcard-btn");
   const allBusinessCards = await getAllBusinessCards();
+
+  const fontInput = document.getElementById("text-font");
+  const scaleInput = document.getElementById("scaleFactor");
+  const fontSizeInput = document.getElementById("fontSize");
+  const fontWeightInput = document.getElementById("fontWeight");
+  const colorInput = document.getElementById("color");
 
   console.log("ALL ACTIVE IMAGE TARGETS:", allBusinessCards);
   let fileToSave = null;
@@ -133,24 +139,121 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveBgBtn.style.display = "none";
   });
 
-  applyBtn.addEventListener("click", (e) => {
+  fontInput.addEventListener("change", async (e) => {
     if (textToEdit < 0) {
       showErrorMessage("Please select a text to edit.");
+      return; // ⬅️ prevent proceeding further
     }
-    editText(textToEdit);
+
+    if (textToEdit === -1) {
+      return;
+    }
+
+    // Show an error message if any values are missing
+    if (!fontInput.value) {
+      return;
+    }
+
+    texts[textToEdit].font_family = fontInput.value;
+
+    await updateContent({
+      content_id: texts[textToEdit].content_id,
+      font_family: texts[textToEdit].font_family,
+    });
+
     draw();
   });
 
-  deleteBtn.addEventListener("click", async (e) => {
-    if (textToEdit !== -1) {
-      deleteContent(texts[textToEdit].content_id);
-      texts.splice(textToEdit, 1);
-      textToEdit = -1;
-      selectedText = -1;
-      draw();
-      contextMenu.style.display = "none";
+  fontSizeInput.addEventListener("change", async (e) => {
+    if (textToEdit < 0) {
+      showErrorMessage("Please select a text to edit.");
+      return; // ⬅️ prevent proceeding further
     }
+
+    if (textToEdit === -1) {
+      return;
+    }
+
+    if (fontSizeInput.value < 16) {
+      fontSizeInput.value = 16;
+    }
+
+    texts[textToEdit].font_size = fontSizeInput.value;
+
+    await updateContent({
+      content_id: texts[textToEdit].content_id,
+      font_size: texts[textToEdit].font_size,
+    });
+
+    draw();
   });
+
+  fontWeightInput.addEventListener("change", async (e) => {
+    if (textToEdit < 0) {
+      showErrorMessage("Please select a text to edit.");
+      return; // ⬅️ prevent proceeding further
+    }
+
+    if (textToEdit === -1) {
+      return;
+    }
+
+    if (!fontWeightInput.value || fontWeightInput.value < 100) {
+      fontWeightInput.value = 100;
+    }
+
+    texts[textToEdit].font_weight = fontWeightInput.value;
+
+    await updateContent({
+      content_id: texts[textToEdit].content_id,
+
+      font_weight: texts[textToEdit].font_weight,
+    });
+
+    draw();
+  });
+  colorInput.addEventListener("change", async (e) => {
+    if (textToEdit < 0) {
+      showErrorMessage("Please select a text to edit.");
+      return; // ⬅️ prevent proceeding further
+    }
+
+    if (textToEdit === -1) {
+      return;
+    }
+
+    if (!colorInput.value) {
+      colorIn.value = "#000000";
+    }
+
+    texts[textToEdit].color = colorInput.value;
+
+    await updateContent({
+      content_id: texts[textToEdit].content_id,
+      color: texts[textToEdit].color,
+    });
+
+    draw();
+  });
+
+  // applyBtn.addEventListener("click", (e) => {
+  //   if (textToEdit < 0) {
+  //     showErrorMessage("Please select a text to edit.");
+  //   }
+  //   editText(textToEdit);
+  //   draw();
+  // });
+
+  // deleteBtn.addEventListener("click", async (e) => {
+  //   if (textToEdit !== -1) {
+  //     deleteContent(texts[textToEdit].content_id);
+  //     texts.splice(textToEdit, 1);
+  //     textToEdit = -1;
+  //     selectedText = -1;
+  //     draw();
+  //     contextMenu.style.display = "none";
+  //   }
+  // });
 
   // Add event listeners
   $canvas.on("mousedown", handleMouseDown);
@@ -336,10 +439,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     colorInput.disabled = false;
     textInput.value = texts[idx].text;
     colorInput.value = texts[idx].color;
-    if (textInput.value.toLowerCase() === "name") {
+    if (
+      textInput.value.toLowerCase() === "name" ||
+      textInput.value.toLowerCase() === "employee number"
+    ) {
       textInput.disabled = true;
     } else {
-      contextMenu.style.display = "block";
+      // contextMenu.style.display = "block";
       textInput.disabled = false;
     }
     fontInput.value = texts[idx].font_family;
@@ -435,6 +541,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     let text = texts[selectedText];
     text.x += dx;
     text.y += dy;
+
+    // Adjust align based on horizontal position
+    if (text.x < canvas.width / 3) {
+      text.align = "left";
+    } else if (text.x > (canvas.width * 2) / 3) {
+      text.align = "right";
+    } else {
+      text.align = "center";
+    }
+
+    // Adjust baseline based on vertical position
+    if (text.y < canvas.height / 3) {
+      text.baseline = "top";
+    } else if (text.y > (canvas.height * 2) / 3) {
+      text.baseline = "bottom";
+    } else {
+      text.baseline = "middle";
+    }
 
     draw();
   }
