@@ -20,31 +20,56 @@ var client = vuforia.client({
 var util = vuforia.util();
 
 exports.getAllCards = async (req, res) => {
-  // This will retrieve all the target id's from the Vuforia cloud database
+  try {
+    // Step 1: Get all image_target entries
+    const { data: targetsRaw, error: targetError } = await supabase
+      .from("image_target")
+      .select("*");
 
-  const { data, error: targetError } = await supabase
-    .from("image_target")
-    .select("*");
+    if (targetError) throw targetError;
 
-  const targets = await Promise.all(
-    data.map(async (target) => {
-      console.log(target);
-      console.log("THE TARGET IMAGE:", target.image_id);
-      const imageData = await Image.getImageById(target.image_id);
+    // Step 2: Get all employees
+    const { data: employees, error: employeeError } = await supabase
+      .from("employee")
+      .select("employee_id, isActive");
 
-      console.log("THE DATA:", imageData);
-      return {
-        ...target,
-        image_url: imageData.image_url, // Ensure imageData is not undefined
-      };
-    })
-  );
+    if (employeeError) throw employeeError;
 
-  return res.status(200).json({
-    status: "success",
-    message: "Successfully retrieved all business cards",
-    targets,
-  });
+    // Step 3: Build a Set of active employee IDs
+    const activeEmployeeIds = new Set(
+      employees.filter((emp) => emp.isActive).map((emp) => emp.employee_id)
+    );
+
+    // Step 4: Filter targets where associated_employee is active
+    const filteredTargets = targetsRaw.filter((target) =>
+      activeEmployeeIds.has(target.associated_employee)
+    );
+
+    // Step 5: Append image_url to each target
+    const targets = await Promise.all(
+      filteredTargets.map(async (target) => {
+        const imageData = await Image.getImageById(target.image_id);
+        return {
+          ...target,
+          image_url: imageData?.image_url || null,
+        };
+      })
+    );
+
+    // Step 6: Send success response
+    return res.status(200).json({
+      status: "success",
+      message: "Successfully retrieved all business cards",
+      targets,
+    });
+  } catch (err) {
+    console.error("Error fetching cards:", err);
+    return res.status(500).json({
+      status: "error",
+      message: "Failed to retrieve business cards",
+      error: err.message,
+    });
+  }
 };
 
 // This will get the data of the target from the Vuforia

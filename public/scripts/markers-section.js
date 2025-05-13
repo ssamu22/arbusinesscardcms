@@ -452,9 +452,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       }
 
       const { employeesList } = await response.json();
+      activeEmployees = employeesList.filter((e) => e.isActive);
 
-      activeEmployees = employeesList;
-
+      console.log("ACTIVE EMPS:", activeEmployees);
       return activeEmployees;
     } catch (error) {
       console.error("Error fetching employees:", error);
