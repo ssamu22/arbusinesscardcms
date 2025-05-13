@@ -149,6 +149,10 @@ exports.signup = async (req, res) => {
     });
   }
 
+  if (!isLPUEmail(email)) {
+    signupErrors.push("Please enter a valid LPU email address!");
+  }
+
   // Check if email already exists
   const existingEmployee = await Employee.findByEmail(email);
   if (existingEmployee) {
@@ -882,4 +886,8 @@ function normalize(str) {
     .trim() // remove leading/trailing whitespace
     .replace(/\s+/g, " ") // collapse multiple spaces to one
     .toLowerCase(); // make it case-insensitive (optional)
+}
+
+function isLPUEmail(email) {
+  return email.endsWith("@lpunetwork.edu.ph") || email.endsWith("@lpu.edu.ph");
 }
