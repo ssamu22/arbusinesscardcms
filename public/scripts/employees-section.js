@@ -14,7 +14,7 @@ const prevApprovalBtn = document.querySelector(".prev-page-approval");
 const nextApprovalBtn = document.querySelector(".next-page-approval");
 const totalPagesInactive = Math.ceil(inactiveEmployees.length / itemsPerPage);
 const tableBodyInactive = document.getElementById("inactiveMembersTableBody");
-const approveAllBtn = document.querySelector(".approve-member-btn");
+// const approveAllBtn = document.querySelector(".approve-member-btn");
 
 const tableBodyAdmins = document.getElementById("adminMembersTableBody");
 const prevAdminBtn = document.querySelector(".prev-page-admin");
@@ -33,6 +33,7 @@ const adminDeleteNoBtn = document.getElementById("delete-no-btn-admin");
 const admincloseDeleteOverlay = document.querySelector(
   ".close-delete-overlay-admin"
 );
+const deleteArchiveText = document.getElementById("delete-archive-text");
 
 let employeeToDelete = null;
 let unapprovedToDelete = null;
@@ -42,16 +43,30 @@ let adminToDelete = null;
 
 let departmentsList = [];
 
-function showDeleteOverlay() {
+function showDeleteOverlay(isArchive) {
+  console.log(isArchive);
+  deleteArchiveText.textContent = "";
+  deleteArchiveText.textContent = isArchive
+    ? "Are you sure you want to archive this employee?"
+    : "Are you sure you want to delete this employee?";
   deleteOverlay.style.display = "flex";
+
+  deleteYesBtn.onclick = () => {
+    if (isArchive) {
+      archiveUser(employeeToDelete);
+    } else {
+      deleteUser(employeeToDelete);
+    }
+
+    unapprovedToDelete?.remove();
+    hideDeleteOverlay();
+  };
 }
 
-deleteYesBtn.addEventListener("click", (e) => {
-  archiveUser(employeeToDelete);
-
-  unapprovedToDelete?.remove();
-  hideDeleteOverlay();
-});
+// deleteYesBtn.addEventListener("click", (e) => {
+//   unapprovedToDelete?.remove();
+//   hideDeleteOverlay();
+// });
 
 deleteNoBtn.addEventListener("click", (e) => {
   hideDeleteOverlay();
@@ -305,10 +320,10 @@ async function displayActiveMembers(pageNumber) {
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-
+      
       employeeToDelete = employeeId;
       unapprovedToDelete = button.parentElement.parentElement;
-      showDeleteOverlay();
+      showDeleteOverlay(true);
     });
   });
 }
@@ -359,11 +374,11 @@ async function fetchDepartments() {
 
 // FOR INACTIVE EMPLOYEES
 
-approveAllBtn.addEventListener("click", (e) => {
-  approveAllBtn.disabled = true;
-  approveAllBtn.textContent = "Approving...";
-  approveAll();
-});
+// approveAllBtn.addEventListener("click", (e) => {
+//   approveAllBtn.disabled = true;
+//   approveAllBtn.textContent = "Approving...";
+//   approveAll();
+// });
 
 async function fetchAllInactiveEmployee() {
   try {
@@ -502,14 +517,14 @@ async function displayInactiveMembers(pageNumber) {
                 <td>
                   <a href="#" class="edit-btn-inactive" data-id="${member.employee_id}">Accept</a>
                   &nbsp;|&nbsp;
-                  <a href="#" class="delete-btn" data-id="${member.employee_id}">Deny</a>
+                  <a href="#" class="delete-btn delete-btn-inactive" data-id="${member.employee_id}">Deny</a>
                 </td>
             `;
     tableBodyInactive.appendChild(row);
   });
 
   const editButtons = document.querySelectorAll(".edit-btn-inactive");
-  const deleteButtons = document.querySelectorAll(".delete-btn");
+  const deleteButtons = document.querySelectorAll(".delete-btn-inactive");
   editButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
@@ -522,7 +537,7 @@ async function displayInactiveMembers(pageNumber) {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
       employeeToDelete = employeeId;
-      showDeleteOverlay();
+      showDeleteOverlay(false);
     });
   });
 }
@@ -559,29 +574,29 @@ async function approveUser(employeeId) {
   }
 }
 
-async function approveAll() {
-  try {
-    tableBodyInactive.innerHTML = "";
-    const response = await fetch(`/arcms/api/v1/auth/approveAll`, {
-      method: "POST",
-    });
+// async function approveAll() {
+//   try {
+//     tableBodyInactive.innerHTML = "";
+//     const response = await fetch(`/arcms/api/v1/auth/approveAll`, {
+//       method: "POST",
+//     });
 
-    const result = await response.json();
+//     const result = await response.json();
 
-    result.data.forEach((employee) => {
-      activeEmployees.push(employee);
-      displayActiveMembers(currentPageForActive);
-      setupPaginationActive();
-    });
+//     result.data.forEach((employee) => {
+//       activeEmployees.push(employee);
+//       displayActiveMembers(currentPageForActive);
+//       setupPaginationActive();
+//     });
 
-    approveAllBtn.disabled = false;
-    approveAllBtn.textContent = "Approve All";
-    showSuccessMessage(`All inactive employees are activated!`);
-    // location.reload();
-  } catch (err) {
-    console.log(err);
-  }
-}
+//     approveAllBtn.disabled = false;
+//     approveAllBtn.textContent = "Approve All";
+//     showSuccessMessage(`All inactive employees are activated!`);
+//     // location.reload();
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
 
 async function archiveUser(employee_id) {
   employee_id = Number(employee_id);
@@ -603,6 +618,36 @@ async function archiveUser(employee_id) {
 
       // Update the display and pagination
       displayActiveMembers(currentPageForActive); // Use the current page or update as necessary
+      setupPaginationActive();
+    } else {
+      showErrorMessage(`Error: ${result.error}`);
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    showErrorMessage("An error occurred while archiving the user.");
+  }
+}
+
+async function deleteUser(employee_id) {
+  employee_id = Number(employee_id);
+  try {
+    const response = await fetch(`/arcms/api/v1/employees/${employee_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showErrorMessage("User deleted successfully!");
+
+      // Remove the deleted employee from the employees array
+      activeEmployees = activeEmployees.filter(
+        (employee) => employee.employee_id !== employee_id
+      );
+
+      // Update the display and pagination
+      displayInactiveMembers(currentPageForActive); // Use the current page or update as necessary
       setupPaginationActive();
     } else {
       showErrorMessage(`Error: ${result.error}`);
