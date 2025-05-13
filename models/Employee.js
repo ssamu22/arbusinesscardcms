@@ -29,6 +29,7 @@ class Employee {
     this.oldHonorifics = employeeData.newHonorifics;
     this.oldField = employeeData.newField;
     this.oldIntroduction = employeeData.newIntroduction;
+    this.isArchived = employeeData.isArchived;
     // Private fields
     this.#password = employeeData.password;
     this.email = employeeData.email;
@@ -249,6 +250,7 @@ class Employee {
         )
         .eq("isApproved", true)
         .eq("isActive", true)
+        .eq("is_archived", false)
         .order("employee_number", { ascending: true });
 
       console.log("ALL ACTIVE MEMBERS: ", data);
@@ -271,8 +273,7 @@ class Employee {
         .select(
           "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, employee_number"
         )
-        .eq("isApproved", true)
-        .eq("isActive", false)
+        .eq("is_archived", true)
         .order("employee_number", { ascending: true });
 
       console.log("ALL ACTIVE MEMBERS: ", data);
@@ -316,6 +317,7 @@ class Employee {
         .from("employee")
         .update({
           isActive: true,
+          is_archived: false,
         })
         .eq("employee_id", employee_id);
 
@@ -338,6 +340,7 @@ class Employee {
         .from("employee")
         .update({
           isActive: false,
+          is_archived: true,
         })
         .eq("employee_id", employee_id);
 
