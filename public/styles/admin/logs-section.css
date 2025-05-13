@@ -10,6 +10,12 @@
   --border-color: #ddd;
 }
 
+.ellipsis {
+  padding: 0.5rem;
+  color: #888;
+  cursor: default;
+}
+
 .approve-validation-btn {
   background-color: var(--secondary-color);
   color: #fff;

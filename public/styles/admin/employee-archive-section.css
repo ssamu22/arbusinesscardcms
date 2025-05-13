@@ -1,0 +1,295 @@
+:root {
+    --primary-color: #9b3838;
+    --primary-dark: #6b1f1f;
+    --primary-diabled: #f07d7d;
+    --secondary-color: #af8e01;
+    --tertiary-color: #808080;
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --border-color: #ddd;
+  }
+  
+  .confirm-delete-overlay {
+    position: fixed; /* <-- THIS makes it stick to the screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.42);
+    /* display: flex; */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .close-delete-overlay,
+  .close-delete-overlay-admin {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+  }
+  
+  .delete-employee-div {
+    animation: slideIn 0.3s ease;
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid black;
+    text-align: center;
+  }
+  
+  .confirm-delete-btn {
+    padding: 10px;
+    padding-inline: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #delete-yes-btn,
+  #delete-yes-btn-admin {
+    background: var(--primary-color);
+    color: white;
+  }
+  #delete-no-btn,
+  #delete-no-btn-admin {
+    color: black;
+  }
+  
+  /* Improve the members section layout */
+  .archive-section {
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+  }
+  
+  .members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .members-header h2 {
+    color: var(--primary-color);
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .members-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .members-table th,
+  .members-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .members-table th {
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  
+  .members-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .members-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .btn-success {
+    background-color: var(--secondary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-success:hover {
+    background-color: #8f7501;
+  }
+  
+  /* Improve pagination design */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pagination-info {
+    color: var(--tertiary-color);
+    font-size: 14px;
+  }
+  
+  .pagination-buttons {
+    display: flex;
+    align-items: center;
+  }
+  
+  .pagination-buttons a {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    margin: 0 5px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.3s;
+    border-radius: 4px;
+  }
+  
+  .pagination-buttons a.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+  }
+  
+  .pagination-buttons a:hover:not(.active) {
+    background-color: var(--secondary-color);
+    color: #fff;
+    border-color: var(--secondary-color);
+  }
+
+  .edit-btn-inactive,
+.edit-btn-active,
+.activate-btn,
+.delete-btn,
+.delete-btn-admin,
+.edit-btn-dept,
+.edit-btn-college,
+.edit-btn-ach,
+.delete-btn-dept,
+.delete-btn-college,
+.delete-btn-ach,
+.edit-btn-faq {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: none;
+  color: white;
+  background: var(--primary-color);
+  text-align: center;
+}
+
+/* Styles specific to edit buttons */
+.edit-btn-inactive,
+.edit-btn-active,
+.activate-btn,
+.edit-btn-ach,
+.edit-btn-dept,
+.edit-btn-college {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.edit-btn-inactive:hover,
+.activate-btn:hover,
+.edit-btn-active:hover,
+.edit-btn-ach:hover,
+.edit-btn-dept:hover 
+.edit-btn-college:hover {
+  background-color: #8f7501;
+}
+
+/* Styles specific to delete buttons */
+.delete-btn,
+.delete-btn-dept,
+.delete-btn-college,
+.delete-btn-admin,
+.delete-btn-ach {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.delete-btn:hover,
+.delete-btn-dept:hover,
+.delete-btn-college:hover,
+.delete-btn-admin:hover,
+.delete-btn-ach {
+  background-color: var(--primary-dark);
+}
+
+.delete-btn-dept:disabled,
+.delete-btn-college:disabled,
+.delete-btn-admin:disabled,
+.delete-btn-ach:disabled {
+  background-color: var(--primary-diabled);
+}
+
+/* Add icons to buttons */
+.edit-btn-inactive::before,
+.edit-btn-active::before,
+.activate-btn::before,
+.delete-btn::before,
+.delete-btn-admin::before,
+.edit-btn-faq::before {
+  font-family: "Font Awesome 5 Free";
+  margin-right: 5px;
+}
+.delete-btn-ach::before,
+.edit-btn-ach::before,
+.edit-btn-dept::before,
+.edit-btn-college::before,
+.delete-btn-dept::before, 
+.delete-btn-college::before {
+  font-family: "Font Awesome 5 Free";
+}
+
+.edit-btn-active::before,
+.edit-btn-ach::before,
+.edit-btn-dept::before,
+.edit-btn-college::before {
+  content: "\f044"; /* Edit icon */
+}
+
+.edit-btn-inactive::before,
+.edit-btn-active.active::before,
+.edit-btn-ach.active::before,
+.edit-btn-dept.active::before,
+.edit-btn-college.active::before {
+  content: "\f00c"; /* Check icon */
+}
+
+.delete-btn::before,
+.delete-btn-admin::before,
+.delete-btn-dept::before,
+.delete-btn-college::before,
+.delete-btn-ach::before {
+  content: "\f2ed"; /* Trash icon */
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }

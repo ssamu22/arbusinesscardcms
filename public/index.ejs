@@ -1455,6 +1455,7 @@
               const contacts = data.contacts;
 
               contactInfo.name = data.name;
+              contactInfo.email = data.email;
               contactInfo.title = data.position;
 
               if (contacts) {
@@ -1465,7 +1466,6 @@
                 // Update the fields in contactInfo based on the fetched contact data
                 contactInfo.phone = contacts.phone_number || "";
                 contactInfo.landline = contacts.landline || "";
-                contactInfo.email = contacts.email || "";
 
                 // Update social media URLs
                 contactInfo.socialMedia = [
@@ -1559,8 +1559,11 @@
 
               console.log("THE CONTACT INFO:", contactInfo);
               const phonePattern = /^(09|\+63)[0-9]{9}$/;
-              if (!phonePattern.test(contactInfo.phone)) {
+
+              if (contactInfo.phone && !phonePattern.test(contactInfo.phone)) {
                 alert("Please enter a valid Philippine phone number.");
+                editToggle.disabled = false;
+                editToggle.textContent = "Save";
                 return;
               }
 
@@ -1583,30 +1586,25 @@
               // Regular expressions for each platform
               const regexValidators = {
                 facebook:
-                  /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.\-_]+\/?$/i,
+                  /(www\.)?facebook\.com\/[a-zA-Z0-9.\-_]+\/?$/i,
                 instagram:
-                  /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/i,
+                  /(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/i,
                 linkedin:
-                  /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9.\-_%]+\/?$/i,
+                  /(www\.)?linkedin\.com\/in\/[a-zA-Z0-9.\-_%]+\/?$/i,
               };
 
               for (const [platform, url] of Object.entries(socialMediaLinks)) {
-                const validator = regexValidators[platform];
+                const platformKey = platform.replace("_url", ""); // e.g., facebook_url → facebook
+                const validator = regexValidators[platformKey];
+              
                 if (url && validator && !validator.test(url)) {
-                  alert(
-                    `Please enter a valid ${platform
-                      .replace("_url", "")
-                      .toUpperCase()} URL.`
-                  );
+                  alert(`Please enter a valid ${platformKey.toUpperCase()} URL.`);
                   editToggle.disabled = false;
                   editToggle.textContent = "Save";
                   return;
-                } else if (url && !validator) {
-                  console.warn(
-                    `No validator defined for platform: ${platform}`
-                  );
                 }
               }
+              
 
               const updatedContactInfo = {
                 ...(contactInfo.contactId && {
@@ -1680,7 +1678,7 @@
               alert("Contact information saved successfully!");
 
               editToggle.disabled = false; // Re-enable the button after save is complete
-              renderSocialMedia();
+              fetchContacts();
             } catch (error) {
               console.error("Error saving contact information:", error);
               alert("An error occurred while saving the contact information.");
@@ -1871,7 +1869,7 @@
                           <label class="form-check-label me-2" for="location-${
                             hour.day
                           }">Location:</label>
-                          <input type="text" class="form-control" placeholder="No location set" id="location-${
+                          <input type="text" class="form-control" placeholder="No location set" maxlength="20" id="location-${
                             hour.day
                           }" value="${hour.location}"
                               data-index="${index}" data-field="location"

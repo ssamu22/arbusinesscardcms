@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/styles/admin.css" />
     <link rel="stylesheet" href="/styles/admin/university-section.css" />
     <link rel="stylesheet" href="/styles/admin/employee-section.css" />
+    <link rel="stylesheet" href="/styles/admin/employee-archive-section.css" />
     <link rel="stylesheet" href="/styles/admin/logs-section.css" />
     <link rel="stylesheet" href="/styles/admin/bcards-section.css" />
     <link rel="stylesheet" href="/styles/admin/admin-account-section.css" />
@@ -157,7 +158,15 @@
                 id="members-link"
                 class="<%= admin.admin_type === 'human_resources' ? 'sidebar-active' : '' %>"
               >
-                <i class="fas fa-users"></i> <span>Faculty</span>
+                <i class="fas fa-users"></i> <span>Employees</span>
+              </a>
+            </li>
+
+            <!-- Employee Archive Tab -->
+            <li>
+              <a href="#" id="archive-link">
+                <i class="fas fa-box-archive"></i>
+                <span>Employees Archive</span>
               </a>
             </li>
 
@@ -220,6 +229,7 @@
       <main>
         <!-- UNIVERSITY CONTENTS SECTION -->
         <%- include('./components/employees-section.ejs')%> <%-
+        include('./components/employee-archive-section.ejs')%> <%-
         include('./components/logs-section.ejs')%> <%-
         include('./components/university-section.ejs')%> <%-
         include('./components/university-content-section.ejs')%> <%-
@@ -491,6 +501,7 @@
     <script src="/scripts/bcard-section.js"></script>
     <script src="/scripts/admin-account-section.js"></script>
     <script src="/scripts/employees-section.js"></script>
+    <script src="/scripts/employee-archive-section.js"></script>
     <script src="/scripts/logs-section.js"></script>
     <script src="/scripts/university-section.js"></script>
     <script src="/scripts/events.js"></script>

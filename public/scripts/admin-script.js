@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const membersSection = document.getElementById("members-section");
   const logsLink = document.getElementById("logs-link");
   const logsSection = document.getElementById("logs-section");
+  const archiveLink = document.getElementById("archive-link");
+  const archiveSection = document.getElementById("archive-section");
   const universitySection = document.getElementById("university-section");
   const universityManagementSection = document.getElementById(
     "university-management-section"
@@ -30,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function showSection(section) {
     [
       membersSection,
+      archiveSection,
       logsSection,
       universitySection,
       universityManagementSection,
@@ -44,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const sidebarLinks = [
       membersLink,
+      archiveLink,
       logsLink,
       universityLink,
       universityManagementLink,
@@ -61,6 +65,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         theIntroVideo.currentTime = 0;
       }
       if (membersLink) membersLink.classList.add("sidebar-active");
+    }
+    if (section === archiveSection) {
+      if (theIntroVideo) {
+        theIntroVideo.pause();
+        theIntroVideo.currentTime = 0;
+      }
+      if (archiveLink) archiveLink.classList.add("sidebar-active");
     }
 
     if (section === logsSection) {
@@ -115,6 +126,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
       e.preventDefault();
       showSection(membersSection);
+    });
+  }
+  if (archiveLink) {
+    archiveLink.addEventListener("click", function (e) {
+      if (errorPasswordTooltip) errorPasswordTooltip.style.display = "none";
+      e.preventDefault();
+      showSection(archiveSection);
     });
   }
 
