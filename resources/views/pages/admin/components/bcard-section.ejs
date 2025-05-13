@@ -17,6 +17,9 @@
       <button class="highlight-name-btn" id="highlight-name-btn">
         Center Name
       </button>
+      <button class="highlight-empnumber-btn" id="highlight-empnumber-btn">
+        Center Employee Number
+      </button>
       <!-- <button
         type="button"
         id="toggle-email-btn"
@@ -61,21 +64,20 @@
       <label for="text-content">Text:</label>
       <input type="text" id="text-content" name="text-content" disabled />
       <label for="text-font">Font Family:</label>
-      <input list="fonts" id="text-font" name="text-font" disabled />
-      <datalist id="fonts">
-        <option value="Arial"></option>
-        <option value="Verdana"></option>
-        <option value="Times New Roman"></option>
-        <option value="Georgia"></option>
-        <option value="Courier New"></option>
-        <option value="Tahoma"></option>
-        <option value="Trebuchet MS"></option>
-        <option value="Impact"></option>
-        <option value="Comic Sans MS"></option>
-        <option value="Lucida Console"></option>
-        <option value="Garamond"></option>
-        <option value="Palatino Linotype"></option>
-      </datalist>
+      <select id="text-font" name="text-font" disabled>
+        <option value="Arial">Arial</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Impact">Impact</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Lucida Console">Lucida Console</option>
+        <option value="Garamond">Garamond</option>
+        <option value="Palatino Linotype">Palatino Linotype</option>
+      </select>
 
       <label for="scaleFactor" style="display: none">Scale Factor:</label>
       <input
@@ -110,6 +112,24 @@
         disabled
       /><br />
 
+      <label for="textAlignment">Text Alignment:</label>
+      <select id="textAlignment">
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+        <option value="start">Start</option>
+        <option value="end">End</option>
+      </select>
+      <!-- <label for="textBaseline">Text Baseline:</label>
+      <select id="textBaseline">
+        <option value="top">Top</option>
+        <option value="hanging">Hanging</option>
+        <option value="middle">Middle</option>
+        <option value="alphabetic">Alphabetic</option>
+        <option value="ideographic">Ideographic</option>
+        <option value="bottom">Bottom</option>
+      </select> -->
+
       <label for="color">Color:</label>
       <input
         type="color"
@@ -122,7 +142,7 @@
       <div id="contextMenu" class="context-menu">
         <button id="delete-text-btn">Delete</button>
       </div>
-      <button type="button" id="apply-btn">Apply</button>
+      <button type="button" id="apply-btn" style="display: none">Apply</button>
     </div>
   </div>
 

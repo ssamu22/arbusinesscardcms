@@ -19,6 +19,7 @@ router.put("/department/:id", controller.updateEmployeeDepartment);
 router.put("/archive/:id", controller.archiveEmployee);
 router.put("/unarchive/:id", controller.unarchiveEmployee);
 
+router.get("/bcard-image/:id", employeeController.getEmployeeCardImage);
 router.get("/active", controller.fetchAllActiveEmployee);
 router.get("/inactive", controller.fetchAllInactiveEmployee);
 router.get("/archive", controller.fetchAllArchivedEmployee);

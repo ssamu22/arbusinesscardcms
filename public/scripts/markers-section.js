@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // Create business Card Overlay components
   const createMarkerOverlay = document.querySelector(".create-marker-overlay");
   const closeCreateOverlay = document.querySelector(".close-create-marker");
-  const createMarkerBtn = document.querySelector(".add-target-btn");
+  // const createMarkerBtn = document.querySelector(".add-target-btn");
   // Create business card inputs
 
   const displayedCreateImage = document.querySelector(".create-marker-img");
@@ -65,9 +65,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     createMarkerOverlay.style.display = "none";
   });
 
-  createMarkerBtn.addEventListener("click", (e) => {
-    createMarkerOverlay.style.display = "flex";
-  });
+  // createMarkerBtn.addEventListener("click", (e) => {
+  //   createMarkerOverlay.style.display = "flex";
+  // });
 
   deleteBcardbtn.addEventListener("click", (e) => {
     deleteBcardOverlay.style.display = "flex";

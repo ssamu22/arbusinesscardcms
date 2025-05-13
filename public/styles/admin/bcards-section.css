@@ -79,6 +79,7 @@
 .draw-text-btn,
 .clear-btn,
 .highlight-name-btn,
+.highlight-empnumber-btn,
 #download-bcard {
   margin-bottom: 15px;
   padding: 10px;
@@ -190,7 +191,6 @@
   display: none;
 }
 
-
 /* Tutorial tooltip styles */
 .tutorial-overlay {
   position: fixed;
@@ -226,9 +226,15 @@
 }
 
 @keyframes tooltipPulse {
-  0% { box-shadow: 0 0 0 0 rgba(155, 56, 56, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(155, 56, 56, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(155, 56, 56, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(155, 56, 56, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(155, 56, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(155, 56, 56, 0);
+  }
 }
 
 .tutorial-tooltip-header {
@@ -338,4 +344,24 @@
 .tutorial-start-btn:hover {
   transform: scale(1.1);
   background-color: #872e2e;
+}
+
+#text-font,
+#textAlignment,
+#textBaseline {
+  padding: 8px 12px; /* Add some padding for better spacing */
+  border: 1px solid #ccc; /* Light grey border */
+  border-radius: 4px; /* Slightly rounded corners */
+  background-color: #f9f9f9; /* Light background color */
+  color: #333; /* Dark text color */
+  font-size: 14px; /* Set font size */
+  cursor: pointer; /* Change the cursor to indicate it's a clickable element */
+}
+
+#text-font:disabled,
+#textAlignment:disabled,
+#textBaseline:disabled {
+  background-color: #e0e0e0; /* Light grey background for disabled state */
+  color: #999; /* Lighter text color when disabled */
+  cursor: not-allowed; /* Cursor change for disabled state */
 }
