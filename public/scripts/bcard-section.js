@@ -63,15 +63,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   function centerText(text) {
     const canvasWidth = bcardCanvas.width;
     const canvasHeight = bcardCanvas.height;
+
     for (let i = 0; i < texts.length; i++) {
-      if (texts[i].text.toLowerCase() === text) {
-        bcardCtx.font = `${texts[i].font_size || 16}px ${
-          texts[i].font_family || "Arial"
-        }`; // set font for measurement
+      if (texts[i].text.toLowerCase() === text.toLowerCase()) {
+        const fontSize = texts[i].font_size || 16;
+        const fontFamily = texts[i].font_family || "Arial";
+        const textAlign = texts[i].align || "left";
+
+        bcardCtx.font = `${fontSize}px ${fontFamily}`; // set font for measurement
         const textWidth = bcardCtx.measureText(texts[i].text).width;
 
-        texts[i].x = (canvasWidth - textWidth) / 2;
-        texts[i].y = canvasHeight / 2; // middle of canvas vertically
+        // Calculate x based on alignment
+        let x;
+        switch (textAlign) {
+          case "center":
+            x = canvasWidth / 2;
+            break;
+          case "right":
+            x = canvasWidth - (canvasWidth - textWidth) / 2;
+            break;
+          case "left":
+          default:
+            x = (canvasWidth - textWidth) / 2;
+            break;
+        }
+
+        texts[i].x = x;
+        texts[i].y = canvasHeight / 2; // middle vertically
+        texts[i].align = textAlign;
         break;
       }
     }
