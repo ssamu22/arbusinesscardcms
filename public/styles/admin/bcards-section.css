@@ -346,7 +346,9 @@
   background-color: #872e2e;
 }
 
-#text-font {
+#text-font,
+#textAlignment,
+#textBaseline {
   padding: 8px 12px; /* Add some padding for better spacing */
   border: 1px solid #ccc; /* Light grey border */
   border-radius: 4px; /* Slightly rounded corners */
@@ -356,7 +358,9 @@
   cursor: pointer; /* Change the cursor to indicate it's a clickable element */
 }
 
-#text-font:disabled {
+#text-font:disabled,
+#textAlignment:disabled,
+#textBaseline:disabled {
   background-color: #e0e0e0; /* Light grey background for disabled state */
   color: #999; /* Lighter text color when disabled */
   cursor: not-allowed; /* Cursor change for disabled state */

@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const allBusinessCards = await getAllBusinessCards();
 
   const fontInput = document.getElementById("text-font");
+  const alignmentInput = document.getElementById("textAlignment");
+  // const baselineInput = document.getElementById("textBaseline");
   const scaleInput = document.getElementById("scaleFactor");
   const fontSizeInput = document.getElementById("fontSize");
   const fontWeightInput = document.getElementById("fontWeight");
@@ -163,6 +165,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     draw();
   });
+
+  alignmentInput.addEventListener("change", async (e) => {
+    if (textToEdit < 0) {
+      showErrorMessage("Please select a text to edit.");
+      return; // ⬅️ prevent proceeding further
+    }
+
+    if (textToEdit === -1) {
+      return;
+    }
+
+    // Show an error message if any values are missing
+    if (!alignmentInput.value) {
+      return;
+    }
+
+    texts[textToEdit].align = alignmentInput.value;
+
+    await updateContent({
+      content_id: texts[textToEdit].content_id,
+      align: texts[textToEdit].align,
+    });
+
+    draw();
+  });
+  // baselineInput.addEventListener("change", async (e) => {
+  //   if (textToEdit < 0) {
+  //     showErrorMessage("Please select a text to edit.");
+  //     return; // ⬅️ prevent proceeding further
+  //   }
+
+  //   if (textToEdit === -1) {
+  //     return;
+  //   }
+
+  //   // Show an error message if any values are missing
+  //   if (!baselineInput.value) {
+  //     return;
+  //   }
+
+  //   texts[textToEdit].baseline = baselineInput.value;
+
+  //   await updateContent({
+  //     content_id: texts[textToEdit].content_id,
+  //     baseline: texts[textToEdit].baseline,
+  //   });
+
+  //   draw();
+  // });
 
   fontSizeInput.addEventListener("change", async (e) => {
     if (textToEdit < 0) {
@@ -337,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // clear the canvas & redraw all texts
-  function draw() {
+  function draw(isGenerating) {
     bcardCtx.clearRect(0, 0, bcardCanvas.width, bcardCanvas.height);
     console.log("CANVAS CLEARED!");
     if (backgroundImage) {
@@ -352,52 +403,89 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
-    drawText(); // Draw the text on top of the image
+    drawText(isGenerating); // Draw the text on top of the image
   }
 
-  function drawText() {
+  function drawText(isGenerating) {
     console.log("TEXTS:", texts);
     for (let i = 0; i < texts.length; i++) {
       bcardCtx.save();
 
       if (!texts[i].is_displayed) {
+        bcardCtx.restore();
         continue;
       }
 
+      // Set font and style early for correct measurement
+      bcardCtx.font = `${texts[i].font_weight} ${texts[i].font_size}px ${texts[i].font_family}`;
+      bcardCtx.fillStyle = texts[i].color;
+      bcardCtx.textAlign = texts[i].align || "left";
+      // Do not set textBaseline — use default ("alphabetic")
+
+      // Measure text size
+      texts[i].width = bcardCtx.measureText(texts[i].text).width;
+      texts[i].height = texts[i].font_size * texts[i].scale_factor;
+
+      // Adjust X position for alignment
+      let x = texts[i].x;
+      if (bcardCtx.textAlign === "center") {
+        x -= texts[i].width / 2;
+      } else if (
+        bcardCtx.textAlign === "right" ||
+        bcardCtx.textAlign === "end"
+      ) {
+        x -= texts[i].width;
+      }
+
+      // Adjust Y position for baseline (alphabetic baseline)
+      let y = texts[i].y - texts[i].height * 0.8;
+
+      // Draw selection rectangle for selected text
       if (i === selectedText) {
         console.log("THE SELECTED TEXT:", i);
         bcardCtx.strokeStyle = "red";
         bcardCtx.lineWidth = 2;
+        const padding = 5;
+
+        // Draw bounding box around the text
         bcardCtx.strokeRect(
-          texts[i].x - 5,
-          texts[i].y - texts[i].height,
-          texts[i].width + 10,
-          texts[i].height + 5
+          x - padding, // adjusted X based on alignment
+          y - padding, // adjusted Y based on text height
+          texts[i].width + padding * 2, // width of the bounding box
+          texts[i].height + padding * 2 // height of the bounding box
         );
       }
 
-      bcardCtx.font = `${texts[i].font_weight} ${texts[i].font_size}px ${texts[i].font_family}`;
-
-      texts[i].width = bcardCtx.measureText(texts[i].text).width;
-      texts[i].height = texts[i].font_size * texts[i].scale_factor;
-      bcardCtx.fillStyle = texts[i].color;
-
+      // Draw the text at its original position
       bcardCtx.fillText(texts[i].text, texts[i].x, texts[i].y);
+
       bcardCtx.restore();
     }
   }
 
   // test if x,y is inside the bounding box of a text
-  function textHittest(x, y, textIndex) {
-    let text = texts[textIndex];
+  function textHittest(x, y, index) {
+    const text = texts[index];
+
+    // Calculate the adjusted X based on the alignment
+    let adjustedX = text.x;
+    if (text.align === "center") {
+      adjustedX -= text.width / 2;
+    } else if (text.align === "right" || text.align === "end") {
+      adjustedX -= text.width;
+    }
+
+    // Calculate the adjusted Y based on the baseline
+    let adjustedY = text.y - text.height * 0.8;
+
+    // Check if the mouse is within the bounds of the text box
     return (
-      x >= text.x &&
-      x <= text.x + text.width &&
-      y >= text.y - text.height &&
-      y <= text.y
+      x >= adjustedX &&
+      x <= adjustedX + text.width &&
+      y >= adjustedY &&
+      y <= adjustedY + text.height
     );
   }
-
   // This will handle the update of the font options of a selected text
   function resetTextOptions() {
     textToEdit = -1;
@@ -405,14 +493,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     contextMenu.style.display = "none";
 
     const textInput = document.getElementById("text-content");
-    const fontInput = document.getElementById("text-font");
-    const scaleInput = document.getElementById("scaleFactor");
-    const fontSizeInput = document.getElementById("fontSize");
-    const fontWeightInput = document.getElementById("fontWeight");
-    const colorInput = document.getElementById("color");
 
     textInput.disabled = true;
     fontInput.disabled = true;
+    alignmentInput.disabled = true;
+    // baselineInput.disabled = true;
     scaleInput.disabled = true;
     fontSizeInput.disabled = true;
     fontWeightInput.disabled = true;
@@ -426,14 +511,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateTextOptions(idx) {
     const textInput = document.getElementById("text-content");
-    const fontInput = document.getElementById("text-font");
-    const scaleInput = document.getElementById("scaleFactor");
-    const fontSizeInput = document.getElementById("fontSize");
-    const fontWeightInput = document.getElementById("fontWeight");
-    const colorInput = document.getElementById("color");
 
     fontInput.disabled = false;
     scaleInput.disabled = false;
+    alignmentInput.disabled = false;
+    // baselineInput.disabled = false;
     fontSizeInput.disabled = false;
     fontWeightInput.disabled = false;
     colorInput.disabled = false;
@@ -450,6 +532,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     fontInput.value = texts[idx].font_family;
     fontSizeInput.value = texts[idx].font_size;
+    alignmentInput.value = texts[idx].align;
+    // baselineInput.value = texts[idx].baseline;
     fontWeightInput.value = texts[idx].font_weight;
     colorInput.value = texts[idx].color;
   }
@@ -460,15 +544,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     const textInput = document.getElementById("text-content");
-    const fontInput = document.getElementById("text-font");
-    const fontSizeInput = document.getElementById("fontSize");
-    const fontWeightInput = document.getElementById("fontWeight");
-    const colorInput = document.getElementById("color");
 
     // Show an error message if any values are missing
     if (
       !textInput.value ||
       !fontInput.value ||
+      !alignmentInput.value ||
       !fontSizeInput.value ||
       !fontWeightInput.value ||
       !colorInput.value
@@ -482,6 +563,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     texts[idx].text = textInput.value;
     texts[idx].font_family = fontInput.value;
+    texts[idx].align = alignmentInput.value;
+    // texts[idx].baseline = baselineInput.value;
     texts[idx].font_size = fontSizeInput.value;
     texts[idx].font_weight = fontWeightInput.value;
     texts[idx].color = colorInput.value;
@@ -542,27 +625,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     text.x += dx;
     text.y += dy;
 
-    // Adjust align based on horizontal position
-    if (text.x < canvas.width / 3) {
-      text.align = "left";
-    } else if (text.x > (canvas.width * 2) / 3) {
-      text.align = "right";
-    } else {
-      text.align = "center";
-    }
-
-    // Adjust baseline based on vertical position
-    if (text.y < canvas.height / 3) {
-      text.baseline = "top";
-    } else if (text.y > (canvas.height * 2) / 3) {
-      text.baseline = "bottom";
-    } else {
-      text.baseline = "middle";
-    }
+    // ❌ Remove auto-alignment here (or make it optional with a key toggle)
+    // text.align = ...
+    // text.baseline = ...
 
     draw();
   }
-
   // handle mouseup events (deselect text)
   function handleMouseUp(e) {
     e.preventDefault();
@@ -1064,7 +1132,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   //   if (targetPositionText) targetPositionText.text = "Position";
   //   if (targetNumberText) targetNumberText.text = "Phone Number";
 
-  //   location.reload();
   // }
 
   const replaceTargetErrors = 0;
@@ -1107,9 +1174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (target) {
         // If employee already has a business card target, replace it
-        targetNameText.text = `${employee.honorifics ?? ""} ${
-          employee.first_name
-        } ${
+        targetNameText.text = `${employee.first_name} ${
           employee.middle_name
             ? employee.middle_name.charAt(0).toUpperCase() + "."
             : ""
@@ -1118,7 +1183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           .trim();
 
         employeeNumberText.text = employee.employee_number;
-        draw();
+        draw(true);
 
         const task = new Promise((resolve, reject) => {
           bcardCanvas.toBlob(async (blob) => {
@@ -1156,7 +1221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         employeeNumberText.text = employee.employee_number;
 
         // Update the canvas
-        draw();
+        draw(true);
 
         const task = new Promise((resolve, reject) => {
           bcardCanvas.toBlob(async (blob) => {
@@ -1198,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     location.reload();
   }
 
-  draw();
+  draw(true);
 });
 
 // function draw() {
