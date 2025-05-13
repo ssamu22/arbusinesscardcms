@@ -166,6 +166,155 @@ function updatePaginationStateForActive() {
   ).textContent = totalResults;
 }
 
+// async function displayActiveMembers(pageNumber) {
+//   const startIndex = (pageNumber - 1) * itemsPerPage;
+//   const endIndex = startIndex + itemsPerPage;
+//   const membersToDisplay = activeEmployees.slice(startIndex, endIndex);
+//   membersToDisplay.sort((a, b) => a.employee_number - b.employee_number);
+
+//   tableBodyActive.innerHTML = ""; // Clear existing content
+//   membersToDisplay.forEach((member, index) => {
+//     const row = document.createElement("tr");
+
+//     const bcardImage = getBcardImage(member.employee_id);
+
+//     console.log("the freaking member:", member);
+//     // <td>${startIndex + index + 1}</td>
+//     const name =
+//       (member.honorifics || "") +
+//       " " +
+//       member.first_name +
+//       " " +
+//       (member.middle_name || "") +
+//       " " +
+//       member.last_name;
+//     row.innerHTML = `
+//                 <td>${member.employee_number}</td>
+//                 <td class="member-info">
+//                     <div>
+//                         <img src="${member.image_url}" alt="${name}">
+//                         <div class="member-name">${name}</div>
+//                         <div class="member-email">${member.email}</div>
+//                     </div>
+//                 </td>
+//                 <td>
+//                     <button class="edit-btn-active edit-position-btn"></button>
+//                     <span class="position-text">${
+//                       member.position || "- - -"
+//                     }</span>
+//                     <input type="text" class="position-input" value="${
+//                       member.position || ""
+//                     }" style="display: none;" />
+//                 </td>
+//                 <td>
+//                     <button class="edit-btn-active edit-dept-btn"></button>
+//                     <span class="dept-text">${getDepartmentName(
+//                       member.department_id
+//                     )}</span>
+//                     <input type="text" class="dept-input" value="${
+//                       member.department_id || ""
+//                     }" style="display: none;" />
+//                 </td>
+//                 <td>${member.isActive ? "Active" : "Inactive"}</td>
+//                 <td>${member.date_created}</td>
+//                 <td>
+//                   <a href="#" class="delete-btn" data-id="${
+//                     member.employee_id
+//                   }">Delete</a>
+//                 </td>
+//             `;
+
+//     tableBodyActive.appendChild(row);
+//     const editButtonPosition = row.querySelector(".edit-position-btn");
+//     const editButtonDept = row.querySelector(".edit-dept-btn");
+
+//     editButtonPosition.addEventListener("click", (event) => {
+//       const textSpan = row.querySelector(".position-text");
+//       const inputField = row.querySelector(".position-input");
+
+//       const isEditing = inputField.style.display === "inline-block";
+
+//       if (isEditing) {
+//         // Save logic
+//         const newPosition = inputField.value.trim();
+//         textSpan.textContent = newPosition ? newPosition : "- - -";
+//         textSpan.style.display = "inline";
+//         inputField.style.display = "none";
+//         editButtonPosition.classList.remove("active");
+//         editButtonPosition.disabled = true;
+
+//         updateEmployeePosition(member.employee_id, newPosition);
+//         editButtonPosition.disabled = false;
+//       } else {
+//         // Edit logic
+//         textSpan.style.display = "none";
+//         inputField.style.display = "inline-block";
+//         editButtonPosition.classList.add("active");
+//       }
+//     });
+
+//     const select = document.createElement("select");
+//     select.className = "dept-select";
+//     select.style.display = "none";
+
+//     // Populate options
+//     departmentsList.forEach((dept) => {
+//       const option = document.createElement("option");
+//       option.value = dept.department_id;
+//       option.textContent = dept.department_name;
+//       select.appendChild(option);
+//     });
+
+//     row.querySelector("td:nth-child(4)").appendChild(select);
+
+//     editButtonDept.addEventListener("click", (event) => {
+//       const deptText = row.querySelector(".dept-text");
+//       const deptInput = row.querySelector(".dept-input");
+
+//       const isEditing = select.style.display === "inline-block";
+
+//       if (isEditing) {
+//         const selectedId = select.value;
+//         console.log("Dept ID: " + selectedId);
+//         const selectedName = getDepartmentName(selectedId);
+
+//         deptText.textContent = selectedName;
+//         deptText.style.display = "inline";
+//         select.style.display = "none";
+//         editButtonDept.classList.remove("active");
+//         editButtonDept.disabled = true;
+
+//         updateEmployeeDepartment(member.employee_id, selectedId);
+//         editButtonDept.disabled = false;
+//       } else {
+//         select.value = member.department_id;
+//         deptText.style.display = "none";
+//         select.style.display = "inline-block";
+//         editButtonDept.classList.add("active");
+//       }
+//     });
+
+//     function getDepartmentName(deptId) {
+//       const dept = departmentsList.find((d) => d.department_id == deptId);
+//       console.log("Depts: " + JSON.stringify(departmentsList));
+//       console.log("Dept Name: " + dept);
+//       return dept ? dept.department_name : "- - -";
+//     }
+//   });
+
+//   const deleteButtons = document.querySelectorAll(".delete-btn");
+
+//   deleteButtons.forEach((button) => {
+//     button.addEventListener("click", (event) => {
+//       const employeeId = event.target.getAttribute("data-id");
+
+//       employeeToDelete = employeeId;
+//       unapprovedToDelete = button.parentElement.parentElement;
+//       showDeleteOverlay();
+//     });
+//   });
+// }
+
 async function displayActiveMembers(pageNumber) {
   const startIndex = (pageNumber - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -173,11 +322,13 @@ async function displayActiveMembers(pageNumber) {
   membersToDisplay.sort((a, b) => a.employee_number - b.employee_number);
 
   tableBodyActive.innerHTML = ""; // Clear existing content
-  membersToDisplay.forEach((member, index) => {
+
+  for (const [index, member] of membersToDisplay.entries()) {
     const row = document.createElement("tr");
 
-    console.log("the freaking member:", member);
-    // <td>${startIndex + index + 1}</td>
+    const bcardImage = await getBcardImage(member.employee_id); // Await async function
+
+    console.log("the freaking image:", bcardImage);
     const name =
       (member.honorifics || "") +
       " " +
@@ -186,41 +337,57 @@ async function displayActiveMembers(pageNumber) {
       (member.middle_name || "") +
       " " +
       member.last_name;
+
     row.innerHTML = `
-                <td>${member.employee_number}</td>
-                <td class="member-info">
-                    <div>
-                        <img src="${member.image_url}" alt="${name}">
-                        <div class="member-name">${name}</div>
-                        <div class="member-email">${member.email}</div>
-                    </div>
-                </td>
-                <td>
-                    <button class="edit-btn-active edit-position-btn"></button>
-                    <span class="position-text">${
-                      member.position || "- - -"
-                    }</span>
-                    <input type="text" class="position-input" value="${
-                      member.position || ""
-                    }" style="display: none;" />
-                </td>
-                <td>
-                    <button class="edit-btn-active edit-dept-btn"></button>
-                    <span class="dept-text">${getDepartmentName(
-                      member.department_id
-                    )}</span>
-                    <input type="text" class="dept-input" value="${
-                      member.department_id || ""
-                    }" style="display: none;" />
-                </td>
-                <td>${member.isActive ? "Active" : "Inactive"}</td>
-                <td>${member.date_created}</td>
-                <td>
-                  <a href="#" class="delete-btn" data-id="${
-                    member.employee_id
-                  }">Delete</a>
-                </td>
-            `;
+      <td>${member.employee_number}</td>
+      <td class="member-info">
+          <div>
+              <img src="${member.image_url || bcardImage}" alt="${name}">
+              <div class="member-name">${name}</div>
+              <div class="member-email">${member.email}</div>
+          </div>
+      </td>
+      <td>
+          <button class="edit-btn-active edit-position-btn"></button>
+          <span class="position-text">${member.position || "- - -"}</span>
+          <input type="text" class="position-input" value="${
+            member.position || ""
+          }" style="display: none;" />
+      </td>
+      <td>
+          <button class="edit-btn-active edit-dept-btn"></button>
+          <span class="dept-text">${getDepartmentName(
+            member.department_id
+          )}</span>
+          <input type="text" class="dept-input" value="${
+            member.department_id || ""
+          }" style="display: none;" />
+      </td>
+      <td>${member.isActive ? "Active" : "Inactive"}</td>
+      <td>${member.date_created}</td>
+      <td>
+        <a href="#" class="delete-btn" data-id="${
+          member.employee_id
+        }">Delete</a>
+      </td>
+
+      <td style = "text-align: center;">
+        
+      ${
+        bcardImage
+          ? `
+                <a href="${bcardImage.image_url}" target="_blank">
+      Yes
+    </a>
+        `
+          : "<p>No</p>"
+      }
+
+
+  
+      </td>
+
+    `;
 
     tableBodyActive.appendChild(row);
     const editButtonPosition = row.querySelector(".edit-position-btn");
@@ -233,7 +400,6 @@ async function displayActiveMembers(pageNumber) {
       const isEditing = inputField.style.display === "inline-block";
 
       if (isEditing) {
-        // Save logic
         const newPosition = inputField.value.trim();
         textSpan.textContent = newPosition ? newPosition : "- - -";
         textSpan.style.display = "inline";
@@ -244,7 +410,6 @@ async function displayActiveMembers(pageNumber) {
         updateEmployeePosition(member.employee_id, newPosition);
         editButtonPosition.disabled = false;
       } else {
-        // Edit logic
         textSpan.style.display = "none";
         inputField.style.display = "inline-block";
         editButtonPosition.classList.add("active");
@@ -255,7 +420,6 @@ async function displayActiveMembers(pageNumber) {
     select.className = "dept-select";
     select.style.display = "none";
 
-    // Populate options
     departmentsList.forEach((dept) => {
       const option = document.createElement("option");
       option.value = dept.department_id;
@@ -298,10 +462,9 @@ async function displayActiveMembers(pageNumber) {
       console.log("Dept Name: " + dept);
       return dept ? dept.department_name : "- - -";
     }
-  });
+  }
 
   const deleteButtons = document.querySelectorAll(".delete-btn");
-
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
@@ -311,6 +474,25 @@ async function displayActiveMembers(pageNumber) {
       showDeleteOverlay();
     });
   });
+}
+
+async function getBcardImage(employee_id) {
+  try {
+    const response = await fetch(
+      `/arcms/api/v1/employees/bcard-image/${employee_id}`
+    );
+
+    if (!response.ok) {
+      console.log("Error getting business card image:", err);
+    }
+
+    const imageData = await response.json();
+
+    console.log("IMAGE DATA RESPONSE:", imageData);
+    return imageData;
+  } catch (err) {
+    console.log("Error getting business card image:", err);
+  }
 }
 
 async function updateEmployeeDepartment(employee_id, departmentId) {

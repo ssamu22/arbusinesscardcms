@@ -17,6 +17,7 @@ router
 
 router.put("/department/:id", controller.updateEmployeeDepartment);
 
+router.get("/bcard-image/:id", employeeController.getEmployeeCardImage);
 router.get("/active", controller.fetchAllActiveEmployee);
 router.get("/inactive", controller.fetchAllInactiveEmployee);
 

@@ -914,7 +914,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
 
       formData.append("name", `${theEmployee.employee_number}`);
-      formData.append("width", 1);
+      formData.append("width", 6);
       formData.append("active_flag", true);
       formData.append("bucket", "assets/targetImages");
       formData.append("application_metadata", JSON.stringify(metadata));
