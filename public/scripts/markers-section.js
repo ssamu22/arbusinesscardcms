@@ -138,8 +138,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     if (!editing) {
       // This will trigger if the user wants to update the data of the target
       e.target.textContent = "Save";
-      targetNameInput.disabled = false;
-      targetWidthInput.disabled = false;
       // targetActiveInput.disabled = false;
       // targetMetadata.disabled = false;
       newTargetUpload.disabled = false;

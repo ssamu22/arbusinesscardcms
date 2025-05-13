@@ -392,7 +392,7 @@ async function displayActiveMembers(pageNumber) {
       <td style = "text-align: center;">
         
       ${
-        bcardImage
+        bcardImage && bcardImage.image_url
           ? `
                 <a href="${bcardImage.image_url}" target="_blank">
       Yes
@@ -485,7 +485,7 @@ async function displayActiveMembers(pageNumber) {
   deleteButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       const employeeId = event.target.getAttribute("data-id");
-      
+
       employeeToDelete = employeeId;
       unapprovedToDelete = button.parentElement.parentElement;
       showDeleteOverlay(true);
@@ -500,7 +500,7 @@ async function getBcardImage(employee_id) {
     );
 
     if (!response.ok) {
-      console.log("Error getting business card image:", err);
+      console.log("Error getting business card image");
     }
 
     const imageData = await response.json();
@@ -785,10 +785,13 @@ async function approveUser(employeeId) {
 async function archiveUser(employee_id) {
   employee_id = Number(employee_id);
   try {
-    const response = await fetch(`/arcms/api/v1/employees/archive/${employee_id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      `/arcms/api/v1/employees/archive/${employee_id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     const result = await response.json();
 
