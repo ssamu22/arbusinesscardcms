@@ -1229,9 +1229,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         console.log(
           "THE NAME:",
-          `${employee.honorifics ?? ""} ${employee.first_name} ${
-            employee.middle_name ?? ""
-          } ${employee.last_name}`
+          `${employee.first_name} ${employee.middle_name ?? ""} ${
+            employee.last_name
+          }`
         );
 
         targetNameText.text = `${employee.honorifics ?? ""} ${
