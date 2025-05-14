@@ -249,7 +249,6 @@ class Employee {
           "employee_id, first_name, middle_name, last_name, email, honorifics, image_id, date_created, isActive, position, employee_number, department_id"
         )
         .eq("isApproved", true)
-        .eq("isActive", true)
         .eq("is_archived", false)
         .order("employee_number", { ascending: true });
 
