@@ -390,7 +390,7 @@ exports.updateProfile = async (req, res) => {
         .from("log")
         .insert({
           action: "UPDATE_USER_INTRO",
-          action_details: `Introduction updated`,
+          action_details: `${employeeData.introduction}`,
           actor: employeeData.email,
           is_admin: false,
           status: "requested",
@@ -411,7 +411,7 @@ exports.updateProfile = async (req, res) => {
         .from("log")
         .insert({
           action: "UPDATE_RESEARCH_FIELDS",
-          action_details: `Research fields updated`,
+          action_details: `${employeeData.field}`,
           actor: employeeData.email,
           is_admin: false,
           status: "requested",
