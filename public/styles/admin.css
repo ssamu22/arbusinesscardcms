@@ -230,6 +230,9 @@ body {
 .user-role {
   font-size: 12px;
   color: #bdc3c7;
+  white-space: normal; /* allows text to wrap */
+  word-wrap: break-word; /* wraps long words if necessary */
+  overflow-wrap: break-word; /* better compatibility */
 }
 nav {
   flex-grow: 1;
@@ -1237,7 +1240,8 @@ header {
 .sidebar.collapsed .user-info div,
 .sidebar.collapsed nav h3,
 .sidebar.collapsed nav a span,
-.sidebar.collapsed .logout-side span {
+.sidebar.collapsed .logout-side span,
+.sidebar.collapsed .user-role {
   display: none;
 }
 
