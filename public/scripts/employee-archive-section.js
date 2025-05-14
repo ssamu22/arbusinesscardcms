@@ -147,9 +147,6 @@ const nextAdminArchiveBtn = document.querySelector(".next-page-archive-admin");
                   <td>${member.isActive ? "Active" : "Inactive"}</td>
                   <td>${member.date_created}</td>
                   <td>
-                    <a href="#" class="delete-btn delete-btn-archive" data-id="${
-                      member.employee_id
-                    }">Delete</a>
                     <a href="#" class="activate-btn" data-id="${
                       member.employee_id
                     }">Unarchive</a>
@@ -159,15 +156,15 @@ const nextAdminArchiveBtn = document.querySelector(".next-page-archive-admin");
       tableBodyEmployee.appendChild(row);
     });
   
-    const deleteButtons = document.querySelectorAll(".delete-btn-archive");
+    // const deleteButtons = document.querySelectorAll(".delete-btn-archive");
   
-    deleteButtons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        const employeeId = event.target.getAttribute("data-id");
+    // deleteButtons.forEach((button) => {
+    //   button.addEventListener("click", (event) => {
+    //     const employeeId = event.target.getAttribute("data-id");
   
-        deleteArchivedEmployee(employeeId);
-      });
-    });
+    //     deleteArchivedEmployee(employeeId);
+    //   });
+    // });
 
     const unarchiveButtons = document.querySelectorAll(".activate-btn");
   
