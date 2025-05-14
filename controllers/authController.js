@@ -299,11 +299,6 @@ exports.updateProfile = async (req, res) => {
         );
       }
     }
-    // Create the updated profile data
-
-    if (image_id) {
-      updatedProfileData.image_id = image_id;
-    }
 
     // Update the user profile in the database here
     // Assuming you have a function in your model to handle this
@@ -318,8 +313,9 @@ exports.updateProfile = async (req, res) => {
     console.log("NEW DATA FIELD:", formattedResearchFields);
 
     const introIsEdited = existingData.introduction != introduction;
-    const fieldIsEdited =
-      existingData.field.join(",") !== formattedResearchFields.join(",");
+    const fieldIsEdited = 
+      (existingData.field || []).join(",") !== formattedResearchFields.join(",");
+
 
     const honorIsEdited =
       normalize(honorifics) !== normalize(existingData.honorifics);
@@ -341,6 +337,10 @@ exports.updateProfile = async (req, res) => {
       fieldIsEdited: fieldIsEdited || existingData.fieldIsEdited,
       honorIsEdited: honorIsEdited || existingData.honorIsEdited,
     };
+
+    if (image_id) {
+      updatedProfileData.image_id = image_id;
+    }
 
     const { data: employeeData, error: employeeError } = await supabase
       .from("employee")
