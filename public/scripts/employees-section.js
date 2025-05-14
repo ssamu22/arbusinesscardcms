@@ -746,9 +746,9 @@ async function approveUser(employeeId) {
 
     console.log("APPROVE USER RESULT:", result);
 
-    activeEmployees.push(employee);
-    displayActiveMembers(currentPageForActive);
-    setupPaginationActive();
+    // activeEmployees.push(employee);
+    // displayActiveMembers(currentPageForActive);
+    // setupPaginationActive();
     showSuccessMessage(`Employee ${employee.employee_number} is approved!`);
   } catch (err) {
     console.error("Network or unexpected error approving user:", err);

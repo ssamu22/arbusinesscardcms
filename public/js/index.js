@@ -16,9 +16,7 @@ const sanitizeInput = (input) => {
 };
 
 const capitalizeWords = (str) => {
-  return str
-    .toLowerCase()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
 if (registerForm) {
@@ -30,11 +28,15 @@ if (registerForm) {
     const rawFname = document.getElementById("fname").value.trim();
     const rawLname = document.getElementById("lname").value.trim();
     const rawMname = document.getElementById("mname").value.trim();
-    const rawEmployeeNumber = document.getElementById("employee_number").value.trim();
+    const rawEmployeeNumber = document
+      .getElementById("employee_number")
+      .value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const passwordConfirm = document.getElementById("passwordConfirm").value;
-    const honorifics = sanitizeInput(document.getElementById("honorifics").value);
+    const honorifics = sanitizeInput(
+      document.getElementById("honorifics").value
+    );
     const privacyCheckbox = document.getElementById("agreePrivacy");
 
     // Validation rules
@@ -43,21 +45,32 @@ if (registerForm) {
     const errors = [];
 
     // Validate names
-    if (!nameRegex.test(rawFname)) errors.push("First name contains invalid characters.");
-    if (!nameRegex.test(rawLname)) errors.push("Last name contains invalid characters.");
-    if (rawMname && !nameRegex.test(rawMname)) errors.push("Middle name contains invalid characters.");
+    if (!nameRegex.test(rawFname))
+      errors.push("First name contains invalid characters.");
+    if (!nameRegex.test(rawLname))
+      errors.push("Last name contains invalid characters.");
+    if (rawMname && !nameRegex.test(rawMname))
+      errors.push("Middle name contains invalid characters.");
 
     // Validate employee number
     if (!employeeNumRegex.test(rawEmployeeNumber)) {
       errors.push("Employee number must follow the format XXXX-XXXXA.");
     }
 
+    // Validate email
+
+    if (!isLPUEmail(email)) {
+      errors.push("Please enter a valid LPU email address.");
+    }
+
     // Validate password
-    if (password.length < 8 ||
-        !/[A-Z]/.test(password) ||
-        !/[a-z]/.test(password) ||
-        !/[0-9]/.test(password) ||
-        !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    if (
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ) {
       errors.push("Password does not meet complexity requirements.");
     }
 
@@ -66,7 +79,7 @@ if (registerForm) {
     }
 
     if (!privacyCheckbox.checked) {
-      e.preventDefault(); 
+      e.preventDefault();
       errors.push("You must agree to the Privacy Policy before registering.");
       return;
     }
@@ -127,3 +140,7 @@ const register = async ({ ...userInput }) => {
     registerErrorsDiv.style.display = "block";
   }
 };
+
+function isLPUEmail(email) {
+  return email.endsWith("@lpunetwork.edu.ph") || email.endsWith("@lpu.edu.ph");
+}

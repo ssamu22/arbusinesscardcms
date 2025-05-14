@@ -121,13 +121,17 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png"];
+      const validExtensions = /\.(jpe?g|png)$/i;
 
-      if (!allowedTypes.includes(file.type)) {
+      if (
+        !allowedTypes.includes(file.type) ||
+        !validExtensions.test(file.name)
+      ) {
         showErrorMessage("Only JPG and PNG images are allowed.");
-        e.target.value = ""; // Clear the selected file
+        e.target.value = "";
+        displayedTargetImage.src = "";
         return;
       }
-      // File is valid — proceed with upload or preview
 
       const imageUrl = URL.createObjectURL(file);
       displayedTargetImage.src = imageUrl;

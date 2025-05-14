@@ -468,6 +468,14 @@ exports.changeAdminPassword = async (req, res) => {
 exports.createEmployee = async (req, res) => {
   const { employee_number } = req.body;
 
+  // Check if the format is lpu email
+  if (!isLPUEmail(req.body.email)) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Please enter a valid LPU email address.",
+    });
+  }
+
   // Check if the email already exists in the db
   const existingEmployee = await supabase
     .from("employee")
@@ -622,15 +630,18 @@ exports.createEmployee = async (req, res) => {
 exports.createAdmin = async (req, res) => {
   const { employee_number } = req.body;
 
-  // Check if employee number already exists
-  const existingEmployeeNumber = await Employee.findByEmployeeNumber(
-    employee_number
-  );
   const existingEmployeeNumberAdmin = await Admin.findByEmployeeNumber(
     employee_number
   );
 
-  if (existingEmployeeNumber || existingEmployeeNumberAdmin) {
+  if (!isLPUEmail(req.body.email)) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Please enter a valid LPU email address.",
+    });
+  }
+
+  if (existingEmployeeNumberAdmin) {
     return res.status(400).json({
       status: "failed",
       message:
@@ -943,3 +954,7 @@ exports.adminUsesTemp = async (req, res) => {
     password_is_temp: data[0].password_is_temp,
   });
 };
+
+function isLPUEmail(email) {
+  return email.endsWith("@lpunetwork.edu.ph") || email.endsWith("@lpu.edu.ph");
+}
