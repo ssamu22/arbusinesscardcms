@@ -14,7 +14,9 @@
     </svg>
 
     <div class="delete-employee-div">
-      <p id="delete-archive-text">Are you sure you want to archive this employee?</p>
+      <p id="delete-archive-text">
+        Are you sure you want to archive this employee?
+      </p>
       <button class="confirm-delete-btn" id="delete-yes-btn">Yes</button>
       <button class="confirm-delete-btn" id="delete-no-btn">No</button>
     </div>
@@ -57,6 +59,13 @@
   </div> -->
 
   <div class="members-table-container">
+    <div class="search-bar-container">
+      <input
+        class="search-users"
+        id="search-active-employees"
+        placeholder="Search by name, email, or employee number"
+      />
+    </div>
     <table class="members-table">
       <thead>
         <tr>
@@ -98,6 +107,14 @@
     </div>
 
     <table class="members-table">
+      <div class="search-bar-container">
+        <input
+          class="search-users"
+          id="search-inactive-employees"
+          placeholder="Search by name, email, or employee number"
+        />
+      </div>
+
       <thead>
         <tr>
           <th>Employee Number</th>
@@ -131,6 +148,13 @@
     </div>
 
     <table class="members-table">
+      <div class="search-bar-container">
+        <input
+          class="search-users"
+          id="search-active-admin"
+          placeholder="Search by name, email, or employee number"
+        />
+      </div>
       <thead>
         <tr>
           <th>Employee Number</th>
