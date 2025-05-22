@@ -209,7 +209,7 @@ body {
   border-bottom: 1px solid #34495e;
 }
 .logo img {
-  max-width: 100px;
+  max-width: 100px; 
   height: auto;
 }
 .user-info {

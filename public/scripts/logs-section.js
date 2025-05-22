@@ -2,6 +2,7 @@ const logsPerPage = 10;
 
 // Logs Variables
 let logs = [];
+let logs2= [];
 let currentLogPage = 1;
 const totalLogPages = Math.ceil(logs.length / logsPerPage);
 const logTableBody = document.getElementById("logsTableBody");
@@ -11,6 +12,7 @@ const refreshLogsBtn = document.getElementById("refresh-logs");
 
 // Content Validation Variables
 let validationLogs = [];
+let validationLogs2 = [];
 let currentValidationPage = 1;
 const totalValidationPages = Math.ceil(validationLogs.length / logsPerPage);
 const validationTableBody = document.getElementById("contentValTableBody");
@@ -32,6 +34,7 @@ async function fetchAllLogs() {
     const responseData = await response.json();
 
     logs = responseData.data;
+    logs2 = responseData.data;
     logs.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // console.log("ALL LOGS:", logs);
@@ -56,6 +59,7 @@ async function fetchAllValidationLogs() {
     const responseData = await response.json();
 
     validationLogs = responseData.data;
+    validationLogs2 = responseData.data;
     validationLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     console.log("ALL VALIDATION LOGS:", validationLogs);

@@ -463,6 +463,24 @@
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
+.search-users{
+  width: 98%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: .5rem;
+  border-radius: 1rem;
+  border: 1px solid black;
+  font-size: 1rem;
+  
+}
+
+.search-bar-container{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 /* Add these responsive styles to your existing CSS */
 
 /* Media query for tablets and smaller devices */

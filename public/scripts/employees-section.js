@@ -1,10 +1,25 @@
 let activeEmployees = [];
 let inactiveEmployees = [];
 let adminMembers = [];
+
+let activeEmployees2 = [];
+let inactiveEmployees2 = [];
+let adminMembers2 = [];
+
 let currentPageForActive = 1;
 let currentPageForAdmin = 1;
 let currentPageForInactive = 1;
 const itemsPerPage = 5;
+
+// Search bars
+
+const searchActiveEmployeeBar = document.getElementById(
+  "search-active-employees"
+);
+const searchInactiveEmployeeBar = document.getElementById(
+  "search-inactive-employees"
+);
+const searchAdminEmployeeBar = document.getElementById("search-active-admin");
 
 const totalPagesActive = Math.ceil(activeEmployees.length / itemsPerPage);
 const tableBodyActive = document.getElementById("activeMembersTableBody");
@@ -93,15 +108,123 @@ async function fetchAllActiveEmployee() {
     const { employeesList } = await response.json();
 
     activeEmployees = employeesList;
+    activeEmployees2 = employeesList;
 
     console.log("Fetched Active Employees:", activeEmployees);
 
-    displayActiveMembers(currentPageForActive); // Default to page 1
+    displayActiveMembers(currentPageForActive);
     setupPaginationActive();
   } catch (error) {
     console.error("Error fetching employees:", error);
   }
 }
+
+searchActiveEmployeeBar.addEventListener("change", (e) => {
+  e.preventDefault();
+  currentPageForActive = 1;
+
+  console.log("ACTIVE EMPS:", activeEmployees);
+
+  if (searchActiveEmployeeBar.value == "") {
+    activeEmployees = activeEmployees2;
+  } else {
+    const searchValue = searchActiveEmployeeBar.value
+      .toLowerCase()
+      .replace(/-/g, "")
+      .trim();
+
+    activeEmployees = activeEmployees2.filter((employee) => {
+      const empNum = employee.employee_number
+        .toString()
+        .toLowerCase()
+        .replace(/-/g, "");
+
+      const email = employee.email.toLowerCase();
+      const name = `${employee.first_name} ${employee.middle_name || ""} ${
+        employee.last_name
+      }`
+        .trim()
+        .toLowerCase();
+
+      return (
+        empNum.includes(searchValue) ||
+        email.includes(searchValue) ||
+        name.includes(searchValue)
+      );
+    });
+  }
+
+  displayActiveMembers(currentPageForActive);
+  setupPaginationActive();
+});
+
+searchInactiveEmployeeBar.addEventListener("change", (e) => {
+  e.preventDefault();
+  currentPageForInactive = 1;
+
+  if (searchInactiveEmployeeBar.value == "") {
+    inactiveEmployees = inactiveEmployees2;
+  } else {
+    const searchValue = searchInactiveEmployeeBar.value
+      .toLowerCase()
+      .replace(/-/g, "")
+      .trim();
+
+    inactiveEmployees = inactiveEmployees2.filter((employee) => {
+      const empNum = employee.employee_number
+        .toString()
+        .toLowerCase()
+        .replace(/-/g, "");
+
+      const email = employee.email.toLowerCase();
+      const name = `${employee.first_name} ${employee.middle_name || ""} ${
+        employee.last_name
+      }`
+        .trim()
+        .toLowerCase();
+
+      return (
+        empNum.includes(searchValue) ||
+        email.includes(searchValue) ||
+        name.includes(searchValue)
+      );
+    });
+  }
+
+  displayInactiveMembers(currentPageForInactive);
+  setupPaginationInactive();
+});
+searchAdminEmployeeBar.addEventListener("change", (e) => {
+  e.preventDefault();
+  currentPageForAdmin = 1;
+  if (searchAdminEmployeeBar.value == "") {
+    adminMembers = adminMembers2;
+  } else {
+    const searchValue = searchAdminEmployeeBar.value
+      .toLowerCase()
+      .replace(/-/g, "")
+      .trim();
+
+    adminMembers = adminMembers2.filter((admin) => {
+      const empNum = admin.employee_number
+        .toString()
+        .toLowerCase()
+        .replace(/-/g, "");
+
+      const email = admin.email.toLowerCase();
+      const name = admin.admin_name.trim().toLowerCase();
+
+      return (
+        empNum.includes(searchValue) ||
+        email.includes(searchValue) ||
+        name.includes(searchValue)
+      );
+    });
+  }
+
+  displayAdminMembers(currentPageForAdmin); // Default to page 1
+  setupPaginationAdmin();
+});
 
 function setupPaginationActive() {
   const totalPages = Math.ceil(activeEmployees.length / itemsPerPage);
@@ -577,6 +700,7 @@ async function fetchAllInactiveEmployee() {
     const { employeesList } = await response.json();
 
     inactiveEmployees = employeesList;
+    inactiveEmployees2 = employeesList;
 
     // Step 5: Log the data to verify
     console.log("Fetched Inactive Employees:", inactiveEmployees);
@@ -744,11 +868,15 @@ async function approveUser(employeeId) {
     const result = await response.json();
     const employee = result.data;
 
+    inactiveEmployees = inactiveEmployees.filter(
+      (emp) => employee.employee_number
+    );
+    inactiveEmployees2 = inactiveEmployees2.filter(
+      (emp) => employee.employee_number
+    );
+
     console.log("APPROVE USER RESULT:", result);
 
-    // activeEmployees.push(employee);
-    // displayActiveMembers(currentPageForActive);
-    // setupPaginationActive();
     showSuccessMessage(`Employee ${employee.employee_number} is approved!`);
   } catch (err) {
     console.error("Network or unexpected error approving user:", err);
@@ -802,6 +930,9 @@ async function archiveUser(employee_id) {
       activeEmployees = activeEmployees.filter(
         (employee) => employee.employee_id !== employee_id
       );
+      activeEmployees2 = activeEmployees2.filter(
+        (employee) => employee.employee_id !== employee_id
+      );
 
       // Update the display and pagination
       displayActiveMembers(currentPageForActive); // Use the current page or update as necessary
@@ -829,12 +960,15 @@ async function deleteUser(employee_id) {
       showErrorMessage("User deleted successfully!");
 
       // Remove the deleted employee from the employees array
-      activeEmployees = activeEmployees.filter(
+      inactiveEmployees = inactiveEmployees.filter(
+        (employee) => employee.employee_id !== employee_id
+      );
+      inactiveEmployees2 = inactiveEmployees2.filter(
         (employee) => employee.employee_id !== employee_id
       );
 
       // Update the display and pagination
-      displayInactiveMembers(currentPageForActive); // Use the current page or update as necessary
+      displayInactiveMembers(currentPageForInactive); // Use the current page or update as necessary
       setupPaginationActive();
     } else {
       showErrorMessage(`Error: ${result.error}`);
@@ -882,6 +1016,7 @@ async function fetchAllAdmins() {
     const { adminsList } = await response.json();
 
     adminMembers = adminsList;
+    adminMembers2 = adminsList;
 
     console.log("Fetched Admins:", adminMembers);
 
@@ -1044,6 +1179,9 @@ async function deleteAdmin(admin_id) {
 
       // Remove the deleted employee from the admin array
       adminMembers = adminMembers.filter(
+        (admin) => admin.admin_id !== admin_id
+      );
+      adminMembers2 = adminMembers2.filter(
         (admin) => admin.admin_id !== admin_id
       );
 
